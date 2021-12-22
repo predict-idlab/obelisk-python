@@ -6,6 +6,10 @@ Obelisk Python client
     :caption: Quickstart
 
     /quickstart/getting-started-with-obelisk
+    /quickstart/querying-metadata
+    /quickstart/querying-data
+    /quickstart/streaming-data
+    /quickstart/ingesting-data
 
 .. toctree::
     :maxdepth: 1
