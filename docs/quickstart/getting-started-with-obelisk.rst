@@ -12,19 +12,24 @@ ObeliskConsumer example::
     from obelisk.consumer import ObeliskConsumer
     from example.config import ObeliskConfig
 
-    consumer = ObeliskConsumer(ObeliskConfig.CLIENT_ID, ObeliskConfig.CLIENT_SECRET, api_version='v2')
-    response = consumer.events('playground.city', 'temperature.celsius::number')
+    consumer = ObeliskConsumer(ObeliskConfig.CLIENT_ID, ObeliskConfig.CLIENT_SECRET)
+    response = consumer.events('60a6665536e9be3139e58f7b', metrics=['temperature.celsius::number'])
 
 Obelisk Producer
 ----------------
 
 ObeliskProducer example::
 
-    from obelisk.consumer import ObeliskProducer
     from example.config import ObeliskConfig
+    from obelisk.models import TimestampPrecision, IngestMode
+    from obelisk.producer import ObeliskProducer
 
-    producer = ObeliskProducer(ObeliskConfig.CLIENT_ID, ObeliskConfig.CLIENT_SECRET, api_version='v2')
+    c = ObeliskProducer(ObeliskConfig.CLIENT_ID, ObeliskConfig.CLIENT_SECRET)
     data = [
-        [1574675693000, 'temperature.celsius::number', 'test', 24.5]
+        {
+            'metric': 'event::json',
+            'value': {'test': 'check'}
+        }
     ]
-    status, response = producer.send(scope='playground.city', data=data)
+    response = c.send(dataset='60a6665536e9be3139e58f7b', data=data, precision=TimestampPrecision.MILLISECONDS,
+                      mode=IngestMode.DEFAULT)

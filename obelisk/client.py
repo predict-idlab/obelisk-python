@@ -5,7 +5,6 @@ __email__ = 'Pieter.Moens@UGent.be'
 
 import base64
 from datetime import datetime, timedelta
-import json
 import logging
 import requests
 from sgqlc.endpoint.http import HTTPEndpoint
