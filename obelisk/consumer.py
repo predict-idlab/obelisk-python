@@ -164,7 +164,7 @@ class ObeliskConsumer(ObeliskClient):
         :param metrics: List of Metric IDs or wildcards (e.g. `*::number`) for the Stream dataRange.
         :param stream_id: The id of the Stream.
         :param receive_backlog: Whether to receive events that were missed since last time the client was connected.
-        If set to 'false' (default), Obelisk starts streaming live data immediately.
+            If set to 'false' (default), Obelisk starts streaming live data immediately.
         :return: stream_id, SSEClient
         """
         self._verify_token()

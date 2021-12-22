@@ -43,5 +43,5 @@ ObeliskProducer example::
                       mode=IngestMode.DEFAULT)
 
 Obelisk API Documentation
-----------------
+-------------------------
 More information about the Obelisk API can be found in the official `documentation <https://obelisk.docs.apiary.io/>`_.
