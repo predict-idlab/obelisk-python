@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "obelisk-py"
 version = "0.1.0"
-description = "Python client for the Obelisk API (v3)"
+description = "Python client for Obelisk (v3)"
 authors = ["Pieter Moens <pieter.moens@ugent.be>"]
 packages = [
         { include = "obelisk"}
