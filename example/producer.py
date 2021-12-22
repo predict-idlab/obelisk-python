@@ -4,8 +4,8 @@ __author__ = 'Pieter Moens'
 __email__ = 'Pieter.Moens@UGent.be'
 
 from example.config import ObeliskConfig
-from obelisk.models import TimestampPrecision, IngestMode
 from obelisk.producer import ObeliskProducer
+from obelisk.models import TimestampPrecision, IngestMode
 
 logger = ObeliskConfig.logger
 logger.name = __name__

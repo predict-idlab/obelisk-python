@@ -1,9 +1,10 @@
-Version 1.0.0
+Version 0.1.0
 -------------
 
 :Date: December 14, 2021
 
 * Support for Obelisk v3
+* PyPI package released
 
 Version 0.0.6
 -------------

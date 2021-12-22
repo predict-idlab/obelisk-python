@@ -9,7 +9,7 @@ import logging
 from rx import Observable, Observer
 
 from example.config import ObeliskConfig
-from obelisk.consumer import ObeliskConsumer
+from obelisk import ObeliskConsumer
 
 
 class ObeliskObserver(Observer):

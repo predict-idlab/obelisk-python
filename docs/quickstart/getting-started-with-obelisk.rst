@@ -4,6 +4,11 @@ Getting Started with Obelisk
 Installation
 ------------
 
+PyPI installation::
+
+    pip install obelisk-py
+
+
 Obelisk Consumer
 ----------------
 

@@ -6,8 +6,8 @@ __email__ = 'Pieter.Moens@UGent.be'
 import csv
 import pathlib
 
-from obelisk.consumer import ObeliskConsumer
 from example.config import ObeliskConfig
+from obelisk import ObeliskConsumer
 
 if __name__ == '__main__':
     c = ObeliskConsumer(ObeliskConfig.CLIENT_ID, ObeliskConfig.CLIENT_SECRET)
