@@ -9,7 +9,7 @@ from sgqlc.operation import Operation
 from sseclient import SSEClient
 
 from obelisk.client import ObeliskClient, ObeliskException
-from obelisk.models import CreateStreamInput, DataRange, TimestampPrecision, Query
+from obelisk.schema import TimestampPrecision, Query, Mutation
 
 
 class ObeliskConsumer(ObeliskClient):
@@ -20,6 +20,7 @@ class ObeliskConsumer(ObeliskClient):
     Obelisk API Documentation:
     https://obelisk.docs.apiary.io/
     """
+
     def __init__(self, client_id: str, client_secret: str, debug: bool = False):
         super().__init__(client_id, client_secret, debug)
 
@@ -59,7 +60,7 @@ class ObeliskConsumer(ObeliskClient):
             'filter': filter_,
             'limit': limit,
             'limitBy': limit_by,
-            'timestampPrecision': precision.value
+            'timestampPrecision': precision
         }
         response = self.http_post(self.EVENTS_URL, data={k: v for k, v in payload.items() if v is not None})
         try:
@@ -70,19 +71,39 @@ class ObeliskConsumer(ObeliskClient):
             self.logger.warning('[%d]: %s', response.status_code, response.text)
             raise ObeliskException
 
-    def get_active_stream(self, datasets: list, metrics: list = None):
+    def get_active_stream(self, datasets: list, metrics: list = None,
+                          precision: TimestampPrecision = TimestampPrecision.MILLISECONDS,
+                          fields: list = None, filter_: dict = None) -> str or None:
         query = Operation(Query)
         query.me.activeStreams.items.id()
         query.me.activeStreams.items.dataRange()
+        query.me.activeStreams.items.fields()
+        query.me.activeStreams.items.timestampPrecision()
+        query.me.activeStreams.items.filter()
 
         result = self.query_graphql(query)
 
+        data_range = {
+            'datasets': datasets
+        }
+        if metrics is not None:
+            data_range['metrics'] = metrics
+
+        input_ = {
+            'dataRange': data_range,
+            'timestampPrecision': precision
+        }
+        if fields is not None:
+            input_['fields'] = fields
+        if filter_ is not None:
+            input_['filter'] = filter_
+
         active_streams = result['data']['me']['activeStreams']['items']
         for stream in active_streams:
-            datasets_ = [dataset['id'] for dataset in stream['dataRange']['datasets']]
-            metrics_ = stream['dataRange']['metrics']
+            stream_ = stream.copy()
+            stream_.pop('id')
 
-            if datasets_ == datasets and metrics_ == metrics:
+            if stream_ == input_:
                 return stream['id']
 
         return None
@@ -100,20 +121,37 @@ class ObeliskConsumer(ObeliskClient):
         :param fields: List of fields to return in the result set. Defaults to `[metric, source, value]`
         :param filter_: Limit output to events matching the specified Filter expression.
         """
-        active_stream = self.get_active_stream(datasets, metrics)
+        active_stream = self.get_active_stream(datasets, metrics, precision, fields, filter_)
         if active_stream is not None:
             self.logger.info('Stream already exists, skipping creation..')
             return active_stream
 
-        input_ = CreateStreamInput(name, datasets, metrics, precision, fields, filter_)
-        mutation = f'mutation {{ createStream(input: { input_ }) {{ responseCode message item {{ id }} }} }}'
-        resp = self.query_graphql(mutation)
+        data_range = {
+            'datasets': datasets
+        }
+        if metrics is not None:
+            data_range['metrics'] = metrics
 
-        response_code = resp['data']['createStream']['responseCode']
-        message = resp['data']['createStream']['message']
+        input_ = {
+            'name': name,
+            'dataRange': data_range,
+            'timestampPrecision': precision
+        }
+        if fields is not None:
+            input_['fields'] = fields
+        if filter_ is not None:
+            input_['filter'] = filter_
+
+        mutation = Operation(Mutation)
+        mutation.createStream(input=input_)
+
+        result = self.query_graphql(mutation)
+
+        response_code = result['data']['createStream']['responseCode']
+        message = result['data']['createStream']['message']
         if response_code != 'SUCCESS':
-            raise ObeliskException(f'Could not create stream: {message}')
-        return resp['data']['createStream']['item']['id']
+            raise ObeliskException(f'Could not create stream: [{response_code}] {message}')
+        return result['data']['createStream']['item']['id']
 
     def sse(self, name: str = None, datasets: list = None, metrics: list = None, stream_id: int = None,
             receive_backlog: bool = False, **kwargs) -> (str, SSEClient):

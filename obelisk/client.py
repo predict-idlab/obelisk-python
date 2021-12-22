@@ -10,7 +10,7 @@ import requests
 from sgqlc.endpoint.http import HTTPEndpoint
 from sgqlc.operation import Operation
 
-from obelisk.models import Query
+from obelisk.schema import Query
 
 
 class ObeliskException(Exception):

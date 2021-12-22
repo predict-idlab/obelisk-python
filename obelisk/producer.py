@@ -3,9 +3,16 @@
 __author__ = 'Pieter Moens'
 __email__ = 'Pieter.Moens@UGent.be'
 
+from enum import Enum
 
 from obelisk.client import ObeliskClient, ObeliskException
-from obelisk.models import IngestMode, TimestampPrecision
+from obelisk.schema import TimestampPrecision
+
+
+class IngestMode(Enum):
+    DEFAULT = 'default'
+    STREAM_ONLY = 'stream_only'
+    STORE_ONLY = 'store_only'
 
 
 class ObeliskProducer(ObeliskClient):
@@ -31,7 +38,7 @@ class ObeliskProducer(ObeliskClient):
         """
         params = {
             'datasetId': dataset,
-            'timestampPrecision': precision.value,
+            'timestampPrecision': precision,
             'mode': mode.value
         }
 

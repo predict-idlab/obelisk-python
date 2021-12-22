@@ -7,16 +7,15 @@ import json
 import logging
 
 from rx import Observable, Observer
+from obelisk import ObeliskConsumer
 
 from example.config import ObeliskConfig
-from obelisk import ObeliskConsumer
 
 
 class ObeliskObserver(Observer):
     """Observer class to consume Server-Sent Events."""
     def __init__(self):
-        self.logger = ObeliskConfig.logger
-        self.logger.name = __name__
+        self.logger = logging.getLogger(__name__)
 
     def on_next(self, message):
         """Consume event."""
@@ -38,12 +37,13 @@ class ObeliskObserver(Observer):
 
 
 if __name__ == '__main__':
-    logging.getLogger('obelisk').propagate = True
     name = 'test.obelisk-python'
     datasets = ['60a6665536e9be3139e58f7b']
     metrics = ['event::json']
 
     c = ObeliskConsumer(ObeliskConfig.CLIENT_ID, ObeliskConfig.CLIENT_SECRET, debug=True)
+    c.create_stream(name, datasets, metrics)
+
     observer = ObeliskObserver()
 
     ObeliskConfig.logger.info('Starting SSE consumer ...')
