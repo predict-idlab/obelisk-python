@@ -133,7 +133,7 @@ class ObeliskClient:
         :param cursor: The pagination cursor from which results should be listed for the resource.
         :param limit: Limits the number of returned results in the response page.
         :param filter_: Allows filtering instances of Dataset
-        based on a number of predefined searchable fields (see Obelisk documentation).
+            based on a number of predefined searchable fields (see Obelisk documentation).
         :return: List of datasets
         """
         query = Operation(Query)
@@ -175,7 +175,7 @@ class ObeliskClient:
         :param cursor: The pagination cursor from which results should be listed for the resource.
         :param limit: Limits the number of returned results in the response page.
         :param filter_: Allows filtering instances of Metric
-        based on a number of predefined searchable fields (see Obelisk documentation).
+            based on a number of predefined searchable fields (see Obelisk documentation).
         """
         query = Operation(Query)
         dataset = query.me.dataset(id=dataset)
@@ -213,7 +213,7 @@ class ObeliskClient:
         :param cursor: The pagination cursor from which results should be listed for the resource.
         :param limit: Limits the number of returned results in the response page.
         :param filter_: Allows filtering instances of Metric
-        based on a number of predefined searchable fields (see Obelisk documentation).
+            based on a number of predefined searchable fields (see Obelisk documentation).
         """
         query = Operation(Query)
         dataset = query.me.dataset(id=dataset)
