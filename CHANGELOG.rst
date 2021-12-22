@@ -1,3 +1,12 @@
+Version 0.1.1
+-------------
+
+:Date: December 22, 2021
+
+* Updated streaming using the `sqglc` package
+* Updated example usage
+* Updated documentation
+
 Version 0.1.0
 -------------
 
