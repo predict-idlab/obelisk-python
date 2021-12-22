@@ -1,6 +1,6 @@
 ObeliskProducer
 ===============
 
-.. automodule:: v3.producer
+.. automodule:: producer
 .. autoclass:: ObeliskProducer
     :members:

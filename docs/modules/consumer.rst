@@ -1,6 +1,6 @@
 ObeliskConsumer
 ===============
 
-.. automodule:: v3.consumer
+.. automodule:: consumer
 .. autoclass:: ObeliskConsumer
     :members:

@@ -1,6 +1,6 @@
 ObeliskClient
 =============
 
-.. automodule:: v3.client
+.. automodule:: client
 .. autoclass:: ObeliskClient
     :members:

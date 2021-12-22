@@ -4,16 +4,6 @@ Getting Started with Obelisk
 Installation
 ------------
 
-Assuming you have Python already, install Obelisk::
-
-    pip install --upgrade obelisk-python --no-deps --index-url https://gitlab+deploy-token-pip:fq5hPPobixza9-mVzuN9@gitlab.ilabt.imec.be/api/v4/projects/2082/packages/pypi/simple
-
-
-Adding the package to ``requirements.txt``::
-
-    https://gitlab+deploy-token-pip:fq5hPPobixza9-mVzuN9@gitlab.ilabt.imec.be/api/v4/projects/2082/packages/pypi/simple#egg=obelisk-python
-
-
 Obelisk Consumer
 ----------------
 
