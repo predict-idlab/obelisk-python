@@ -21,14 +21,14 @@ class ObeliskClient:
     """
     Component that contains all the logic to access the Obelisk API (e.g. Authentication).
     Obelisk Documentation:
-    https://rc.obelisk.ilabt.imec.be/docs/guides/auth.html
+    https://obelisk.ilabt.imec.be/docs/guides/auth.html
     """
-    TOKEN_URL = 'https://rc.obelisk.ilabt.imec.be/api/v3/auth/token'
-    ROOT_URL = 'https://rc.obelisk.ilabt.imec.be/api/v3'
-    METADATA_URL = 'https://rc.obelisk.ilabt.imec.be/api/v3/catalog/graphql'
-    EVENTS_URL = 'https://rc.obelisk.ilabt.imec.be/api/v3/data/query/events'
-    INGEST_URL = 'https://rc.obelisk.ilabt.imec.be/api/v3/data/ingest'
-    STREAMS_URL = 'https://rc.obelisk.ilabt.imec.be/api/v3/data/streams'
+    TOKEN_URL = 'https://obelisk.ilabt.imec.be/api/v3/auth/token'
+    ROOT_URL = 'https://obelisk.ilabt.imec.be/api/v3'
+    METADATA_URL = 'https://obelisk.ilabt.imec.be/api/v3/catalog/graphql'
+    EVENTS_URL = 'https://obelisk.ilabt.imec.be/api/v3/data/query/events'
+    INGEST_URL = 'https://obelisk.ilabt.imec.be/api/v3/data/ingest'
+    STREAMS_URL = 'https://obelisk.ilabt.imec.be/api/v3/data/streams'
 
     def __init__(self, client_id: str, client_secret: str, debug: bool = False):
         """
