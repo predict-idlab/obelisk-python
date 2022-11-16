@@ -1,3 +1,10 @@
+Version 0.2.0
+-------------
+
+:Date: November 16, 2022
+
+* Updated to Obelisk v3 stable deployment
+
 Version 0.1.1
 -------------
 

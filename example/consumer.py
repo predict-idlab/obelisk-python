@@ -34,3 +34,4 @@ if __name__ == '__main__':
         }
     }
     events = consumer.events(['60a6665536e9be3139e58f7b'], metrics=['event::json'], filter_=filter_thing)
+    print(events)
