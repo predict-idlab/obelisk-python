@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>obelisk.client &mdash; obelisk-python 0.1.1 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> obelisk-python
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Quickstart</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart/getting-started-with-obelisk.html">Getting Started with Obelisk</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart/querying-metadata.html">Querying MetaData</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart/querying-data.html">Querying Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart/streaming-data.html">Streaming Data (Server-Sent Events)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart/ingesting-data.html">Ingesting Data</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Modules</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/client.html">ObeliskClient</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/consumer.html">ObeliskConsumer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/producer.html">ObeliskProducer</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">About Obelisk</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../changelog.html">Changelog</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">obelisk-python</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">obelisk.client</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for obelisk.client</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Obelisk client.&quot;&quot;&quot;</span>
+
+<span class="n">__author__</span> <span class="o">=</span> <span class="s1">&#39;Pieter Moens&#39;</span>
+<span class="n">__email__</span> <span class="o">=</span> <span class="s1">&#39;Pieter.Moens@UGent.be&#39;</span>
+
+<span class="kn">import</span> <span class="nn">base64</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">requests</span>
+<span class="kn">from</span> <span class="nn">sgqlc.endpoint.http</span> <span class="kn">import</span> <span class="n">HTTPEndpoint</span>
+<span class="kn">from</span> <span class="nn">sgqlc.operation</span> <span class="kn">import</span> <span class="n">Operation</span>
+
+<span class="kn">from</span> <span class="nn">obelisk.schema</span> <span class="kn">import</span> <span class="n">Query</span>
+
+
+<span class="k">class</span> <span class="nc">ObeliskException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="k">pass</span>
+
+
+<div class="viewcode-block" id="ObeliskClient"><a class="viewcode-back" href="../../modules/client.html#obelisk.client.ObeliskClient">[docs]</a><span class="k">class</span> <span class="nc">ObeliskClient</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Component that contains all the logic to access the Obelisk API (e.g. Authentication).</span>
+<span class="sd">    Obelisk Documentation:</span>
+<span class="sd">    https://obelisk.ilabt.imec.be/docs/guides/auth.html</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">TOKEN_URL</span> <span class="o">=</span> <span class="s1">&#39;https://obelisk.ilabt.imec.be/api/v3/auth/token&#39;</span>
+    <span class="n">ROOT_URL</span> <span class="o">=</span> <span class="s1">&#39;https://obelisk.ilabt.imec.be/api/v3&#39;</span>
+    <span class="n">METADATA_URL</span> <span class="o">=</span> <span class="s1">&#39;https://obelisk.ilabt.imec.be/api/v3/catalog/graphql&#39;</span>
+    <span class="n">EVENTS_URL</span> <span class="o">=</span> <span class="s1">&#39;https://obelisk.ilabt.imec.be/api/v3/data/query/events&#39;</span>
+    <span class="n">INGEST_URL</span> <span class="o">=</span> <span class="s1">&#39;https://obelisk.ilabt.imec.be/api/v3/data/ingest&#39;</span>
+    <span class="n">STREAMS_URL</span> <span class="o">=</span> <span class="s1">&#39;https://obelisk.ilabt.imec.be/api/v3/data/streams&#39;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">client_secret</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">debug</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize the object.</span>
+
+<span class="sd">        :param client_id: Obelisk client ID</span>
+<span class="sd">        :param client_secret: Obelisk client secret</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client_id</span> <span class="o">=</span> <span class="n">client_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client_secret</span> <span class="o">=</span> <span class="n">client_secret</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">token</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">token_expires</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_verify_token</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;obelisk-python&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">debug</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+
+        <span class="n">console_handler</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">StreamHandler</span><span class="p">()</span>
+
+        <span class="n">formatter</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span><span class="s1">&#39;[</span><span class="si">%(asctime)s</span><span class="s1">] - [</span><span class="si">%(name)s</span><span class="s1">] - [</span><span class="si">%(levelname)s</span><span class="s1">] - </span><span class="si">%(message)s</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">console_handler</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">formatter</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">console_handler</span><span class="p">)</span>
+
+    <span class="c1"># AUTHENTICATION FLOW</span>
+    <span class="k">def</span> <span class="nf">_get_token</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get an access token from Obelisk.&quot;&quot;&quot;</span>
+        <span class="n">auth_string</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">base64</span><span class="o">.</span><span class="n">b64encode</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">client_id</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">client_secret</span><span class="si">}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)),</span> <span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
+        <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;Authorization&#39;</span><span class="p">:</span> <span class="sa">f</span><span class="s1">&#39;Basic </span><span class="si">{</span><span class="n">auth_string</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;Content-Type&#39;</span><span class="p">:</span> <span class="s1">&#39;application/json&#39;</span>
+        <span class="p">}</span>
+        <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;grant_type&#39;</span><span class="p">:</span> <span class="s1">&#39;client_credentials&#39;</span>
+        <span class="p">}</span>
+
+        <span class="k">with</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">TOKEN_URL</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="n">payload</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span> <span class="k">as</span> <span class="n">req</span><span class="p">:</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="n">req</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="n">req</span><span class="o">.</span><span class="n">status_code</span> <span class="o">!=</span> <span class="mi">200</span><span class="p">:</span>
+                <span class="k">if</span> <span class="s1">&#39;error&#39;</span> <span class="ow">in</span> <span class="n">response</span><span class="p">:</span>
+                    <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;An error occurred during authentication with Obelisk&#39;</span><span class="p">)</span>
+                    <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Description: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">response</span><span class="p">[</span><span class="s1">&#39;error&#39;</span><span class="p">][</span><span class="s1">&#39;message&#39;</span><span class="p">])</span>
+                    <span class="k">raise</span> <span class="n">ObeliskException</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">token</span> <span class="o">=</span> <span class="n">response</span><span class="p">[</span><span class="s1">&#39;token&#39;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">token_expires</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">+</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="n">response</span><span class="p">[</span><span class="s1">&#39;max_valid_time&#39;</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="nf">_verify_token</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Verify token from Obelisk.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">token</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">token_expires</span> <span class="o">&lt;</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_get_token</span><span class="p">()</span>
+
+<div class="viewcode-block" id="ObeliskClient.http_post"><a class="viewcode-back" href="../../modules/client.html#obelisk.client.ObeliskClient.http_post">[docs]</a>    <span class="k">def</span> <span class="nf">http_post</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">requests</span><span class="o">.</span><span class="n">Response</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Execute HTTP POST request on an API endpoint.</span>
+
+<span class="sd">        :param url: API endpoint</span>
+<span class="sd">        :param data: Payload as dictionary</span>
+<span class="sd">        :param params: Parameters as dictionary</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_verify_token</span><span class="p">()</span>
+
+        <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;Authorization&#39;</span><span class="p">:</span> <span class="sa">f</span><span class="s1">&#39;Bearer </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">token</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;Content-Type&#39;</span><span class="p">:</span> <span class="s1">&#39;application/json&#39;</span>
+        <span class="p">}</span>
+        <span class="k">if</span> <span class="n">params</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">params</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">with</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">url</span><span class="p">,</span>
+                           <span class="n">json</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
+                           <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">params</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">},</span>
+                           <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span> <span class="k">as</span> <span class="n">response</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">response</span></div>
+
+    <span class="c1"># METADATA</span>
+<div class="viewcode-block" id="ObeliskClient.query_graphql"><a class="viewcode-back" href="../../modules/client.html#obelisk.client.ObeliskClient.query_graphql">[docs]</a>    <span class="k">def</span> <span class="nf">query_graphql</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieve metadata through GraphQL endpoints.</span>
+
+<span class="sd">        :param query: GraphQL query (sgqlc.operation.Operation or str)</span>
+<span class="sd">        :return: Query result as JSON object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_verify_token</span><span class="p">()</span>
+
+        <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;Authorization&#39;</span><span class="p">:</span> <span class="sa">f</span><span class="s1">&#39;Bearer </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">token</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;Content-Type&#39;</span><span class="p">:</span> <span class="s1">&#39;application/json&#39;</span>
+        <span class="p">}</span>
+
+        <span class="n">endpoint</span> <span class="o">=</span> <span class="n">HTTPEndpoint</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">METADATA_URL</span><span class="p">,</span> <span class="n">base_headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">endpoint</span><span class="p">(</span><span class="n">query</span><span class="o">=</span><span class="n">query</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ObeliskClient.get_datasets"><a class="viewcode-back" href="../../modules/client.html#obelisk.client.ObeliskClient.get_datasets">[docs]</a>    <span class="k">def</span> <span class="nf">get_datasets</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cursor</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                     <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">filter_</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">[]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        List datasets the current user/client has access to.</span>
+
+<span class="sd">        :param cursor: The pagination cursor from which results should be listed for the resource.</span>
+<span class="sd">        :param limit: Limits the number of returned results in the response page.</span>
+<span class="sd">        :param filter_: Allows filtering instances of Dataset</span>
+<span class="sd">            based on a number of predefined searchable fields (see Obelisk documentation).</span>
+<span class="sd">        :return: List of datasets</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="n">Operation</span><span class="p">(</span><span class="n">Query</span><span class="p">)</span>
+
+        <span class="n">args</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;cursor&#39;</span><span class="p">:</span> <span class="n">cursor</span><span class="p">,</span>
+            <span class="s1">&#39;limit&#39;</span><span class="p">:</span> <span class="n">limit</span><span class="p">,</span>
+            <span class="s1">&#39;filter&#39;</span><span class="p">:</span> <span class="n">filter_</span>
+        <span class="p">}</span>
+        <span class="n">query</span><span class="o">.</span><span class="n">me</span><span class="o">.</span><span class="n">datasets</span><span class="p">(</span><span class="o">**</span><span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">args</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">})</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">query_graphql</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">][</span><span class="s1">&#39;me&#39;</span><span class="p">][</span><span class="s1">&#39;datasets&#39;</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="ObeliskClient.get_dataset"><a class="viewcode-back" href="../../modules/client.html#obelisk.client.ObeliskClient.get_dataset">[docs]</a>    <span class="k">def</span> <span class="nf">get_dataset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieves a specific dataset.</span>
+
+<span class="sd">        :param dataset: ID of the Dataset</span>
+<span class="sd">        :return: Dataset</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="n">Operation</span><span class="p">(</span><span class="n">Query</span><span class="p">)</span>
+        <span class="n">dataset</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">me</span><span class="o">.</span><span class="n">dataset</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">dataset</span><span class="p">)</span>
+        <span class="n">dataset</span><span class="o">.</span><span class="n">id</span><span class="p">()</span>
+        <span class="n">dataset</span><span class="o">.</span><span class="n">name</span><span class="p">()</span>
+        <span class="n">dataset</span><span class="o">.</span><span class="n">description</span><span class="p">()</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">query_graphql</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">][</span><span class="s1">&#39;me&#39;</span><span class="p">][</span><span class="s1">&#39;dataset&#39;</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="ObeliskClient.get_metrics"><a class="viewcode-back" href="../../modules/client.html#obelisk.client.ObeliskClient.get_metrics">[docs]</a>    <span class="k">def</span> <span class="nf">get_metrics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">cursor</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                    <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">filter_</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieve available metrics for a scope.</span>
+
+<span class="sd">        :param dataset: The id of the Dataset.</span>
+<span class="sd">        :param cursor: The pagination cursor from which results should be listed for the resource.</span>
+<span class="sd">        :param limit: Limits the number of returned results in the response page.</span>
+<span class="sd">        :param filter_: Allows filtering instances of Metric</span>
+<span class="sd">            based on a number of predefined searchable fields (see Obelisk documentation).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="n">Operation</span><span class="p">(</span><span class="n">Query</span><span class="p">)</span>
+        <span class="n">dataset</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">me</span><span class="o">.</span><span class="n">dataset</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">dataset</span><span class="p">)</span>
+
+        <span class="n">args</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;cursor&#39;</span><span class="p">:</span> <span class="n">cursor</span><span class="p">,</span>
+            <span class="s1">&#39;limit&#39;</span><span class="p">:</span> <span class="n">limit</span><span class="p">,</span>
+            <span class="s1">&#39;filter&#39;</span><span class="p">:</span> <span class="n">filter_</span>
+        <span class="p">}</span>
+        <span class="n">dataset</span><span class="o">.</span><span class="n">metrics</span><span class="p">(</span><span class="o">**</span><span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">args</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">})</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">query_graphql</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">][</span><span class="s1">&#39;me&#39;</span><span class="p">][</span><span class="s1">&#39;dataset&#39;</span><span class="p">][</span><span class="s1">&#39;metrics&#39;</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="ObeliskClient.get_metric"><a class="viewcode-back" href="../../modules/client.html#obelisk.client.ObeliskClient.get_metric">[docs]</a>    <span class="k">def</span> <span class="nf">get_metric</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">metric</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get a specific Metric.</span>
+
+<span class="sd">        :param dataset: The id of the Dataset.</span>
+<span class="sd">        :param metric: The id of the Metric.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="n">Operation</span><span class="p">(</span><span class="n">Query</span><span class="p">)</span>
+        <span class="n">dataset</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">me</span><span class="o">.</span><span class="n">dataset</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">dataset</span><span class="p">)</span>
+        <span class="n">dataset</span><span class="o">.</span><span class="n">metric</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">metric</span><span class="p">)</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">query_graphql</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">][</span><span class="s1">&#39;me&#39;</span><span class="p">][</span><span class="s1">&#39;dataset&#39;</span><span class="p">][</span><span class="s1">&#39;metric&#39;</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="ObeliskClient.get_things"><a class="viewcode-back" href="../../modules/client.html#obelisk.client.ObeliskClient.get_things">[docs]</a>    <span class="k">def</span> <span class="nf">get_things</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">cursor</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                   <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">filter_</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieve available metrics for a scope.</span>
+
+<span class="sd">        :param dataset: The id of the Dataset.</span>
+<span class="sd">        :param cursor: The pagination cursor from which results should be listed for the resource.</span>
+<span class="sd">        :param limit: Limits the number of returned results in the response page.</span>
+<span class="sd">        :param filter_: Allows filtering instances of Metric</span>
+<span class="sd">            based on a number of predefined searchable fields (see Obelisk documentation).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="n">Operation</span><span class="p">(</span><span class="n">Query</span><span class="p">)</span>
+        <span class="n">dataset</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">me</span><span class="o">.</span><span class="n">dataset</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">dataset</span><span class="p">)</span>
+
+        <span class="n">args</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;cursor&#39;</span><span class="p">:</span> <span class="n">cursor</span><span class="p">,</span>
+            <span class="s1">&#39;limit&#39;</span><span class="p">:</span> <span class="n">limit</span><span class="p">,</span>
+            <span class="s1">&#39;filter&#39;</span><span class="p">:</span> <span class="n">filter_</span>
+        <span class="p">}</span>
+        <span class="n">dataset</span><span class="o">.</span><span class="n">things</span><span class="p">(</span><span class="o">**</span><span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">args</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">})</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">query_graphql</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">][</span><span class="s1">&#39;me&#39;</span><span class="p">][</span><span class="s1">&#39;dataset&#39;</span><span class="p">][</span><span class="s1">&#39;things&#39;</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="ObeliskClient.get_thing"><a class="viewcode-back" href="../../modules/client.html#obelisk.client.ObeliskClient.get_thing">[docs]</a>    <span class="k">def</span> <span class="nf">get_thing</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">thing</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get a specific Thing.</span>
+
+<span class="sd">        :param dataset: The id of the Dataset.</span>
+<span class="sd">        :param thing: The id of the Thing.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="n">Operation</span><span class="p">(</span><span class="n">Query</span><span class="p">)</span>
+        <span class="n">dataset</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">me</span><span class="o">.</span><span class="n">dataset</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">dataset</span><span class="p">)</span>
+        <span class="n">dataset</span><span class="o">.</span><span class="n">thing</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">thing</span><span class="p">)</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">query_graphql</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">][</span><span class="s1">&#39;me&#39;</span><span class="p">][</span><span class="s1">&#39;dataset&#39;</span><span class="p">][</span><span class="s1">&#39;thing&#39;</span><span class="p">]</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020-2022, PreDiCT - IDLab.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>
