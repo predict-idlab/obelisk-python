@@ -8,6 +8,7 @@ import httpx
 from src.construct_additional_obelisks.exceptions import AuthenticationError
 from src.construct_additional_obelisks.strategies.retry import RetryStrategy, \
     NoRetryStrategy
+from src.construct_additional_obelisks.types import ObeliskKind
 
 
 class Client:
@@ -19,6 +20,7 @@ class Client:
 
     grace_period: timedelta = timedelta(seconds=10)
     retry_strategy: RetryStrategy
+    kind: ObeliskKind
 
     log: logging.Logger
 
@@ -30,26 +32,46 @@ class Client:
     STREAMS_URL = 'https://obelisk.ilabt.imec.be/api/v3/data/streams'
 
     def __init__(self, client: str, secret: str,
-                 retry_strategy: RetryStrategy = NoRetryStrategy()) -> None:
+                 retry_strategy: RetryStrategy = NoRetryStrategy(),
+                 kind: ObeliskKind = ObeliskKind.CLASSIC) -> None:
         self.client = client
         self.secret = secret
         self.retry_strategy = retry_strategy
+        self.kind = kind
 
         self.log = logging.getLogger('obelisk')
+
+        if self.kind == ObeliskKind.HFS:
+            self.TOKEN_URL = 'https://obelisk-hfs.discover.ilabt.imec.be/auth/realms/obelisk-hfs/protocol/openid-connect/token'
+            self.ROOT_URL = 'https://obelisk-hfs.discover.ilabt.imec.be'
+            self.EVENTS_URL = 'https://obelisk-hfs.discover.ilabt.imec.be/data/query/events'
+            self.INGEST_URL = 'https://obelisk-hfs.discover.ilabt.imec.be/data/ingest'
+        else:
+            self.TOKEN_URL = 'https://obelisk.ilabt.imec.be/api/v3/auth/token'
+            self.ROOT_URL = 'https://obelisk.ilabt.imec.be/api/v3'
+            self.METADATA_URL = 'https://obelisk.ilabt.imec.be/api/v3/catalog/graphql'
+            self.EVENTS_URL = 'https://obelisk.ilabt.imec.be/api/v3/data/query/events'
+            self.INGEST_URL = 'https://obelisk.ilabt.imec.be/api/v3/data/ingest'
+            self.STREAMS_URL = 'https://obelisk.ilabt.imec.be/api/v3/data/streams'
 
     async def _get_token(self):
         auth_string = str(base64.b64encode(
             f'{self.client}:{self.secret}'.encode('utf-8')), 'utf-8')
         headers = {
             'Authorization': f'Basic {auth_string}',
-            'Content-Type': 'application/json'
+            'Content-Type': ('application/x-www-form-urlencoded'
+                             if self.kind == ObeliskKind.HFS else 'application/json')
         }
         payload = {
             'grant_type': 'client_credentials'
         }
 
         async with httpx.AsyncClient() as client:
-            request = await client.post(self.TOKEN_URL, json=payload, headers=headers)
+            request = await client.post(
+                self.TOKEN_URL,
+                json=payload if self.kind == ObeliskKind.CLASSIC else None,
+                data=payload if self.kind == ObeliskKind.HFS else None,
+                headers=headers)
 
             response = request.json()
 

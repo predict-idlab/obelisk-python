@@ -6,7 +6,7 @@ from src.construct_additional_obelisks.asynchronous.consumer import \
     Consumer as AsyncConsumer
 from src.construct_additional_obelisks.strategies.retry import RetryStrategy, \
     NoRetryStrategy
-from src.construct_additional_obelisks.types import QueryResult, Datapoint
+from src.construct_additional_obelisks.types import QueryResult, Datapoint, ObeliskKind
 
 
 class Consumer:
@@ -14,8 +14,9 @@ class Consumer:
     async_consumer: AsyncConsumer
 
     def __init__(self, client: str, secret: str,
-                 retry_strategy: RetryStrategy = NoRetryStrategy()):
-        self.async_consumer = AsyncConsumer(client, secret, retry_strategy)
+                 retry_strategy: RetryStrategy = NoRetryStrategy(),
+                 kind: ObeliskKind = ObeliskKind.CLASSIC):
+        self.async_consumer = AsyncConsumer(client, secret, retry_strategy, kind)
         self.loop = asyncio.get_event_loop()
 
     def single_chunk(self, datasets: List[str], metrics: List[str] | None = None,

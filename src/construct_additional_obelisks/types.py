@@ -18,14 +18,20 @@ class TimestampPrecision(Enum):
     MICROSECONDS = 'microseconds'
 
 
-class Datapoint(BaseModel):
+class Datapoint(BaseModel, extra='allow'):
     timestamp: int
     value: Any
     dataset: str | None = None
     metric: str | None = None
     source: str | None = None
+    userId: int | None = None # Only if HFS and no other name for field
 
 
 class QueryResult(BaseModel):
     items: List[Datapoint]
     cursor: str | None = None
+
+
+class ObeliskKind(Enum):
+    CLASSIC = 'classic'
+    HFS = 'hfs'
