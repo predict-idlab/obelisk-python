@@ -1,4 +1,3 @@
-from enum import Enum
 from typing import List
 
 import httpx
@@ -8,7 +7,7 @@ from src.construct_additional_obelisks.exceptions import ObeliskError
 from src.construct_additional_obelisks.types import IngestMode, TimestampPrecision
 
 
-class ObeliskProducer(Client):
+class Producer(Client):
     async def send(self, dataset: str, data: List[dict],
                    precision: TimestampPrecision = TimestampPrecision.MILLISECONDS,
                    mode: IngestMode = IngestMode.DEFAULT) -> httpx.Response:
@@ -18,7 +17,8 @@ class ObeliskProducer(Client):
             'mode': mode.value
         }
 
-        response = await self.http_post(f'{self.INGEST_URL}/{dataset}', data=data, params=params)
+        response = await self.http_post(f'{self.INGEST_URL}/{dataset}', data=data,
+                                        params=params)
         if response.status_code != 204:
             self.log.warning('An error occurred during data ingestion')
             self.log.warning('[%d]: %s', response.status_code, response.text)

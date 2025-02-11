@@ -50,19 +50,20 @@ class Client:
 
             if request.status_code != 200:
                 if 'error' in response:
-                    logging.warning('An error occurred during authentication with Obelisk at ' + self.TOKEN_URL)
-                    logging.warning(response)
-                    logging.warning('Description: %s', response['message'])
+                    self.log.warning(f"Could not authenticate, {response['error']}")
                     raise AuthenticationError
 
             self.token = response['access_token']
-            self.token_expires = datetime.now() + timedelta(seconds=response['expires_in'])
+            self.token_expires = (datetime.now()
+                                  + timedelta(seconds=response['expires_in']))
 
     async def _verify_token(self):
-        if self.token is None or self.token_expires < (datetime.now() - self.grace_period):
+        if (self.token is None
+                or self.token_expires < (datetime.now() - self.grace_period)):
             await self._get_token()
 
-    async def http_post(self, url: str, data: Any = None, params: dict = None) -> httpx.Response:
+    async def http_post(self, url: str, data: Any = None,
+                        params: dict = None) -> httpx.Response:
         await self._verify_token()
 
         headers = {
@@ -74,7 +75,8 @@ class Client:
         async with httpx.AsyncClient() as client:
             response = await client.post(url,
                                          json=data,
-                                         params={k: v for k, v in params.items() if v is not None},
+                                         params={k: v for k, v in params.items() if
+                                                 v is not None},
                                          headers=headers)
             if response.status_code != 401:
                 return response
@@ -83,5 +85,6 @@ class Client:
             await self._verify_token()
             return await client.post(url,
                                      json=data,
-                                     params={k: v for k, v in params.items() if v is not None},
+                                     params={k: v for k, v in params.items() if
+                                             v is not None},
                                      headers=headers)

@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import NamedTuple, List, AnyStr, Any
+from typing import List, Any
 
 from pydantic import BaseModel
 
