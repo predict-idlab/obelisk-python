@@ -24,7 +24,7 @@ build-backend = "hatchling.build"
 [[tool.uv.index]]
 name = "pypi"
 url = "https://pypi.org/simple/"
-publish-url = "https://pypi.org/legacy/"
+publish-url = "https://upload.pypi.org/legacy/"
 
 [[tool.uv.index]]
 name = "testpypi"
