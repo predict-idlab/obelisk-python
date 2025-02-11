@@ -25,6 +25,7 @@ class Datapoint(BaseModel):
     metric: str | None = None
     source: str | None = None
 
+
 class QueryResult(BaseModel):
     items: List[Datapoint]
     cursor: str | None = None

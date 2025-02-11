@@ -15,12 +15,12 @@ class Consumer:
         self.loop = asyncio.get_event_loop()
 
     def single_chunk(self, datasets: List[str], metrics: List[str] | None = None,
-                     fields: dict = None,
-                     from_timestamp: int = None, to_timestamp: int = None,
-                     order_by: dict = None,
-                     filter_: dict = None,
-                     limit: int = None, limit_by: dict = None,
-                     cursor: str = None) -> QueryResult:
+                     fields: dict | None = None,
+                     from_timestamp: int | None = None, to_timestamp: int | None = None,
+                     order_by: dict | None = None,
+                     filter_: dict | None = None,
+                     limit: int | None = None, limit_by: dict | None = None,
+                     cursor: str | None = None) -> QueryResult:
         task = self.loop.create_task(
             self.async_consumer.single_chunk(datasets, metrics, fields, from_timestamp,
                                              to_timestamp, order_by, filter_,
@@ -29,10 +29,13 @@ class Consumer:
 
 
 def query(self, datasets: List[str], metrics: List[str] | None = None,
-          fields: dict = None,
-          from_timestamp: int = None, to_timestamp: int = None, order_by: dict = None,
-          filter_: dict = None,
-          limit: int = None, limit_by: dict = None) -> List[Datapoint]:
+          fields: dict | None = None,
+          from_timestamp: int | None = None,
+          to_timestamp: int | None = None,
+          order_by: dict | None = None,
+          filter_: dict | None = None,
+          limit: int | None = None,
+          limit_by: dict | None = None) -> List[Datapoint]:
     task = self.loop.create_task(
         self.async_consumer.query(datasets, metrics, fields, from_timestamp,
                                   to_timestamp, order_by, filter_, limit,

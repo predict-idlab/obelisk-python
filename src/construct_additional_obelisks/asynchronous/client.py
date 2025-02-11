@@ -63,7 +63,7 @@ class Client:
             await self._get_token()
 
     async def http_post(self, url: str, data: Any = None,
-                        params: dict = None) -> httpx.Response:
+                        params: dict | None = None) -> httpx.Response:
         await self._verify_token()
 
         headers = {

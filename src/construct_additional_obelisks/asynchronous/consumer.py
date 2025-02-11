@@ -1,5 +1,5 @@
 import json
-from typing import List
+from typing import List, Literal
 
 from pydantic import ValidationError
 
@@ -18,12 +18,14 @@ class Consumer(Client):
     """
 
     async def single_chunk(self, datasets: List[str], metrics: List[str] | None = None,
-                           fields: dict = None,
-                           from_timestamp: int = None, to_timestamp: int = None,
-                           order_by: dict = None,
-                           filter_: dict = None,
-                           limit: int = None, limit_by: dict = None,
-                           cursor: str = None) -> QueryResult:
+                           fields: dict | None = None,
+                           from_timestamp: int | None = None,
+                           to_timestamp: int | None = None,
+                           order_by: dict | None = None,
+                           filter_: dict | None = None,
+                           limit: int | None = None,
+                           limit_by: dict | None = None,
+                           cursor: str | None = None) -> QueryResult:
         """
         Queries one chunk of events from Obelisk for given parameters
 
@@ -82,12 +84,13 @@ class Consumer(Client):
 
 
 async def query(self, datasets: List[str], metrics: List[str] | None = None,
-                fields: dict = None,
-                from_timestamp: int = None, to_timestamp: int = None,
-                order_by: dict = None,
-                filter_: dict = None,
-                limit: int = None, limit_by: dict = None) -> List[Datapoint]:
-    cursor: str | None | True = True
+                fields: dict | None = None,
+                from_timestamp: int | None = None, to_timestamp: int | None = None,
+                order_by: dict | None = None,
+                filter_: dict | None = None,
+                limit: int | None = None,
+                limit_by: dict | None = None) -> List[Datapoint]:
+    cursor: str | None | Literal[True] = True
     result_set: List[Datapoint] = []
 
     while cursor:
