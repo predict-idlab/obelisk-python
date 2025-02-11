@@ -1,5 +1,6 @@
 import asyncio
-from typing import List
+from datetime import datetime, timedelta
+from typing import List, Literal, Generator
 
 from src.construct_additional_obelisks.asynchronous.consumer import \
     Consumer as AsyncConsumer
@@ -44,3 +45,23 @@ def query(self, datasets: List[str], metrics: List[str] | None = None,
                                   to_timestamp, order_by, filter_, limit,
                                   limit_by))
     return self.loop.run_until_complete(task)
+
+
+def query_time_chunked(self, datasets: List[str], metrics: List[str],
+                       from_time: datetime, to_time: datetime,
+                       jump: timedelta, filter_: dict | None = None,
+                       direction: Literal['asc', 'desc'] = 'asc'
+                       ) -> Generator[List[Datapoint], None, None]:
+    """
+    Fetches data from Obelisk in groups by time, one `jump` at a time.
+    Each iteration may cause more than one network query.
+    """
+
+    current_start = from_time
+    while current_start < to_time:
+        yield self.query(datasets=datasets, metrics=metrics,
+                               from_timestamp=current_start.timestamp(),
+                               to_timestamp=(current_start + jump).timestamp() - 1,
+                               order_by={"field": ["timestamp"], "ordering": direction},
+                               filter_=filter_)
+        current_start += jump
