@@ -5,6 +5,8 @@ import httpx
 
 from src.construct_additional_obelisks.asynchronous.producer import \
     Producer as AsyncProducer
+from src.construct_additional_obelisks.strategies.retry import RetryStrategy, \
+    NoRetryStrategy
 from src.construct_additional_obelisks.types import IngestMode, TimestampPrecision
 
 
@@ -12,8 +14,9 @@ class Producer:
     loop: asyncio.AbstractEventLoop
     async_producer: AsyncProducer
 
-    def __init__(self, client: str, secret: str):
-        self.async_producer = AsyncProducer(client, secret)
+    def __init__(self, client: str, secret: str,
+                 retry_strategy: RetryStrategy = NoRetryStrategy()):
+        self.async_producer = AsyncProducer(client, secret, retry_strategy)
         self.loop = asyncio.get_event_loop()
 
     def send(self, dataset: str, data: List[dict],

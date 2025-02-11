@@ -6,6 +6,8 @@ from typing import Any
 import httpx
 
 from src.construct_additional_obelisks.exceptions import AuthenticationError
+from src.construct_additional_obelisks.strategies.retry import RetryStrategy, \
+    NoRetryStrategy
 
 
 class Client:
@@ -16,6 +18,7 @@ class Client:
     token_expires: datetime | None = None
 
     grace_period: timedelta = timedelta(seconds=10)
+    retry_strategy: RetryStrategy
 
     log: logging.Logger
 
@@ -26,9 +29,11 @@ class Client:
     INGEST_URL = 'https://obelisk.ilabt.imec.be/api/v3/data/ingest'
     STREAMS_URL = 'https://obelisk.ilabt.imec.be/api/v3/data/streams'
 
-    def __init__(self, client: str, secret: str):
+    def __init__(self, client: str, secret: str,
+                 retry_strategy: RetryStrategy = NoRetryStrategy()) -> None:
         self.client = client
         self.secret = secret
+        self.retry_strategy = retry_strategy
 
         self.log = logging.getLogger('obelisk')
 
@@ -73,18 +78,18 @@ class Client:
         if params is None:
             params = {}
         async with httpx.AsyncClient() as client:
-            response = await client.post(url,
-                                         json=data,
-                                         params={k: v for k, v in params.items() if
-                                                 v is not None},
-                                         headers=headers)
-            if response.status_code != 401:
-                return response
+            response = None
+            retry = self.retry_strategy.make()
+            while not response or await retry.should_retry():
+                if response is not None:
+                    self.log.debug(f"Retrying, last response: {response.status_code}")
 
-            # Refresh token and retry _once_
-            await self._verify_token()
-            return await client.post(url,
-                                     json=data,
-                                     params={k: v for k, v in params.items() if
-                                             v is not None},
-                                     headers=headers)
+                response = await client.post(url,
+                                             json=data,
+                                             params={k: v for k, v in params.items() if
+                                                     v is not None},
+                                             headers=headers)
+
+                if response.status_code // 100 == 2:
+                    return response
+            return response
