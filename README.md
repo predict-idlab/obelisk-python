@@ -12,7 +12,7 @@ There is explicitly minimal documentation on actual filter values,
 read the [Obelisk docs](https://obelisk.docs.apiary.io/) for that.
 
 Please never copy the repo into your own project,
-rather use `pip install construct_addditional_obelisks`.
+rather use `pip install construct-addditional-obelisks`.
 
 ## Retry strategies
 
