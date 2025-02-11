@@ -10,8 +10,8 @@ dependencies = [
     "pydantic>=2.10.6",
 ]
 authors = [
+    { name="Stef Pletinck", email="Stef.Pletinck@ugent.be"},
     { name="Pieter Moens", email="Pieter.Moens@ugent.be"},
-    { name="Stef Pletinck", email="Stef.Pletinck@ugent.be"}
 ]
 
 [project.urls]
