@@ -18,6 +18,9 @@ class RetryStrategy(ABC):
         pass
 
 class NoRetryStrategy(RetryStrategy):
+    """
+    Retry strategy that simply does not retry.
+    """
     def make(self) -> RetryEvaluator:
         class NoRetryEvaluator(RetryEvaluator):
             async def should_retry(self) -> bool:
@@ -26,6 +29,10 @@ class NoRetryStrategy(RetryStrategy):
         return NoRetryEvaluator()
 
 class ImmediateRetryStrategy(RetryStrategy):
+    """
+    Retry strategy that tries again without delay,
+    up to a user defined maximum amount of times.
+    """
     def __init__(self, max_retries: int) -> None:
         self.max_retries = max_retries
 
@@ -42,6 +49,13 @@ class ImmediateRetryStrategy(RetryStrategy):
         return ImmediateRetryEvaluator()
 
 class ExponentialBackoffStrategy(RetryStrategy):
+    """
+    Retry strategy implementing the exponential backoff algorithm.
+    Every failure up to `max_retries` will result in a sleep
+    of t ** n seconds, with t being the backoff and n amount of failures.
+
+    Note that backoff values less than one second will count as zero.
+    """
     max_retries: int
     backoff: timedelta
 
