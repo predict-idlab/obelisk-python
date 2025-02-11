@@ -9,6 +9,10 @@ dependencies = [
     "httpx>=0.28.1",
     "pydantic>=2.10.6",
 ]
+authors = [
+    { name="Pieter Moens", email="Pieter.Moens@ugent.be"},
+    { name="Stef Pletinck", email="Stef.Pletinck@ugent.be"}
+]
 
 [build-system]
 requires = ["hatchling"]
