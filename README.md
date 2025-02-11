@@ -11,6 +11,9 @@ import the relevant Producer or Consumer and go crazy.
 There is explicitly minimal documentation on actual filter values,
 read the [Obelisk docs](https://obelisk.docs.apiary.io/) for that.
 
+Please never copy the repo into your own project,
+rather use `pip install construct_addditional_obelisks`.
+
 ## Retry strategies
 
 Construct Additional Obelisks provides first class support for retry behaviours.
