@@ -1,0 +1,14 @@
+[project]
+name = "construct-additional-obelisks"
+version = "0.1.0"
+description = "The one Obelisk client to rule them all"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "ruff>=0.9.6",
+    "requests>=2.32.3",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
