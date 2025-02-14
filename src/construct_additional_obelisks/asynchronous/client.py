@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 import logging
 import base64
 from typing import Any
+from urllib import response
 
 import httpx
 
@@ -67,13 +68,25 @@ class Client:
         }
 
         async with httpx.AsyncClient() as client:
-            request = await client.post(
-                self.TOKEN_URL,
-                json=payload if self.kind == ObeliskKind.CLASSIC else None,
-                data=payload if self.kind == ObeliskKind.HFS else None,
-                headers=headers)
+            response = None
+            last_error = None
+            retry = self.retry_strategy.make()
+            while not response or await retry.should_retry():
+                try:
+                    request = await client.post(
+                        self.TOKEN_URL,
+                        json=payload if self.kind == ObeliskKind.CLASSIC else None,
+                        data=payload if self.kind == ObeliskKind.HFS else None,
+                        headers=headers)
 
-            response = request.json()
+                    response = request.json()
+                except Exception as e:
+                    last_error = e
+                    self.log.error(e)
+                    continue
+
+            if response is None and last_error is not None:
+                raise last_error
 
             if request.status_code != 200:
                 if 'error' in response:
@@ -102,16 +115,25 @@ class Client:
         async with httpx.AsyncClient() as client:
             response = None
             retry = self.retry_strategy.make()
+            last_error = None
             while not response or await retry.should_retry():
                 if response is not None:
                     self.log.debug(f"Retrying, last response: {response.status_code}")
 
-                response = await client.post(url,
-                                             json=data,
-                                             params={k: v for k, v in params.items() if
-                                                     v is not None},
-                                             headers=headers)
+                try:
+                    response = await client.post(url,
+                                                 json=data,
+                                                 params={k: v for k, v in params.items() if
+                                                         v is not None},
+                                                 headers=headers)
 
-                if response.status_code // 100 == 2:
-                    return response
+                    if response.status_code // 100 == 2:
+                        return response
+                except Exception as e:
+                    self.log.error(e)
+                    last_error = e
+                    continue
+
+            if not response and last_error:
+                raise last_error
             return response
