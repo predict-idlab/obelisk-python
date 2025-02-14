@@ -58,23 +58,28 @@ class ExponentialBackoffStrategy(RetryStrategy):
     """
     max_retries: int
     backoff: timedelta
+    max_backoff: timedelta
 
     def __init__(self, max_retries: int = 5,
-                 backoff: timedelta = timedelta(seconds=2)) -> None:
+                 backoff: timedelta = timedelta(seconds=2),
+                 max_backoff: timedelta = timedelta(hours=24)) -> None:
         self.max_retries = max_retries
         self.backoff = backoff
+        self.max_backoff = max_backoff
 
     def make(self) -> RetryEvaluator:
         class ExponentialBackoffEvaluator(RetryEvaluator):
             count: int = 0
             max_retries: int = self.max_retries
             backoff: timedelta = self.backoff
+            max_backoff: timedelta = self.max_backoff
 
             async def should_retry(self) -> bool:
                 if self.count >= self.max_retries:
                     return False
                 self.count += 1
-                await sleep(self.backoff.seconds)
+                await sleep(
+                    min(self.max_backoff.seconds, self.backoff.seconds ** self.count))
                 return True
 
         return ExponentialBackoffEvaluator()
