@@ -100,7 +100,15 @@ class Client:
     async def _verify_token(self):
         if (self.token is None
                 or self.token_expires < (datetime.now() - self.grace_period)):
-            await self._get_token()
+            retry = self.retry_strategy.make()
+            first = True
+            while first or await retry.should_retry():
+                first = False
+                try:
+                    await self._get_token()
+                    return
+                except:
+                    continue
 
     async def http_post(self, url: str, data: Any = None,
                         params: dict | None = None) -> httpx.Response:
