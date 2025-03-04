@@ -5,8 +5,8 @@ each with a synchronous and async API.
 
 Your starting point will be one of the Consumer or Producer instances in `sync` or `asynchronous` depending on your preferred API.
 
-Each of th `sync` or `asynchronous` modules will contain three main classes, those being Client, Producer and Consumer.
-Client is mostly useful as a base class handling authentication for the Producer and Consumer classes.
+Each of th `sync` or `asynchronous` modules will contain two main classes, those being Producer and Consumer.
+Those submit or fetch data respectively.
 
 ## Error handling
 

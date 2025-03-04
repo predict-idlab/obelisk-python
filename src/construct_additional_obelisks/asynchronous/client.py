@@ -2,7 +2,6 @@ from datetime import datetime, timedelta
 import logging
 import base64
 from typing import Any
-from urllib import response
 
 import httpx
 
@@ -13,51 +12,59 @@ from construct_additional_obelisks.types import ObeliskKind
 
 
 class Client:
-    client: str = ""
-    secret: str = ""
+    """
+    Base class handling Obelisk auth and doing the core HTTP communication.
+    Only exists in asynchronous variety, as it is not usually directly useful for user code.
+    """
+
+    _client: str = ""
+    _secret: str = ""
 
     token: str | None = None
+    """Current authentication token"""
     token_expires: datetime | None = None
+    """Deadline after which token is no longer useable"""
 
     grace_period: timedelta = timedelta(seconds=10)
+    """Controls how much before the expiration deadline a token will be refreshed."""
     retry_strategy: RetryStrategy
     kind: ObeliskKind
 
     log: logging.Logger
 
-    TOKEN_URL = 'https://obelisk.ilabt.imec.be/api/v3/auth/token'
-    ROOT_URL = 'https://obelisk.ilabt.imec.be/api/v3'
-    METADATA_URL = 'https://obelisk.ilabt.imec.be/api/v3/catalog/graphql'
-    EVENTS_URL = 'https://obelisk.ilabt.imec.be/api/v3/data/query/events'
-    INGEST_URL = 'https://obelisk.ilabt.imec.be/api/v3/data/ingest'
-    STREAMS_URL = 'https://obelisk.ilabt.imec.be/api/v3/data/streams'
+    _token_url = 'https://obelisk.ilabt.imec.be/api/v3/auth/token'
+    _root_url = 'https://obelisk.ilabt.imec.be/api/v3'
+    _metadata_url = 'https://obelisk.ilabt.imec.be/api/v3/catalog/graphql'
+    _events_url = 'https://obelisk.ilabt.imec.be/api/v3/data/query/events'
+    _ingest_url = 'https://obelisk.ilabt.imec.be/api/v3/data/ingest'
+    _streams_url = 'https://obelisk.ilabt.imec.be/api/v3/data/streams'
 
     def __init__(self, client: str, secret: str,
                  retry_strategy: RetryStrategy = NoRetryStrategy(),
                  kind: ObeliskKind = ObeliskKind.CLASSIC) -> None:
-        self.client = client
-        self.secret = secret
+        self._client = client
+        self._secret = secret
         self.retry_strategy = retry_strategy
         self.kind = kind
 
         self.log = logging.getLogger('obelisk')
 
         if self.kind == ObeliskKind.HFS:
-            self.TOKEN_URL = 'https://obelisk-hfs.discover.ilabt.imec.be/auth/realms/obelisk-hfs/protocol/openid-connect/token'
-            self.ROOT_URL = 'https://obelisk-hfs.discover.ilabt.imec.be'
-            self.EVENTS_URL = 'https://obelisk-hfs.discover.ilabt.imec.be/data/query/events'
-            self.INGEST_URL = 'https://obelisk-hfs.discover.ilabt.imec.be/data/ingest'
+            self._token_url = 'https://obelisk-hfs.discover.ilabt.imec.be/auth/realms/obelisk-hfs/protocol/openid-connect/token'
+            self._root_url = 'https://obelisk-hfs.discover.ilabt.imec.be'
+            self._events_url = 'https://obelisk-hfs.discover.ilabt.imec.be/data/query/events'
+            self._ingest_url = 'https://obelisk-hfs.discover.ilabt.imec.be/data/ingest'
         else:
-            self.TOKEN_URL = 'https://obelisk.ilabt.imec.be/api/v3/auth/token'
-            self.ROOT_URL = 'https://obelisk.ilabt.imec.be/api/v3'
-            self.METADATA_URL = 'https://obelisk.ilabt.imec.be/api/v3/catalog/graphql'
-            self.EVENTS_URL = 'https://obelisk.ilabt.imec.be/api/v3/data/query/events'
-            self.INGEST_URL = 'https://obelisk.ilabt.imec.be/api/v3/data/ingest'
-            self.STREAMS_URL = 'https://obelisk.ilabt.imec.be/api/v3/data/streams'
+            self._token_url = 'https://obelisk.ilabt.imec.be/api/v3/auth/token'
+            self._root_url = 'https://obelisk.ilabt.imec.be/api/v3'
+            self._metadata_url = 'https://obelisk.ilabt.imec.be/api/v3/catalog/graphql'
+            self._events_url = 'https://obelisk.ilabt.imec.be/api/v3/data/query/events'
+            self._ingest_url = 'https://obelisk.ilabt.imec.be/api/v3/data/ingest'
+            self._streams_url = 'https://obelisk.ilabt.imec.be/api/v3/data/streams'
 
     async def _get_token(self):
         auth_string = str(base64.b64encode(
-            f'{self.client}:{self.secret}'.encode('utf-8')), 'utf-8')
+            f'{self._client}:{self._secret}'.encode('utf-8')), 'utf-8')
         headers = {
             'Authorization': f'Basic {auth_string}',
             'Content-Type': ('application/x-www-form-urlencoded'
@@ -74,7 +81,7 @@ class Client:
             while not response or await retry.should_retry():
                 try:
                     request = await client.post(
-                        self.TOKEN_URL,
+                        self._token_url,
                         json=payload if self.kind == ObeliskKind.CLASSIC else None,
                         data=payload if self.kind == ObeliskKind.HFS else None,
                         headers=headers)
@@ -112,6 +119,17 @@ class Client:
 
     async def http_post(self, url: str, data: Any = None,
                         params: dict | None = None) -> httpx.Response:
+        """
+        Send an HTTP POST request to Obelisk,
+        with proper auth.
+
+        Possibly refreshes the authentication token and performs backoff as per `retry_strategy`.
+        This method is not of stable latency because of these properties.
+
+        No validation is performed on the input data,
+        callers are responsible for formatting it in a method Obelisk understands.
+        """
+
         await self._verify_token()
 
         headers = {
