@@ -25,7 +25,7 @@ class Consumer:
                  retry_strategy: RetryStrategy = NoRetryStrategy(),
                  kind: ObeliskKind = ObeliskKind.CLASSIC):
         self.async_consumer = AsyncConsumer(client, secret, retry_strategy, kind)
-        self.loop = asyncio.get_event_loop()
+        self.loop = asyncio.new_event_loop()
 
     def single_chunk(self, datasets: List[str], metrics: List[str] | None = None,
                      fields: dict | None = None,
@@ -73,10 +73,12 @@ class Consumer:
             used when paging through large result sets.
         """
 
+        self.async_consumer.log.info("Starting task")
         task = self.loop.create_task(
             self.async_consumer.single_chunk(datasets, metrics, fields, from_timestamp,
                                              to_timestamp, order_by, filter_,
                                              limit, limit_by, cursor))
+        self.async_consumer.log.info("Blocking...")
         return self.loop.run_until_complete(task)
 
 
@@ -123,6 +125,7 @@ class Consumer:
             Limit the combination of a specific set of Index fields
             to a specified maximum number.
         """
+
 
         task = self.loop.create_task(
             self.async_consumer.query(datasets, metrics, fields, from_timestamp,

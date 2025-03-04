@@ -65,6 +65,7 @@ class Consumer(Client):
             Specifies the next cursor,
             used when paging through large result sets.
         """
+
         # pylint: disable=too-many-arguments
         data_range = {
             'datasets': datasets
@@ -92,7 +93,7 @@ class Consumer(Client):
 
         try:
             js = response.json()
-            return QueryResult.model_vaidate(js)
+            return QueryResult.model_validate(js)
         except json.JSONDecodeError as e:
             self.log.warning(f'Obelisk response is not a JSON object: {e}')
             raise ObeliskError
@@ -153,7 +154,7 @@ class Consumer(Client):
                                                         metrics=metrics, fields=fields,
                                                         from_timestamp=from_timestamp,
                                                         to_timestamp=to_timestamp,
-                                                        order=order_by, filter_=filter_,
+                                                        order_by=order_by, filter_=filter_,
                                                         limit=limit,
                                                         limit_by=limit_by,
                                                         cursor=actual_cursor)

@@ -19,7 +19,7 @@ class Producer:
                  retry_strategy: RetryStrategy = NoRetryStrategy(),
                  kind: ObeliskKind = ObeliskKind.CLASSIC):
         self.async_producer = AsyncProducer(client, secret, retry_strategy, kind)
-        self.loop = asyncio.get_event_loop()
+        self.loop = asyncio.new_event_loop()
 
     def send(self, dataset: str, data: List[dict],
              precision: TimestampPrecision = TimestampPrecision.MILLISECONDS,
