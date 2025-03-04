@@ -4,9 +4,9 @@ from typing import List, Literal, Generator
 
 from pydantic import ValidationError
 
-from src.construct_additional_obelisks.asynchronous.client import Client
-from src.construct_additional_obelisks.exceptions import ObeliskError
-from src.construct_additional_obelisks.types import QueryResult, Datapoint
+from construct_additional_obelisks.asynchronous.client import Client
+from construct_additional_obelisks.exceptions import ObeliskError
+from construct_additional_obelisks.types import QueryResult, Datapoint
 
 
 class Consumer(Client):

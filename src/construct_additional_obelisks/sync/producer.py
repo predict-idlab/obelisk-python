@@ -3,11 +3,11 @@ from typing import List
 
 import httpx
 
-from src.construct_additional_obelisks.asynchronous.producer import \
+from construct_additional_obelisks.asynchronous.producer import \
     Producer as AsyncProducer
-from src.construct_additional_obelisks.strategies.retry import RetryStrategy, \
+from construct_additional_obelisks.strategies.retry import RetryStrategy, \
     NoRetryStrategy
-from src.construct_additional_obelisks.types import IngestMode, TimestampPrecision, \
+from construct_additional_obelisks.types import IngestMode, TimestampPrecision, \
     ObeliskKind
 
 

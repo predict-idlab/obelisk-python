@@ -2,11 +2,11 @@ import asyncio
 from datetime import datetime, timedelta
 from typing import List, Literal, Generator
 
-from src.construct_additional_obelisks.asynchronous.consumer import \
+from construct_additional_obelisks.asynchronous.consumer import \
     Consumer as AsyncConsumer
-from src.construct_additional_obelisks.strategies.retry import RetryStrategy, \
+from construct_additional_obelisks.strategies.retry import RetryStrategy, \
     NoRetryStrategy
-from src.construct_additional_obelisks.types import QueryResult, Datapoint, ObeliskKind
+from construct_additional_obelisks.types import QueryResult, Datapoint, ObeliskKind
 
 
 class Consumer:

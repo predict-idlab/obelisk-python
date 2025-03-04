@@ -6,10 +6,10 @@ from urllib import response
 
 import httpx
 
-from src.construct_additional_obelisks.exceptions import AuthenticationError
-from src.construct_additional_obelisks.strategies.retry import RetryStrategy, \
+from construct_additional_obelisks.exceptions import AuthenticationError
+from construct_additional_obelisks.strategies.retry import RetryStrategy, \
     NoRetryStrategy
-from src.construct_additional_obelisks.types import ObeliskKind
+from construct_additional_obelisks.types import ObeliskKind
 
 
 class Client:

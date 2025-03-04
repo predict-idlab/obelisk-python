@@ -2,9 +2,9 @@ from typing import List
 
 import httpx
 
-from src.construct_additional_obelisks.asynchronous.client import Client
-from src.construct_additional_obelisks.exceptions import ObeliskError
-from src.construct_additional_obelisks.types import IngestMode, TimestampPrecision
+from construct_additional_obelisks.asynchronous.client import Client
+from construct_additional_obelisks.exceptions import ObeliskError
+from construct_additional_obelisks.types import IngestMode, TimestampPrecision
 
 
 class Producer(Client):
