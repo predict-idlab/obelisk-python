@@ -36,32 +36,32 @@ class Consumer(Client):
 
         datasets : List[str]
             List of Dataset IDs.
-        metrics: List[str] | None = None
+        metrics : List[str] | None = None
             List of Metric IDs or wildcards (e.g. `*::number`), defaults to all metrics.
-        fields: List[str] | None = None
+        fields : List[str] | None = None
             List of fields to return in the result set.
             Defaults to `[metric, source, value]`
-        from_timestamp: int | None = None
+        from_timestamp : int | None = None
             Limit output to events after (and including)
             this UTC millisecond timestamp, if present.
-        to_timestamp: int | None = None
+        to_timestamp : int | None = None
             Limit output to events before (and excluding)
             this UTC millisecond timestamp, if present.
-        order_by: dict | None = None
+        order_by : dict | None = None
             Specifies the ordering of the output,
             defaults to ascending by timestamp.
             See Obelisk docs for format. Caller is responsible for validity.
-        filter_: dict | None = None
+        filter_ : dict | None = None
             Limit output to events matching the specified Filter expression.
             See Obelisk docs, caller is responsible for validity.
-        limit: int | None = None
+        limit : int | None = None
             Limit output to a maximum number of events.
             Also determines the page size.
             Default is server-determined, usually 2500.
-        limit_by: dict | None = None
+        limit_by : dict | None = None
             Limit the combination of a specific set of Index fields
             to a specified maximum number.
-        cursor: str | None = None
+        cursor : str | None = None
             Specifies the next cursor,
             used when paging through large result sets.
         """
@@ -118,29 +118,29 @@ class Consumer(Client):
 
         datasets : List[str]
             List of Dataset IDs.
-        metrics: List[str] | None = None
+        metrics : List[str] | None = None
             List of Metric IDs or wildcards (e.g. `*::number`), defaults to all metrics.
-        fields: List[str] | None = None
+        fields : List[str] | None = None
             List of fields to return in the result set.
             Defaults to `[metric, source, value]`
-        from_timestamp: int | None = None
+        from_timestamp : int | None = None
             Limit output to events after (and including)
             this UTC millisecond timestamp, if present.
-        to_timestamp: int | None = None
+        to_timestamp : int | None = None
             Limit output to events before (and excluding)
             this UTC millisecond timestamp, if present.
-        order_by: dict | None = None
+        order_by : dict | None = None
             Specifies the ordering of the output,
             defaults to ascending by timestamp.
             See Obelisk docs for format. Caller is responsible for validity.
-        filter_: dict | None = None
+        filter_ : dict | None = None
             Limit output to events matching the specified Filter expression.
             See Obelisk docs, caller is responsible for validity.
-        limit: int | None = None
+        limit : int | None = None
             Limit output to a maximum number of events.
             Also determines the page size.
             Default is server-determined, usually 2500.
-        limit_by: dict | None = None
+        limit_by : dict | None = None
             Limit the combination of a specific set of Index fields
             to a specified maximum number.
         """
@@ -178,19 +178,19 @@ class Consumer(Client):
         Parameters
         ----------
 
-        datasets: List[str]
+        datasets : List[str]
             Dataset IDs to query from
-        metrics: List[str]
+        metrics : List[str]
             IDs of metrics to query
-        from_time: `datetime.timedelta`
+        from_time : `datetime.timedelta`
             Start time to fetch from
-        to_time: `datetime.timedelta`
+        to_time : `datetime.timedelta`
             End time to fetch until.
-        jump: `datetime.timedelta`
+        jump : `datetime.timedelta`
             Size of one yielded chunk
-        filter_: dict | None = None
+        filter_ : dict | None = None
             Obelisk filter, caller is responsible for correct format
-        direction: Literal['asc', 'desc'] = 'asc'
+        direction : Literal['asc', 'desc'] = 'asc'
             Yield older data or newer data first, defaults to older first.
         """
 

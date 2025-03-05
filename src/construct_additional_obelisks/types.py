@@ -16,6 +16,7 @@ class IngestMode(Enum):
 
     Does not apply to HFS
     """
+
     DEFAULT = 'default'
     STREAM_ONLY = 'stream_only'
     STORE_ONLY = 'store_only'
@@ -27,6 +28,7 @@ class TimestampPrecision(Enum):
     If a provided timestamp is in seconds,
     but interpreted by Obelisk as milliseconds, it would erroneously be somewhere in the past.
     """
+
     __choices__ = ('SECONDS', 'MILLISECONDS', 'MICROSECONDS')
 
     SECONDS = 'seconds'
