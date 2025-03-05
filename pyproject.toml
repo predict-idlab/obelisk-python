@@ -1,6 +1,5 @@
 [project]
 name = "construct-additional-obelisks"
-version = "0.2.3"
 description = "The one Obelisk client to rule them all"
 readme = "README.md"
 requires-python = ">=3.9"
@@ -8,17 +7,20 @@ dependencies = [
     "ruff>=0.9.6",
     "httpx>=0.28.1",
     "pydantic>=2.10.6",
+    "pytest>=8.3.5",
+    "pytest-asyncio>=0.25.3",
 ]
 authors = [
     { name="Stef Pletinck", email="Stef.Pletinck@ugent.be"},
     { name="Pieter Moens", email="Pieter.Moens@ugent.be"},
 ]
+dynamic = ["version"]
 
 [project.urls]
 source = "https://gitlab.ilabt.imec.be/predict/construct_additional_obelisks"
 
 [build-system]
-requires = ["hatchling"]
+requires = ["hatchling", "hatch-vcs"]
 build-backend = "hatchling.build"
 
 [[tool.uv.index]]
@@ -30,3 +32,12 @@ publish-url = "https://upload.pypi.org/legacy/"
 name = "testpypi"
 url = "https://test.pypi.org/simple/"
 publish-url = "https://test.pypi.org/legacy/"
+
+[tool.hatch.version]
+source = "vcs"
+
+[dependency-groups]
+dev = [
+    "numpydoc>=1.8.0",
+    "sphinx>=7.4.7",
+]

@@ -14,7 +14,7 @@ read the [Obelisk docs](https://obelisk.docs.apiary.io/) for that.
 Please never copy the repo into your own project,
 rather use `pip install construct-addditional-obelisks`.
 
-## Retry strategies
+### Retry strategies
 
 Construct Additional Obelisks provides first class support for retry behaviours.
 These are defined in `strategies/retry.py`,
@@ -29,7 +29,7 @@ The default strategy is no retry,
 we do recommend setting at least some form of retry
 as the token validity behaviour sometimes encounters edge cases.
 
-## Async and Sync support
+### Async and Sync support
 
 The library has an async and blocking edition.
 The async edition is contained in the module `asynchronous` 
@@ -38,7 +38,7 @@ synchronous can be found in `sync`.
 The `sync` edition is simply a wrapper around `asynchronous`, 
 maintaining an own event loop.
 
-## HFS and Classic support
+### HFS and Classic support
 
 All constructors take an optional `kind` argument,
 set this to the appropriate variety for you.
@@ -48,8 +48,21 @@ directly touched by the library.
 The only exception is that `Datapoint` has explicit support for userId
 and allows extra fields to provide naive support for other field names.
 
+## Building and Docs
+
+`uv` is used to manage this project.
+Tests can be run using `uv run pytest`, building and deployment are handled by `uv build` and `uv publish`.
+
+Documentation uses the classic `sphinx` setup, with numpydoc for their lovely layouts and conventions.
+Building is as follows:
+
+``` sh
+# uv run sphinx-build -M html docs/source/ docs/build/
+```
+
 ## Credits
 
 Base implementation originally by Pieter Moens <Pieter.Moens@ugent.be>,
 modified by Kyana Bosschaerts <Kyana.Bosschaerts@ugent.be>
 and finally consolidated by Stef Pletinck <Stef.Pletinck@ugent.be>.
+
