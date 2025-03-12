@@ -4,6 +4,10 @@ After years of copy-pasting and modifying Obelisk client implementations all ove
 we've had enough of hearing "construct additional obelisks".
 Thus, we have decided to build the one client to rule them all.
 
+This project is licensed according to the LICENSE file included with the source.
+You should have received a copy alongside the code bundle,
+otherwise you can get it for the most recent version [here](https://github.com/predict-idlab/obelisk-python/blob/main/LICENSE).
+
 ## Usage
 
 Take your pick of asynchronous or sync,
