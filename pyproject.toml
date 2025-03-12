@@ -1,30 +1,47 @@
-[tool.poetry]
+[project]
 name = "obelisk-py"
-version = "0.2.0"
-description = "Python client for Obelisk (v3)"
-authors = ["Pieter Moens <pieter.moens@ugent.be>"]
-packages = [
-        { include = "obelisk"}
-    ]
+description = "The one Obelisk client to rule them all"
 readme = "README.md"
-repository = "https://github.com/predict-idlab/obelisk-python"
+requires-python = ">=3.9"
+dependencies = [
+    "ruff>=0.9.6",
+    "httpx>=0.28.1",
+    "pydantic>=2.10.6",
+    "pytest>=8.3.5",
+    "pytest-asyncio>=0.25.3",
+]
+authors = [
+    { name="Stef Pletinck", email="Stef.Pletinck@ugent.be"},
+    { name="Pieter Moens", email="Pieter.Moens@ugent.be"},
+]
+dynamic = ["version"]
+
+[project.urls]
+source = "https://github.com/predict-idlab/obelisk-python"
 documentation = "https://predict-idlab.github.io/obelisk-python/"
-keywords = ["obelisk", "client", "graphql", "https"]
-
-[tool.poetry.dependencies]
-python = "^3.7"
-requests = "^2.23.0"
-Rx = "^1.6.1"
-sgqlc = "^14.1"
-sseclient-py = "^1.7"
-
-[tool.poetry.dev-dependencies]
-python = "^3.7"
-requests = "^2.23.0"
-Rx = "^1.6.1"
-sgqlc = "^14.1"
-sseclient-py = "^1.7"
 
 [build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
+requires = ["hatchling", "hatch-vcs"]
+build-backend = "hatchling.build"
+
+[[tool.uv.index]]
+name = "pypi"
+url = "https://pypi.org/simple/"
+publish-url = "https://upload.pypi.org/legacy/"
+
+[[tool.uv.index]]
+name = "testpypi"
+url = "https://test.pypi.org/simple/"
+publish-url = "https://test.pypi.org/legacy/"
+
+[tool.hatch.version]
+source = "vcs"
+
+[dependency-groups]
+dev = [
+    "numpydoc>=1.8.0",
+    "sphinx>=7.4.7",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/obelisk"]

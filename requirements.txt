@@ -1,4 +1,0 @@
-requests>=2.23.0
-rx==1.6.1
-sgqlc==14.1
-sseclient-py>=1.7

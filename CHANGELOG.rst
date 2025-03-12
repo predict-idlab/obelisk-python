@@ -1,3 +1,10 @@
+Version 1.0.0
+-------------
+
+:Date: March 12, 2025
+
+* Switch to new Construct Additional Obelisks implementation
+
 Version 0.2.0
 -------------
 
