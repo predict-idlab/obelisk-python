@@ -5,9 +5,12 @@
 
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
+from datetime import datetime
 
 project = 'Construct Additional Obelisks'
-copyright = '2025, Stef Pletinck'
+copyright = '2025-{}, PreDiCT - IDLab'.format(
+    datetime.now().year
+)
 author = 'Stef Pletinck'
 
 import re
