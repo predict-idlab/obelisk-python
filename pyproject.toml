@@ -15,6 +15,9 @@ authors = [
     { name="Pieter Moens", email="Pieter.Moens@ugent.be"},
 ]
 dynamic = ["version"]
+license-files = [
+              "LICENSE"
+]
 
 [project.urls]
 source = "https://github.com/predict-idlab/obelisk-python"
