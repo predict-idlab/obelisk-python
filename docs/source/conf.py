@@ -7,7 +7,7 @@
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 from datetime import datetime
 
-project = 'Construct Additional Obelisks'
+project = 'Obelisk-Py'
 copyright = '2025-{}, PreDiCT - IDLab'.format(
     datetime.now().year
 )

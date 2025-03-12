@@ -1,8 +1,8 @@
-Construct Additional Obelisks documentation
+Obelisk-py documentation
 ===========================================
 
-Construct Additional Obelisks is a fresh client for the Obelisk platform.
-It is intended to supersede obelisk-py, bringing retry strategies and optional async support.
+Obelisk-py is a fresh client for the Obelisk platform.
+It brings retry strategies and optional async support
 
 
 .. autosummary::
@@ -10,4 +10,4 @@ It is intended to supersede obelisk-py, bringing retry strategies and optional a
    :template: custom-module-template.rst
    :recursive:
 
-   construct_additional_obelisks
+   obelisk

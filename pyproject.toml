@@ -1,5 +1,5 @@
 [project]
-name = "construct-additional-obelisks"
+name = "obelisk-py"
 description = "The one Obelisk client to rule them all"
 readme = "README.md"
 requires-python = ">=3.9"
@@ -17,7 +17,8 @@ authors = [
 dynamic = ["version"]
 
 [project.urls]
-source = "https://gitlab.ilabt.imec.be/predict/construct_additional_obelisks"
+source = "https://github.com/predict-idlab/obelisk-python"
+documentation = "https://predict-idlab.github.io/obelisk-python/"
 
 [build-system]
 requires = ["hatchling", "hatch-vcs"]
@@ -41,3 +42,6 @@ dev = [
     "numpydoc>=1.8.0",
     "sphinx>=7.4.7",
 ]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/obelisk"]

@@ -1,4 +1,4 @@
-# Construct Additional Obelisks
+# Obelisk-Python
 
 After years of copy-pasting and modifying Obelisk client implementations all over,
 we've had enough of hearing "construct additional obelisks".
@@ -10,13 +10,14 @@ Take your pick of asynchronous or sync,
 import the relevant Producer or Consumer and go crazy.
 There is explicitly minimal documentation on actual filter values,
 read the [Obelisk docs](https://obelisk.docs.apiary.io/) for that.
+Documentation for the Python API can be found [here](https://predict-idlab.github.io/obelisk-python/).
 
 Please never copy the repo into your own project,
-rather use `pip install construct-addditional-obelisks`.
+rather use `pip install obelisk-py`.
 
 ### Retry strategies
 
-Construct Additional Obelisks provides first class support for retry behaviours.
+Obelisk-py provides first class support for retry behaviours.
 These are defined in `strategies/retry.py`,
 we provide `NoRetryStrategy`, `ImmediateRetryStrategy`, 
 and `ExponentialBackoffRetryStrategy.`
