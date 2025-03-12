@@ -1,28 +1,13 @@
-Obelisk Python client
-=====================
+Obelisk-py documentation
+===========================================
 
-.. toctree::
-    :maxdepth: 1
-    :caption: Quickstart
-
-    /quickstart/getting-started-with-obelisk
-    /quickstart/querying-metadata
-    /quickstart/querying-data
-    /quickstart/streaming-data
-    /quickstart/ingesting-data
-
-.. toctree::
-    :maxdepth: 1
-    :caption: Modules
-
-    /modules/client
-    /modules/consumer
-    /modules/producer
+Obelisk-py is a fresh client for the Obelisk platform.
+It brings retry strategies and optional async support
 
 
-.. toctree::
-    :maxdepth: 1
-    :hidden:
-    :caption: About Obelisk
+.. autosummary::
+   :toctree: _autosummary
+   :template: custom-module-template.rst
+   :recursive:
 
-    changelog
+   obelisk
