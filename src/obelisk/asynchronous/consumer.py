@@ -182,9 +182,9 @@ class Consumer(Client):
             Dataset IDs to query from
         metrics : List[str]
             IDs of metrics to query
-        from_time : `datetime.timedelta`
+        from_time : `datetime.datetime`
             Start time to fetch from
-        to_time : `datetime.timedelta`
+        to_time : `datetime.datetime`
             End time to fetch until.
         jump : `datetime.timedelta`
             Size of one yielded chunk
