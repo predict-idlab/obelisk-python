@@ -203,6 +203,16 @@
             <span class="n">result_set</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">items</span><span class="p">)</span>
             <span class="n">cursor</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">cursor</span>
 
+            <span class="k">if</span> <span class="n">limit</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">result_set</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">limit</span><span class="p">:</span>
+<span class="w">                </span><span class="sd">&quot;&quot;&quot;On Obelisk HFS, limit is actually page size,</span>
+<span class="sd">                so continuing to read the cursor will result in a larger than desired</span>
+<span class="sd">                set of results.</span>
+
+<span class="sd">                On the other hand, if the limit is very large,</span>
+<span class="sd">                we may need to iterate before we reach the desired limit after all.</span>
+<span class="sd">                &quot;&quot;&quot;</span>
+                <span class="k">break</span>
+
         <span class="k">return</span> <span class="n">result_set</span></div>
 
 
