@@ -113,29 +113,29 @@ automatically iterating when a cursor is returned.</p>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>datasets</strong><span class="classifier">List[str]</span></dt><dd><p>List of Dataset IDs.</p>
 </dd>
-<dt><strong>metrics</strong><span class="classifier">List[str] | None = None</span></dt><dd><p>List of Metric IDs or wildcards (e.g. <cite>*::number</cite>), defaults to all metrics.</p>
+<dt><strong>metrics</strong><span class="classifier">Optional[List[str]] = None</span></dt><dd><p>List of Metric IDs or wildcards (e.g. <cite>*::number</cite>), defaults to all metrics.</p>
 </dd>
-<dt><strong>fields</strong><span class="classifier">List[str] | None = None</span></dt><dd><p>List of fields to return in the result set.
+<dt><strong>fields</strong><span class="classifier">Optional[List[str]] = None</span></dt><dd><p>List of fields to return in the result set.
 Defaults to <cite>[metric, source, value]</cite></p>
 </dd>
-<dt><strong>from_timestamp</strong><span class="classifier">int | None = None</span></dt><dd><p>Limit output to events after (and including)
+<dt><strong>from_timestamp</strong><span class="classifier">Optional[int] = None</span></dt><dd><p>Limit output to events after (and including)
 this UTC millisecond timestamp, if present.</p>
 </dd>
-<dt><strong>to_timestamp</strong><span class="classifier">int | None = None</span></dt><dd><p>Limit output to events before (and excluding)
+<dt><strong>to_timestamp</strong><span class="classifier">Optional[int] = None</span></dt><dd><p>Limit output to events before (and excluding)
 this UTC millisecond timestamp, if present.</p>
 </dd>
-<dt><strong>order_by</strong><span class="classifier">dict | None = None</span></dt><dd><p>Specifies the ordering of the output,
+<dt><strong>order_by</strong><span class="classifier">Optional[dict] = None</span></dt><dd><p>Specifies the ordering of the output,
 defaults to ascending by timestamp.
 See Obelisk docs for format. Caller is responsible for validity.</p>
 </dd>
-<dt><strong>filter_</strong><span class="classifier">dict | None = None</span></dt><dd><p>Limit output to events matching the specified Filter expression.
+<dt><strong>filter_</strong><span class="classifier">Optional[dict] = None</span></dt><dd><p>Limit output to events matching the specified Filter expression.
 See Obelisk docs, caller is responsible for validity.</p>
 </dd>
-<dt><strong>limit</strong><span class="classifier">int | None = None</span></dt><dd><p>Limit output to a maximum number of events.
+<dt><strong>limit</strong><span class="classifier">Optional[int] = None</span></dt><dd><p>Limit output to a maximum number of events.
 Also determines the page size.
 Default is server-determined, usually 2500.</p>
 </dd>
-<dt><strong>limit_by</strong><span class="classifier">dict | None = None</span></dt><dd><p>Limit the combination of a specific set of Index fields
+<dt><strong>limit_by</strong><span class="classifier">Optional[dict] = None</span></dt><dd><p>Limit the combination of a specific set of Index fields
 to a specified maximum number.</p>
 </dd>
 </dl>
@@ -163,7 +163,7 @@ By necessity iterates over time, no other ordering is supported.</p>
 </dd>
 <dt><strong>jump</strong><span class="classifier">datetime.timedelta</span></dt><dd><p>Size of one yielded chunk</p>
 </dd>
-<dt><strong>filter_</strong><span class="classifier">dict | None = None</span></dt><dd><p>Obelisk filter, caller is responsible for correct format</p>
+<dt><strong>filter_</strong><span class="classifier">Optional[dict] = None</span></dt><dd><p>Obelisk filter, caller is responsible for correct format</p>
 </dd>
 <dt><strong>direction</strong><span class="classifier">Literal[‘asc’, ‘desc’] = ‘asc’</span></dt><dd><p>Yield older data or newer data first, defaults to older first.</p>
 </dd>
@@ -182,32 +182,32 @@ does not handle paging over Cursors.</p>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>datasets</strong><span class="classifier">List[str]</span></dt><dd><p>List of Dataset IDs.</p>
 </dd>
-<dt><strong>metrics</strong><span class="classifier">List[str] | None = None</span></dt><dd><p>List of Metric IDs or wildcards (e.g. <code class="docutils literal notranslate"><span class="pre">*::number</span></code>), defaults to all metrics.</p>
+<dt><strong>metrics</strong><span class="classifier">Optional[List[str]] = None</span></dt><dd><p>List of Metric IDs or wildcards (e.g. <code class="docutils literal notranslate"><span class="pre">*::number</span></code>), defaults to all metrics.</p>
 </dd>
-<dt><strong>fields</strong><span class="classifier">List[str] | None = None</span></dt><dd><p>List of fields to return in the result set.
+<dt><strong>fields</strong><span class="classifier">Optional[List[str]] = None</span></dt><dd><p>List of fields to return in the result set.
 Defaults to <cite>[metric, source, value]</cite></p>
 </dd>
-<dt><strong>from_timestamp</strong><span class="classifier">int | None = None</span></dt><dd><p>Limit output to events after (and including)
+<dt><strong>from_timestamp</strong><span class="classifier">Optional[int] = None</span></dt><dd><p>Limit output to events after (and including)
 this UTC millisecond timestamp, if present.</p>
 </dd>
-<dt><strong>to_timestamp</strong><span class="classifier">int | None = None</span></dt><dd><p>Limit output to events before (and excluding)
+<dt><strong>to_timestamp</strong><span class="classifier">Optional[int] = None</span></dt><dd><p>Limit output to events before (and excluding)
 this UTC millisecond timestamp, if present.</p>
 </dd>
-<dt><strong>order_by</strong><span class="classifier">dict | None = None</span></dt><dd><p>Specifies the ordering of the output,
+<dt><strong>order_by</strong><span class="classifier">Optional[dict] = None</span></dt><dd><p>Specifies the ordering of the output,
 defaults to ascending by timestamp.
 See Obelisk docs for format. Caller is responsible for validity.</p>
 </dd>
-<dt><strong>filter_</strong><span class="classifier">dict | None = None</span></dt><dd><p>Limit output to events matching the specified Filter expression.
+<dt><strong>filter_</strong><span class="classifier">Optional[dict] = None</span></dt><dd><p>Limit output to events matching the specified Filter expression.
 See Obelisk docs, caller is responsible for validity.</p>
 </dd>
-<dt><strong>limit</strong><span class="classifier">int | None = None</span></dt><dd><p>Limit output to a maximum number of events.
+<dt><strong>limit</strong><span class="classifier">Optional[int] = None</span></dt><dd><p>Limit output to a maximum number of events.
 Also determines the page size.
 Default is server-determined, usually 2500.</p>
 </dd>
-<dt><strong>limit_by</strong><span class="classifier">dict | None = None</span></dt><dd><p>Limit the combination of a specific set of Index fields
+<dt><strong>limit_by</strong><span class="classifier">Optional[dict] = None</span></dt><dd><p>Limit the combination of a specific set of Index fields
 to a specified maximum number.</p>
 </dd>
-<dt><strong>cursor</strong><span class="classifier">str | None = None</span></dt><dd><p>Specifies the next cursor,
+<dt><strong>cursor</strong><span class="classifier">Optional[str] = None</span></dt><dd><p>Specifies the next cursor,
 used when paging through large result sets.</p>
 </dd>
 </dl>

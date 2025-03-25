@@ -33,7 +33,8 @@
   <h1>Source code for obelisk.sync.consumer</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Generator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">Optional</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">math</span><span class="w"> </span><span class="kn">import</span> <span class="n">floor</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">obelisk.asynchronous.consumer</span><span class="w"> </span><span class="kn">import</span> \
     <span class="n">Consumer</span> <span class="k">as</span> <span class="n">AsyncConsumer</span>
@@ -71,13 +72,13 @@
 
 <div class="viewcode-block" id="Consumer.single_chunk">
 <a class="viewcode-back" href="../../../_autosummary/obelisk.sync.consumer.Consumer.html#obelisk.sync.consumer.Consumer.single_chunk">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">single_chunk</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">datasets</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">metrics</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                     <span class="n">fields</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                     <span class="n">from_timestamp</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">to_timestamp</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                     <span class="n">order_by</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                     <span class="n">filter_</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                     <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">limit_by</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                     <span class="n">cursor</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">QueryResult</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">single_chunk</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">datasets</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">metrics</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                     <span class="n">fields</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                     <span class="n">from_timestamp</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">to_timestamp</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                     <span class="n">order_by</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                     <span class="n">filter_</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                     <span class="n">limit</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">limit_by</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                     <span class="n">cursor</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">QueryResult</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Queries one chunk of events from Obelisk for given parameters,</span>
 <span class="sd">        does not handle paging over Cursors.</span>
@@ -87,32 +88,32 @@
 
 <span class="sd">        datasets : List[str]</span>
 <span class="sd">            List of Dataset IDs.</span>
-<span class="sd">        metrics : List[str] | None = None</span>
+<span class="sd">        metrics : Optional[List[str]] = None</span>
 <span class="sd">            List of Metric IDs or wildcards (e.g. ``*::number``), defaults to all metrics.</span>
-<span class="sd">        fields : List[str] | None = None</span>
+<span class="sd">        fields : Optional[List[str]] = None</span>
 <span class="sd">            List of fields to return in the result set.</span>
 <span class="sd">            Defaults to `[metric, source, value]`</span>
-<span class="sd">        from_timestamp : int | None = None</span>
+<span class="sd">        from_timestamp : Optional[int] = None</span>
 <span class="sd">            Limit output to events after (and including)</span>
 <span class="sd">            this UTC millisecond timestamp, if present.</span>
-<span class="sd">        to_timestamp : int | None = None</span>
+<span class="sd">        to_timestamp : Optional[int] = None</span>
 <span class="sd">            Limit output to events before (and excluding)</span>
 <span class="sd">            this UTC millisecond timestamp, if present.</span>
-<span class="sd">        order_by : dict | None = None</span>
+<span class="sd">        order_by : Optional[dict] = None</span>
 <span class="sd">            Specifies the ordering of the output,</span>
 <span class="sd">            defaults to ascending by timestamp.</span>
 <span class="sd">            See Obelisk docs for format. Caller is responsible for validity.</span>
-<span class="sd">        filter_ : dict | None = None</span>
+<span class="sd">        filter_ : Optional[dict] = None</span>
 <span class="sd">            Limit output to events matching the specified Filter expression.</span>
 <span class="sd">            See Obelisk docs, caller is responsible for validity.</span>
-<span class="sd">        limit : int | None = None</span>
+<span class="sd">        limit : Optional[int] = None</span>
 <span class="sd">            Limit output to a maximum number of events.</span>
 <span class="sd">            Also determines the page size.</span>
 <span class="sd">            Default is server-determined, usually 2500.</span>
-<span class="sd">        limit_by : dict | None = None</span>
+<span class="sd">        limit_by : Optional[dict] = None</span>
 <span class="sd">            Limit the combination of a specific set of Index fields</span>
 <span class="sd">            to a specified maximum number.</span>
-<span class="sd">        cursor : str | None = None</span>
+<span class="sd">        cursor : Optional[str] = None</span>
 <span class="sd">            Specifies the next cursor,</span>
 <span class="sd">            used when paging through large result sets.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -129,14 +130,14 @@
 
 <div class="viewcode-block" id="Consumer.query">
 <a class="viewcode-back" href="../../../_autosummary/obelisk.sync.consumer.Consumer.html#obelisk.sync.consumer.Consumer.query">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">datasets</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">metrics</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-            <span class="n">fields</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-            <span class="n">from_timestamp</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-            <span class="n">to_timestamp</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-            <span class="n">order_by</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-            <span class="n">filter_</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-            <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-            <span class="n">limit_by</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Datapoint</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">datasets</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">metrics</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">fields</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">from_timestamp</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">to_timestamp</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">order_by</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">filter_</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">limit</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">limit_by</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Datapoint</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Queries data from obelisk,</span>
 <span class="sd">        automatically iterating when a cursor is returned.</span>
@@ -146,29 +147,29 @@
 
 <span class="sd">        datasets  : List[str]</span>
 <span class="sd">            List of Dataset IDs.</span>
-<span class="sd">        metrics : List[str] | None = None</span>
+<span class="sd">        metrics : Optional[List[str]] = None</span>
 <span class="sd">            List of Metric IDs or wildcards (e.g. `*::number`), defaults to all metrics.</span>
-<span class="sd">        fields : List[str] | None = None</span>
+<span class="sd">        fields : Optional[List[str]] = None</span>
 <span class="sd">            List of fields to return in the result set.</span>
 <span class="sd">            Defaults to `[metric, source, value]`</span>
-<span class="sd">        from_timestamp : int | None = None</span>
+<span class="sd">        from_timestamp : Optional[int] = None</span>
 <span class="sd">            Limit output to events after (and including)</span>
 <span class="sd">            this UTC millisecond timestamp, if present.</span>
-<span class="sd">        to_timestamp : int | None = None</span>
+<span class="sd">        to_timestamp : Optional[int] = None</span>
 <span class="sd">            Limit output to events before (and excluding)</span>
 <span class="sd">            this UTC millisecond timestamp, if present.</span>
-<span class="sd">        order_by : dict | None = None</span>
+<span class="sd">        order_by : Optional[dict] = None</span>
 <span class="sd">            Specifies the ordering of the output,</span>
 <span class="sd">            defaults to ascending by timestamp.</span>
 <span class="sd">            See Obelisk docs for format. Caller is responsible for validity.</span>
-<span class="sd">        filter_ : dict | None = None</span>
+<span class="sd">        filter_ : Optional[dict] = None</span>
 <span class="sd">            Limit output to events matching the specified Filter expression.</span>
 <span class="sd">            See Obelisk docs, caller is responsible for validity.</span>
-<span class="sd">        limit : int | None = None</span>
+<span class="sd">        limit : Optional[int] = None</span>
 <span class="sd">            Limit output to a maximum number of events.</span>
 <span class="sd">            Also determines the page size.</span>
 <span class="sd">            Default is server-determined, usually 2500.</span>
-<span class="sd">        limit_by : dict | None = None</span>
+<span class="sd">        limit_by : Optional[dict] = None</span>
 <span class="sd">            Limit the combination of a specific set of Index fields</span>
 <span class="sd">            to a specified maximum number.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -186,7 +187,7 @@
 <a class="viewcode-back" href="../../../_autosummary/obelisk.sync.consumer.Consumer.html#obelisk.sync.consumer.Consumer.query_time_chunked">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">query_time_chunked</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">datasets</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">metrics</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
                         <span class="n">from_time</span><span class="p">:</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">to_time</span><span class="p">:</span> <span class="n">datetime</span><span class="p">,</span>
-                        <span class="n">jump</span><span class="p">:</span> <span class="n">timedelta</span><span class="p">,</span> <span class="n">filter_</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                        <span class="n">jump</span><span class="p">:</span> <span class="n">timedelta</span><span class="p">,</span> <span class="n">filter_</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                         <span class="n">direction</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;asc&#39;</span><span class="p">,</span> <span class="s1">&#39;desc&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;asc&#39;</span>
                         <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Datapoint</span><span class="p">],</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -208,7 +209,7 @@
 <span class="sd">            End time to fetch until.</span>
 <span class="sd">        jump : datetime.timedelta</span>
 <span class="sd">            Size of one yielded chunk</span>
-<span class="sd">        filter_ : dict | None = None</span>
+<span class="sd">        filter_ : Optional[dict] = None</span>
 <span class="sd">            Obelisk filter, caller is responsible for correct format</span>
 <span class="sd">        direction : Literal[&#39;asc&#39;, &#39;desc&#39;] = &#39;asc&#39;</span>
 <span class="sd">            Yield older data or newer data first, defaults to older first.</span>
@@ -217,8 +218,8 @@
         <span class="n">current_start</span> <span class="o">=</span> <span class="n">from_time</span>
         <span class="k">while</span> <span class="n">current_start</span> <span class="o">&lt;</span> <span class="n">to_time</span><span class="p">:</span>
             <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">datasets</span><span class="o">=</span><span class="n">datasets</span><span class="p">,</span> <span class="n">metrics</span><span class="o">=</span><span class="n">metrics</span><span class="p">,</span>
-                                <span class="n">from_timestamp</span><span class="o">=</span><span class="n">current_start</span><span class="o">.</span><span class="n">timestamp</span><span class="p">(),</span>
-                                <span class="n">to_timestamp</span><span class="o">=</span><span class="p">(</span><span class="n">current_start</span> <span class="o">+</span> <span class="n">jump</span><span class="p">)</span><span class="o">.</span><span class="n">timestamp</span><span class="p">()</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+                                <span class="n">from_timestamp</span><span class="o">=</span><span class="n">floor</span><span class="p">(</span><span class="n">current_start</span><span class="o">.</span><span class="n">timestamp</span><span class="p">()</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">),</span>
+                                <span class="n">to_timestamp</span><span class="o">=</span><span class="n">floor</span><span class="p">((</span><span class="n">current_start</span> <span class="o">+</span> <span class="n">jump</span><span class="p">)</span><span class="o">.</span><span class="n">timestamp</span><span class="p">()</span> <span class="o">*</span> <span class="mi">1000</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span>
                                 <span class="n">order_by</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;field&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;timestamp&quot;</span><span class="p">],</span> <span class="s2">&quot;ordering&quot;</span><span class="p">:</span> <span class="n">direction</span><span class="p">},</span>
                                 <span class="n">filter_</span><span class="o">=</span><span class="n">filter_</span><span class="p">)</span>
             <span class="n">current_start</span> <span class="o">+=</span> <span class="n">jump</span></div>
