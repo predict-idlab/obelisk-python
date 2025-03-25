@@ -66,7 +66,7 @@
                  <span class="n">retry_strategy</span><span class="p">:</span> <span class="n">RetryStrategy</span> <span class="o">=</span> <span class="n">NoRetryStrategy</span><span class="p">(),</span>
                  <span class="n">kind</span><span class="p">:</span> <span class="n">ObeliskKind</span> <span class="o">=</span> <span class="n">ObeliskKind</span><span class="o">.</span><span class="n">CLASSIC</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">async_consumer</span> <span class="o">=</span> <span class="n">AsyncConsumer</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">secret</span><span class="p">,</span> <span class="n">retry_strategy</span><span class="p">,</span> <span class="n">kind</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">loop</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">new_event_loop</span><span class="p">()</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">loop</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">get_event_loop</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="Consumer.single_chunk">
