@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 import logging
 import base64
-from typing import Any
+from typing import Any, Optional
 
 import httpx
 
@@ -20,9 +20,9 @@ class Client:
     _client: str = ""
     _secret: str = ""
 
-    token: str | None = None
+    token: Optional[str] = None
     """Current authentication token"""
-    token_expires: datetime | None = None
+    token_expires: Optional[datetime] = None
     """Deadline after which token is no longer useable"""
 
     grace_period: timedelta = timedelta(seconds=10)
@@ -118,7 +118,7 @@ class Client:
                     continue
 
     async def http_post(self, url: str, data: Any = None,
-                        params: dict | None = None) -> httpx.Response:
+                        params: Optional[dict] = None) -> httpx.Response:
         """
         Send an HTTP POST request to Obelisk,
         with proper auth.
