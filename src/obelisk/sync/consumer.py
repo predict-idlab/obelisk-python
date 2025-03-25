@@ -29,7 +29,7 @@ class Consumer:
                  retry_strategy: RetryStrategy = NoRetryStrategy(),
                  kind: ObeliskKind = ObeliskKind.CLASSIC):
         self.async_consumer = AsyncConsumer(client, secret, retry_strategy, kind)
-        self.loop = asyncio.new_event_loop()
+        self.loop = asyncio.get_event_loop()
 
     def single_chunk(self, datasets: List[str], metrics: List[str] | None = None,
                      fields: dict | None = None,
