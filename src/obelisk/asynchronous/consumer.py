@@ -163,6 +163,16 @@ class Consumer(Client):
             result_set.extend(result.items)
             cursor = result.cursor
 
+            if limit and len(result_set) >= limit:
+                """On Obelisk HFS, limit is actually page size,
+                so continuing to read the cursor will result in a larger than desired
+                set of results.
+
+                On the other hand, if the limit is very large,
+                we may need to iterate before we reach the desired limit after all.
+                """
+                break
+
         return result_set
 
 
