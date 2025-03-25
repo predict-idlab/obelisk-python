@@ -38,6 +38,12 @@
 <p>This module provides wrappers for the classes in <cite>obelisk.asynchronous</cite> with a synchronous API.
 These hold on to a private event loop and block until a result is available.</p>
 <p>There is no synchronous alternative to <cite>obelisk.asynchronous.client.Client</cite>.</p>
+<section id="note">
+<h2>Note<a class="headerlink" href="#note" title="Link to this heading">¶</a></h2>
+<p>Please note that the sync module <em>will not</em> work in an asynchronous context (i.e. in any method returning a Future, or a Jupyter notebook).
+This is because it is internally nothing more than a wrapper over the asynchronous implementation.
+Use the asynchronous implementation in these situations.</p>
+</section>
 <p class="rubric">Modules</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
@@ -87,6 +93,7 @@ These hold on to a private event loop and block until a result is available.</p>
 <li class="toctree-l2"><a class="reference internal" href="obelisk.exceptions.html">obelisk.exceptions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="obelisk.strategies.html">obelisk.strategies</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">obelisk.sync</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#note">Note</a></li>
 <li class="toctree-l3"><a class="reference internal" href="obelisk.sync.consumer.html">obelisk.sync.consumer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="obelisk.sync.consumer_test.html">obelisk.sync.consumer_test</a></li>
 <li class="toctree-l3"><a class="reference internal" href="obelisk.sync.producer.html">obelisk.sync.producer</a></li>
