@@ -47,6 +47,29 @@
 
     <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">items</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span></div>
 
+
+<div class="viewcode-block" id="test_two_instances">
+<a class="viewcode-back" href="../../../_autosummary/obelisk.sync.consumer_test.test_two_instances.html#obelisk.sync.consumer_test.test_two_instances">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_two_instances</span><span class="p">():</span>
+    <span class="n">consumer_one</span> <span class="o">=</span> <span class="n">Consumer</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="s2">&quot;67c716e616c11421cfe2faf6&quot;</span><span class="p">,</span> <span class="n">secret</span><span class="o">=</span><span class="s2">&quot;08dafe89-0389-45b4-9832-cc565fb8c2eb&quot;</span><span class="p">)</span>
+    <span class="n">consumer_two</span> <span class="o">=</span> <span class="n">Consumer</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="s2">&quot;67c716e616c11421cfe2faf6&quot;</span><span class="p">,</span> <span class="n">secret</span><span class="o">=</span><span class="s2">&quot;08dafe89-0389-45b4-9832-cc565fb8c2eb&quot;</span><span class="p">)</span>
+    <span class="n">result_one</span> <span class="o">=</span> <span class="n">consumer_one</span><span class="o">.</span><span class="n">single_chunk</span><span class="p">(</span>
+        <span class="n">datasets</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;612f6c39cbceda0ea9753d95&quot;</span><span class="p">],</span>
+        <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;org.dyamand.types.common.Temperature::number&quot;</span><span class="p">],</span>
+        <span class="n">from_timestamp</span><span class="o">=</span><span class="mi">1740924034000</span><span class="p">,</span>
+        <span class="n">to_timestamp</span><span class="o">=</span><span class="mi">1741100614258</span><span class="p">,</span>
+        <span class="n">limit</span><span class="o">=</span><span class="mi">2</span>
+    <span class="p">)</span>
+    <span class="n">result_two</span> <span class="o">=</span> <span class="n">consumer_one</span><span class="o">.</span><span class="n">single_chunk</span><span class="p">(</span>
+        <span class="n">datasets</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;612f6c39cbceda0ea9753d95&quot;</span><span class="p">],</span>
+        <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;org.dyamand.types.common.Temperature::number&quot;</span><span class="p">],</span>
+        <span class="n">from_timestamp</span><span class="o">=</span><span class="mi">1740924034000</span><span class="p">,</span>
+        <span class="n">to_timestamp</span><span class="o">=</span><span class="mi">1741100614258</span><span class="p">,</span>
+        <span class="n">limit</span><span class="o">=</span><span class="mi">2</span>
+    <span class="p">)</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">result_one</span><span class="o">.</span><span class="n">items</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">result_two</span><span class="o">.</span><span class="n">items</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span></div>
+
 </pre></div>
 
           </div>
