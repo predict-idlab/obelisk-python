@@ -97,11 +97,13 @@ class Consumer(Client):
             js = response.json()
             return QueryResult.model_validate(js)
         except json.JSONDecodeError as e:
-            self.log.warning(f'Obelisk response is not a JSON object: {e}')
-            raise ObeliskError
+            msg = f'Obelisk response is not a JSON object: {e}'
+            self.log.warning(msg)
+            raise ObeliskError(msg)
         except ValidationError as e:
-            self.log.warning(f"Response cannot be validated: {e}")
-            raise ObeliskError
+            msg = f"Response cannot be validated: {e}"
+            self.log.warning(msg)
+            raise ObeliskError(msg)
 
 
     async def query(self, datasets: List[str], metrics:Optional[List[str]] = None,

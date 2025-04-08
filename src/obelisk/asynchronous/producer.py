@@ -48,7 +48,7 @@ class Producer(Client):
         response = await self.http_post(f'{self._ingest_url}/{dataset}', data=data,
                                         params=params)
         if response.status_code != 204:
-            self.log.warning('An error occurred during data ingestion')
-            self.log.warning('[%d]: %s', response.status_code, response.text)
-            raise ObeliskError
+            msg = f'An error occured during data ingest. Status {response.status_code}, messasge: {response.text}'
+            self.log.warning(msg)
+            raise ObeliskError(msg)
         return response
