@@ -31,7 +31,7 @@
           <div class="body" role="main">
             
   <h1>Source code for obelisk.types</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">StrEnum</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span>
@@ -39,7 +39,7 @@
 
 <div class="viewcode-block" id="IngestMode">
 <a class="viewcode-back" href="../../_autosummary/obelisk.types.IngestMode.html#obelisk.types.IngestMode">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">IngestMode</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">IngestMode</span><span class="p">(</span><span class="n">StrEnum</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Classic Obelisk accepts three ways of submitting new data.</span>
 <span class="sd">    This integrates with the concept of Streams,</span>
@@ -60,7 +60,7 @@
 
 <div class="viewcode-block" id="TimestampPrecision">
 <a class="viewcode-back" href="../../_autosummary/obelisk.types.TimestampPrecision.html#obelisk.types.TimestampPrecision">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">TimestampPrecision</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">TimestampPrecision</span><span class="p">(</span><span class="n">StrEnum</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    When ingesting data it is important to specify which precision provided UNIX timestamps are in.</span>
 <span class="sd">    If a provided timestamp is in seconds,</span>
@@ -83,7 +83,7 @@
     <span class="n">dataset</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">metric</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">source</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">userId</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span> <span class="c1"># Only if HFS and no other name for field</span></div>
+    <span class="n">userId</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Only if HFS and no other name for field</span></div>
 
 
 
@@ -97,7 +97,7 @@
 
 <div class="viewcode-block" id="ObeliskKind">
 <a class="viewcode-back" href="../../_autosummary/obelisk.types.ObeliskKind.html#obelisk.types.ObeliskKind">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">ObeliskKind</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ObeliskKind</span><span class="p">(</span><span class="n">StrEnum</span><span class="p">):</span>
     <span class="n">CLASSIC</span> <span class="o">=</span> <span class="s1">&#39;classic&#39;</span>
     <span class="n">HFS</span> <span class="o">=</span> <span class="s1">&#39;hfs&#39;</span></div>
 
