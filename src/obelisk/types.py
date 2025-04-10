@@ -1,10 +1,10 @@
-from enum import StrEnum
+from enum import Enum
 from typing import List, Any, Optional
 
 from pydantic import BaseModel
 
 
-class IngestMode(StrEnum):
+class IngestMode(str, Enum):
     """
     Classic Obelisk accepts three ways of submitting new data.
     This integrates with the concept of Streams,
@@ -22,7 +22,7 @@ class IngestMode(StrEnum):
     STORE_ONLY = 'store_only'
 
 
-class TimestampPrecision(StrEnum):
+class TimestampPrecision(str, Enum):
     """
     When ingesting data it is important to specify which precision provided UNIX timestamps are in.
     If a provided timestamp is in seconds,
@@ -50,6 +50,6 @@ class QueryResult(BaseModel):
     cursor: Optional[str] = None
 
 
-class ObeliskKind(StrEnum):
+class ObeliskKind(str, Enum):
     CLASSIC = 'classic'
     HFS = 'hfs'
