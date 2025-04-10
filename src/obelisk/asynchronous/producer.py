@@ -41,7 +41,7 @@ class Producer(Client):
 
         params = {
             'datasetId': dataset,
-            'timestampPrecision': precision,
+            'timestampPrecision': precision.value,
             'mode': mode.value
         }
 
