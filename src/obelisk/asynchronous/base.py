@@ -63,12 +63,13 @@ class BaseClient:
             self._streams_url = 'https://obelisk.ilabt.imec.be/api/v3/data/streams'
 
     async def _get_token(self):
+        use_json = self.kind == ObeliskKind.CLASSIC
         auth_string = str(base64.b64encode(
             f'{self._client}:{self._secret}'.encode('utf-8')), 'utf-8')
         headers = {
             'Authorization': f'Basic {auth_string}',
-            'Content-Type': ('application/x-www-form-urlencoded'
-                             if self.kind == ObeliskKind.HFS else 'application/json')
+            'Content-Type': ('application/json'
+                             if use_json else 'application/x-www-form-urlencoded')
         }
         payload = {
             'grant_type': 'client_credentials'
@@ -82,8 +83,8 @@ class BaseClient:
                 try:
                     request = await client.post(
                         self._token_url,
-                        json=payload if self.kind == ObeliskKind.CLASSIC else None,
-                        data=payload if self.kind == ObeliskKind.HFS else None,
+                        json=payload if use_json else None,
+                        data=payload if not use_json else None,
                         headers=headers)
 
                     response = request.json()

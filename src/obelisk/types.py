@@ -53,3 +53,4 @@ class QueryResult(BaseModel):
 class ObeliskKind(str, Enum):
     CLASSIC = 'classic'
     HFS = 'hfs'
+    CORE = 'core'
