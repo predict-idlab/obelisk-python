@@ -1,7 +1,7 @@
-obelisk.sync.consumer
-=====================
+obelisk.asynchronous.base
+=========================
 
-.. automodule:: obelisk.sync.consumer
+.. automodule:: obelisk.asynchronous.base
 
    
    .. rubric:: Classes
@@ -10,5 +10,5 @@ obelisk.sync.consumer
       :toctree:
       :template: custom-class-template.rst
    
-      Consumer
+      BaseClient
    

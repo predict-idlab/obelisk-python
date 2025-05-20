@@ -4,10 +4,10 @@ We support both "classic" Obelisk and HFS,
 each with a synchronous and async API.
 The PyPi package name is ``obelisk-py``, the Python module is called ``obelisk``.
 
-Your starting point will be one of the Consumer or Producer instances in :mod:`~.sync` or :mod:`~.asynchronous` depending on your preferred API.
+Your starting point will be one of the Obelisk instances in :mod:`~.sync` or :mod:`~.asynchronous` depending on your preferred API.
 
-Each of the `sync` or `asynchronous` modules will contain two main classes, those being Producer and Consumer.
-Those submit or fetch data respectively.
+The Obelisk classes in these modules both implement the same interface,
+but the asynchronous implementation returns Coroutines.
 
 Error handling
 --------------

@@ -10,5 +10,5 @@ obelisk.asynchronous.client
       :toctree:
       :template: custom-class-template.rst
    
-      Client
+      Obelisk
    

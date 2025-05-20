@@ -12,6 +12,59 @@ obelisk.types.IngestMode
    .. automethod:: __init__
 
    
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~IngestMode.encode
+      ~IngestMode.replace
+      ~IngestMode.split
+      ~IngestMode.rsplit
+      ~IngestMode.join
+      ~IngestMode.capitalize
+      ~IngestMode.casefold
+      ~IngestMode.title
+      ~IngestMode.center
+      ~IngestMode.count
+      ~IngestMode.expandtabs
+      ~IngestMode.find
+      ~IngestMode.partition
+      ~IngestMode.index
+      ~IngestMode.ljust
+      ~IngestMode.lower
+      ~IngestMode.lstrip
+      ~IngestMode.rfind
+      ~IngestMode.rindex
+      ~IngestMode.rjust
+      ~IngestMode.rstrip
+      ~IngestMode.rpartition
+      ~IngestMode.splitlines
+      ~IngestMode.strip
+      ~IngestMode.swapcase
+      ~IngestMode.translate
+      ~IngestMode.upper
+      ~IngestMode.startswith
+      ~IngestMode.endswith
+      ~IngestMode.removeprefix
+      ~IngestMode.removesuffix
+      ~IngestMode.isascii
+      ~IngestMode.islower
+      ~IngestMode.isupper
+      ~IngestMode.istitle
+      ~IngestMode.isspace
+      ~IngestMode.isdecimal
+      ~IngestMode.isdigit
+      ~IngestMode.isnumeric
+      ~IngestMode.isalpha
+      ~IngestMode.isalnum
+      ~IngestMode.isidentifier
+      ~IngestMode.isprintable
+      ~IngestMode.zfill
+      ~IngestMode.format
+      ~IngestMode.format_map
+      ~IngestMode.maketrans
+      ~IngestMode.__init__
+   
    
 
    

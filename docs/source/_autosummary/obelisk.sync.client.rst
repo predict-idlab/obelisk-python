@@ -1,7 +1,7 @@
-obelisk.sync.producer
-=====================
+obelisk.sync.client
+===================
 
-.. automodule:: obelisk.sync.producer
+.. automodule:: obelisk.sync.client
 
    
    .. rubric:: Classes
@@ -10,5 +10,5 @@ obelisk.sync.producer
       :toctree:
       :template: custom-class-template.rst
    
-      Producer
+      Obelisk
    
