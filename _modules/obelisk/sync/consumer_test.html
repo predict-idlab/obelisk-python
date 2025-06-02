@@ -33,10 +33,13 @@
   <h1>Source code for obelisk.sync.consumer_test</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span><span class="w"> </span><span class="nn">.consumer</span><span class="w"> </span><span class="kn">import</span> <span class="n">Consumer</span>
 
+<span class="n">client_id</span> <span class="o">=</span> <span class="s2">&quot;682c6c46604b3b3be35429df&quot;</span>
+<span class="n">client_secret</span> <span class="o">=</span> <span class="s2">&quot;7136832d-01be-456a-a1fe-25c7f9e130c5&quot;</span>
+
 <div class="viewcode-block" id="test_demo_igent">
 <a class="viewcode-back" href="../../../_autosummary/obelisk.sync.consumer_test.test_demo_igent.html#obelisk.sync.consumer_test.test_demo_igent">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">test_demo_igent</span><span class="p">():</span>
-    <span class="n">consumer</span> <span class="o">=</span> <span class="n">Consumer</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="s2">&quot;67c716e616c11421cfe2faf6&quot;</span><span class="p">,</span> <span class="n">secret</span><span class="o">=</span><span class="s2">&quot;08dafe89-0389-45b4-9832-cc565fb8c2eb&quot;</span><span class="p">)</span>
+    <span class="n">consumer</span> <span class="o">=</span> <span class="n">Consumer</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="n">client_id</span><span class="p">,</span><span class="n">secret</span><span class="o">=</span><span class="n">client_secret</span><span class="p">)</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">consumer</span><span class="o">.</span><span class="n">single_chunk</span><span class="p">(</span>
         <span class="n">datasets</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;612f6c39cbceda0ea9753d95&quot;</span><span class="p">],</span>
         <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;org.dyamand.types.common.Temperature::number&quot;</span><span class="p">],</span>
@@ -51,8 +54,8 @@
 <div class="viewcode-block" id="test_two_instances">
 <a class="viewcode-back" href="../../../_autosummary/obelisk.sync.consumer_test.test_two_instances.html#obelisk.sync.consumer_test.test_two_instances">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">test_two_instances</span><span class="p">():</span>
-    <span class="n">consumer_one</span> <span class="o">=</span> <span class="n">Consumer</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="s2">&quot;67c716e616c11421cfe2faf6&quot;</span><span class="p">,</span> <span class="n">secret</span><span class="o">=</span><span class="s2">&quot;08dafe89-0389-45b4-9832-cc565fb8c2eb&quot;</span><span class="p">)</span>
-    <span class="n">consumer_two</span> <span class="o">=</span> <span class="n">Consumer</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="s2">&quot;67c716e616c11421cfe2faf6&quot;</span><span class="p">,</span> <span class="n">secret</span><span class="o">=</span><span class="s2">&quot;08dafe89-0389-45b4-9832-cc565fb8c2eb&quot;</span><span class="p">)</span>
+    <span class="n">consumer_one</span> <span class="o">=</span> <span class="n">Consumer</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="n">client_id</span><span class="p">,</span><span class="n">secret</span><span class="o">=</span><span class="n">client_secret</span><span class="p">)</span>
+    <span class="n">consumer_two</span> <span class="o">=</span> <span class="n">Consumer</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="n">client_id</span><span class="p">,</span><span class="n">secret</span><span class="o">=</span><span class="n">client_secret</span><span class="p">)</span>
     <span class="n">result_one</span> <span class="o">=</span> <span class="n">consumer_one</span><span class="o">.</span><span class="n">single_chunk</span><span class="p">(</span>
         <span class="n">datasets</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;612f6c39cbceda0ea9753d95&quot;</span><span class="p">],</span>
         <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;org.dyamand.types.common.Temperature::number&quot;</span><span class="p">],</span>
@@ -60,7 +63,7 @@
         <span class="n">to_timestamp</span><span class="o">=</span><span class="mi">1741100614258</span><span class="p">,</span>
         <span class="n">limit</span><span class="o">=</span><span class="mi">2</span>
     <span class="p">)</span>
-    <span class="n">result_two</span> <span class="o">=</span> <span class="n">consumer_one</span><span class="o">.</span><span class="n">single_chunk</span><span class="p">(</span>
+    <span class="n">result_two</span> <span class="o">=</span> <span class="n">consumer_two</span><span class="o">.</span><span class="n">single_chunk</span><span class="p">(</span>
         <span class="n">datasets</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;612f6c39cbceda0ea9753d95&quot;</span><span class="p">],</span>
         <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;org.dyamand.types.common.Temperature::number&quot;</span><span class="p">],</span>
         <span class="n">from_timestamp</span><span class="o">=</span><span class="mi">1740924034000</span><span class="p">,</span>

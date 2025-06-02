@@ -36,11 +36,14 @@
 
 <span class="n">pytest_plugins</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;pytest_asyncio&#39;</span><span class="p">,)</span>
 
+<span class="n">client_id</span> <span class="o">=</span> <span class="s2">&quot;682c6c46604b3b3be35429df&quot;</span>
+<span class="n">client_secret</span> <span class="o">=</span> <span class="s2">&quot;7136832d-01be-456a-a1fe-25c7f9e130c5&quot;</span>
+
 <div class="viewcode-block" id="test_demo_igent">
 <a class="viewcode-back" href="../../../_autosummary/obelisk.asynchronous.consumer_test.test_demo_igent.html#obelisk.asynchronous.consumer_test.test_demo_igent">[docs]</a>
 <span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">asyncio</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">test_demo_igent</span><span class="p">():</span>
-    <span class="n">consumer</span> <span class="o">=</span> <span class="n">Consumer</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="s2">&quot;67c716e616c11421cfe2faf6&quot;</span><span class="p">,</span> <span class="n">secret</span><span class="o">=</span><span class="s2">&quot;08dafe89-0389-45b4-9832-cc565fb8c2eb&quot;</span><span class="p">)</span>
+    <span class="n">consumer</span> <span class="o">=</span> <span class="n">Consumer</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="n">client_id</span><span class="p">,</span> <span class="n">secret</span><span class="o">=</span><span class="n">client_secret</span><span class="p">)</span>
     <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">consumer</span><span class="o">.</span><span class="n">single_chunk</span><span class="p">(</span>
         <span class="n">datasets</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;612f6c39cbceda0ea9753d95&quot;</span><span class="p">],</span>
         <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;org.dyamand.types.common.Temperature::number&quot;</span><span class="p">],</span>
