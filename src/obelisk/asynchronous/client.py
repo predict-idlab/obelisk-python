@@ -5,7 +5,7 @@ from typing import Any, Optional
 
 import httpx
 
-from obelisk.exceptions import AuthenticationError
+from obelisk.exceptions import AuthenticationError, ObeliskError
 from obelisk.strategies.retry import RetryStrategy, \
     NoRetryStrategy
 from obelisk.types import ObeliskKind
@@ -76,9 +76,10 @@ class Client:
 
         async with httpx.AsyncClient() as client:
             response = None
+            request = None
             last_error = None
             retry = self.retry_strategy.make()
-            while not response or await retry.should_retry():
+            while not response:
                 try:
                     request = await client.post(
                         self._token_url,
@@ -90,10 +91,13 @@ class Client:
                 except Exception as e:
                     last_error = e
                     self.log.error(e)
-                    continue
+                    if await retry.should_retry():
+                        continue
+                    else:
+                        break
 
-            if response is None and last_error is not None:
-                raise last_error
+            if not response or not request:
+                raise (last_error if last_error is not None else ObeliskError("No response"))
 
             if request.status_code != 200:
                 if 'error' in response:
@@ -142,7 +146,7 @@ class Client:
             response = None
             retry = self.retry_strategy.make()
             last_error = None
-            while not response or await retry.should_retry():
+            while not response:
                 if response is not None:
                     self.log.debug(f"Retrying, last response: {response.status_code}")
 
@@ -158,7 +162,10 @@ class Client:
                 except Exception as e:
                     self.log.error(e)
                     last_error = e
-                    continue
+                    if await retry.should_retry():
+                        continue
+                    else:
+                        break
 
             if not response and last_error:
                 raise last_error
