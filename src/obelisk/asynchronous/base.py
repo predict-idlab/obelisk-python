@@ -156,3 +156,49 @@ class BaseClient:
             if not response and last_error:
                 raise last_error
             return response
+
+
+    async def http_get(self, url: str, params: Optional[dict] = None) -> httpx.Response:
+        """
+        Send an HTTP GET request to Obelisk,
+        with proper auth.
+
+        Possibly refreshes the authentication token and performs backoff as per `retry_strategy`.
+        This method is not of stable latency because of these properties.
+
+        No validation is performed on the input data,
+        callers are responsible for formatting it in a method Obelisk understands.
+        """
+
+        await self._verify_token()
+
+        headers = {
+            'Authorization': f'Bearer {self.token}',
+            'Content-Type': 'application/json'
+        }
+        if params is None:
+            params = {}
+        async with httpx.AsyncClient() as client:
+            response = None
+            retry = self.retry_strategy.make()
+            last_error = None
+            while not response or await retry.should_retry():
+                if response is not None:
+                    self.log.debug(f"Retrying, last response: {response.status_code}")
+
+                try:
+                    response = await client.get(url,
+                                                 params={k: v for k, v in params.items() if
+                                                         v is not None},
+                                                 headers=headers)
+
+                    if response.status_code // 100 == 2:
+                        return response
+                except Exception as e:
+                    self.log.error(e)
+                    last_error = e
+                    continue
+
+            if not response and last_error:
+                raise last_error
+            return response
