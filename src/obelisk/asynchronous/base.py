@@ -49,27 +49,19 @@ class BaseClient:
 
         self.log = logging.getLogger('obelisk')
 
-        if self.kind == ObeliskKind.HFS:
-            self._token_url = 'https://obelisk-hfs.discover.ilabt.imec.be/auth/realms/obelisk-hfs/protocol/openid-connect/token'
-            self._root_url = 'https://obelisk-hfs.discover.ilabt.imec.be'
-            self._events_url = 'https://obelisk-hfs.discover.ilabt.imec.be/data/query/events'
-            self._ingest_url = 'https://obelisk-hfs.discover.ilabt.imec.be/data/ingest'
-        else:
-            self._token_url = 'https://obelisk.ilabt.imec.be/api/v3/auth/token'
-            self._root_url = 'https://obelisk.ilabt.imec.be/api/v3'
-            self._metadata_url = 'https://obelisk.ilabt.imec.be/api/v3/catalog/graphql'
-            self._events_url = 'https://obelisk.ilabt.imec.be/api/v3/data/query/events'
-            self._ingest_url = 'https://obelisk.ilabt.imec.be/api/v3/data/ingest'
-            self._streams_url = 'https://obelisk.ilabt.imec.be/api/v3/data/streams'
+        self._token_url = kind.token_url
+        self._root_url = kind.root_url
+        self._events_url = kind.query_url
+        self._ingest_url = kind.ingest_url
+        self._streams_url = kind.stream_url
 
     async def _get_token(self):
-        use_json = self.kind == ObeliskKind.CLASSIC
         auth_string = str(base64.b64encode(
             f'{self._client}:{self._secret}'.encode('utf-8')), 'utf-8')
         headers = {
             'Authorization': f'Basic {auth_string}',
             'Content-Type': ('application/json'
-                             if use_json else 'application/x-www-form-urlencoded')
+                             if self.kind.use_json_auth else 'application/x-www-form-urlencoded')
         }
         payload = {
             'grant_type': 'client_credentials'
@@ -83,8 +75,8 @@ class BaseClient:
                 try:
                     request = await client.post(
                         self._token_url,
-                        json=payload if use_json else None,
-                        data=payload if not use_json else None,
+                        json=payload if self.kind.use_json_auth else None,
+                        data=payload if not self.kind.use_json_auth else None,
                         headers=headers)
 
                     response = request.json()

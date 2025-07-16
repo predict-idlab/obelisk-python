@@ -54,3 +54,63 @@ class ObeliskKind(str, Enum):
     CLASSIC = 'classic'
     HFS = 'hfs'
     CORE = 'core'
+
+    @property
+    def token_url(self) -> str:
+        match self:
+            case ObeliskKind.CLASSIC:
+                return 'https://obelisk.ilabt.imec.be/api/v3/auth/token'
+            case ObeliskKind.HFS:
+                return 'https://obelisk-hfs.discover.ilabt.imec.be/auth/realms/obelisk-hfs/protocol/openid-connect/token'
+            case ObeliskKind.CORE:
+                raise NotImplementedError()
+
+    @property
+    def root_url(self) -> str:
+        match self:
+            case ObeliskKind.CLASSIC:
+                return 'https://obelisk.ilabt.imec.be/api/v3'
+            case ObeliskKind.HFS:
+                return 'https://obelisk-hfs.discover.ilabt.imec.be'
+            case ObeliskKind.CORE:
+                raise NotImplementedError()
+
+    @property
+    def query_url(self) -> str:
+        match self:
+            case ObeliskKind.CLASSIC:
+                return 'https://obelisk.ilabt.imec.be/api/v3/data/query/events'
+            case ObeliskKind.HFS:
+                return 'https://obelisk-hfs.discover.ilabt.imec.be/data/query/events'
+            case ObeliskKind.CORE:
+                raise NotImplementedError()
+
+    @property
+    def ingest_url(self) -> str:
+        match self:
+            case ObeliskKind.CLASSIC:
+                return 'https://obelisk.ilabt.imec.be/api/v3/data/ingest'
+            case ObeliskKind.HFS:
+                return 'https://obelisk-hfs.discover.ilabt.imec.be/data/ingest'
+            case ObeliskKind.CORE:
+                raise NotImplementedError()
+
+    @property
+    def stream_url(self) -> str | None:
+        match self:
+            case ObeliskKind.CLASSIC:
+                return 'https://obelisk.ilabt.imec.be/api/v3/data/streams'
+            case ObeliskKind.HFS:
+                return None
+            case ObeliskKind.CORE:
+                raise NotImplementedError()
+
+    @property
+    def use_json_auth(self) -> bool:
+        match self:
+            case ObeliskKind.CLASSIC:
+                return True
+            case ObeliskKind.HFS:
+                return False
+            case ObeliskKind.CORE:
+                return False
