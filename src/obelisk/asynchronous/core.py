@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 import httpx
 import json
 from pydantic import BaseModel, AwareDatetime, ValidationError, model_validator
-from typing import AsyncGenerator, Dict, Generator, Iterator, List, Literal, Optional, Any, get_args
+from typing import AsyncIterator, Dict, Iterator, List, Literal, Optional, Any, get_args
 from typing_extensions import Self
 from numbers import Number
 
@@ -90,12 +90,12 @@ class QueryParams(BaseModel):
 
 class ChunkedParams(BaseModel):
     dataset: str
-    metric: str
     groupBy: Optional[List[FieldName]] = None
     aggregator: Optional[Aggregator] = None
     fields: Optional[List[FieldName]] = None
     orderBy: Optional[List[str]] = None # More complex than just FieldName, can be prefixed with - to invert sort
     dataType: Optional[DataType] = None
+    filter: Optional[str] = None
     start: datetime
     end: datetime
     jump: timedelta = timedelta(hours=1)
@@ -112,6 +112,9 @@ class ChunkedParams(BaseModel):
         current_start = self.start
         while current_start < self.end:
             current_end = current_start + self.jump
+            filter=f'timestamp>={current_start.isoformat()};timestamp<{current_end.isoformat()}'
+            if self.filter:
+                filter += f';{self.filter}'
 
             yield QueryParams(
                 dataset=self.dataset,
@@ -120,7 +123,7 @@ class ChunkedParams(BaseModel):
                 fields=self.fields,
                 orderBy=self.orderBy,
                 dataType=self.dataType,
-                filter=f'timestamp>={current_start.isoformat()} and timestamp<{current_end.isoformat()} and metric=={self.metric}'
+                filter=filter
             )
 
             current_start += self.jump
@@ -219,12 +222,9 @@ class Core(BaseClient):
 
     async def query_time_chunked(
         self,
-        dataset: str,
-        params: QueryParams,
-        from_time: datetime,
-        to_time: datetime,
-        jump: timedelta,
-        filter_: Optional[str] = None,
-        direction: Literal["asc", "desc"] = "asc",
-    ) -> AsyncGenerator[List[Datapoint], None]:
-        raise NotImplementedError()
+        params: ChunkedParams
+    ) -> AsyncIterator[List[Datapoint]]:
+        for chunk in params.chunks():
+            yield await self.query(
+                chunk
+            )
