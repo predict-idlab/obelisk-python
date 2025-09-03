@@ -1,3 +1,12 @@
+"""
+This module contains the asynchronous API to interface with Obelisk CORE.
+These methods all return a :any:`Coroutine`.
+
+Relevant entrance points are :class:`Core`.
+
+This API vaguely resembles that of clients to previous Obelisk versions,
+but also significantly diverts from it where the underlying Obelisk CORE API does so.
+"""
 from obelisk.asynchronous.base import BaseClient
 from obelisk.exceptions import ObeliskError
 
@@ -11,25 +20,35 @@ from numbers import Number
 
 
 DataType = Literal['number', 'number[]', 'json', 'bool', 'string']
+"""The possible types of data Obelisk can accept"""
 
 
 Aggregator = Literal['last', 'min', 'mean', 'max', 'count', 'stddev']
+"""Type of aggregation Obelisk can process"""
 
 
-# https://obelisk.pages.ilabt.imec.be/obelisk-core/query.html#available-data-point-fields
 FieldName = str # TODO: validate field names?
+"""https://obelisk.pages.ilabt.imec.be/obelisk-core/query.html#available-data-point-fields"""
 
 
 Datapoint = Dict[str, Any]
+"""Datapoints resulting from queries are modeled as simple dicts, as fields can come and go depending on query."""
 
 
 class ObeliskPosition(BaseModel):
+    """
+    Format for coordinates as expected by Obelisk.
+    """
+
     lat: float
+    """Latitude"""
     lng: float
+    """Longitude"""
     elevation: float
 
 
-class IncomingDataPoint(BaseModel):
+class IncomingDatapoint(BaseModel):
+    """A datapoint to be submitted to Obelisk. These are validated quite extensively, but not fully."""
     timestamp: Optional[AwareDatetime] = None
     metric: str
     value: Any
@@ -142,7 +161,7 @@ class Core(BaseClient):
     async def send(
         self,
         dataset: str,
-        data: List[IncomingDataPoint],
+        data: List[IncomingDatapoint],
     ) -> httpx.Response:
         """
         Publishes data to Obelisk
@@ -151,7 +170,7 @@ class Core(BaseClient):
         ----------
         dataset : str
             ID for the dataset to publish to
-        data : List[IncomingDataPoint]
+        data : List[IncomingDatapoint]
             List of Obelisk-acceptable datapoints.
             Exact format varies between Classic or HFS,
             caller is responsible for formatting.
@@ -228,3 +247,4 @@ class Core(BaseClient):
             yield await self.query(
                 chunk
             )
+

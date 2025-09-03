@@ -43,3 +43,8 @@ exclude_patterns = []
 
 html_theme = 'alabaster'
 html_static_path = ['_static']
+
+autodoc_default_options = {
+    'inherited-members': False,
+    'undoc-members': False,
+}
