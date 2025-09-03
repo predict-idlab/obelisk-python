@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 import httpx
 import json
 from pydantic import BaseModel, AwareDatetime, ValidationError, model_validator
-from typing import AsyncGenerator, Dict, List, Literal, Optional, Any, get_args
+from typing import AsyncGenerator, Dict, Generator, Iterator, List, Literal, Optional, Any, get_args
 from typing_extensions import Self
 from numbers import Number
 
@@ -88,6 +88,45 @@ class QueryParams(BaseModel):
         return self.model_dump(exclude_none=True)
 
 
+class ChunkedParams(BaseModel):
+    dataset: str
+    metric: str
+    groupBy: Optional[List[FieldName]] = None
+    aggregator: Optional[Aggregator] = None
+    fields: Optional[List[FieldName]] = None
+    orderBy: Optional[List[str]] = None # More complex than just FieldName, can be prefixed with - to invert sort
+    dataType: Optional[DataType] = None
+    start: datetime
+    end: datetime
+    jump: timedelta = timedelta(hours=1)
+
+    @model_validator(mode='after')
+    def check_datatype_needed(self) -> Self:
+        if self.fields is None or 'value' in self.fields:
+            if self.dataType is None:
+                raise ValueError("Value field requested, must specify datatype")
+
+        return self
+
+    def chunks(self) -> Iterator[QueryParams]:
+        current_start = self.start
+        while current_start < self.end:
+            current_end = current_start + self.jump
+
+            yield QueryParams(
+                dataset=self.dataset,
+                groupBy=self.groupBy,
+                aggregator=self.aggregator,
+                fields=self.fields,
+                orderBy=self.orderBy,
+                dataType=self.dataType,
+                filter=f'timestamp>={current_start.isoformat()} and timestamp<{current_end.isoformat()} and metric=={self.metric}'
+            )
+
+            current_start += self.jump
+
+
+
 class QueryResult(BaseModel):
     cursor: Optional[str] = None
     items: List[Datapoint]
@@ -130,7 +169,6 @@ class Core(BaseClient):
             raise ObeliskError(msg)
         return response
 
-    # TODO query methods!
     async def fetch_single_chunk(
             self,
             params: QueryParams
