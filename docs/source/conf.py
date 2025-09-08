@@ -27,7 +27,6 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.autosummary',
     'sphinx.ext.viewcode',
-    'numpydoc',
     'sphinx.ext.doctest',
 ]
 autosummary_generate = True
@@ -46,5 +45,7 @@ html_static_path = ['_static']
 
 autodoc_default_options = {
     'inherited-members': False,
-    'undoc-members': False,
+    'undoc-members': True,
 }
+autoclass_content = 'class'
+autodoc_member_order = 'groupwise'

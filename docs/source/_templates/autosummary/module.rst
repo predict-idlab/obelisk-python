@@ -1,5 +1,6 @@
 {{ fullname | escape | underline}}
 
+.. currentmodule:: {{ module }}
 .. automodule:: {{ fullname }}
 
    {% block attributes %}
@@ -32,7 +33,6 @@
 
    .. autosummary::
       :toctree:
-      :template: custom-class-template.rst
    {% for item in classes %}
       {{ item }}
    {%- endfor %}
@@ -57,7 +57,6 @@
 
 .. autosummary::
    :toctree:
-   :template: custom-module-template.rst
    :recursive:
 {% for item in modules %}
    {{ item }}

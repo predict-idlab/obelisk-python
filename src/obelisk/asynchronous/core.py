@@ -1,6 +1,6 @@
 """
 This module contains the asynchronous API to interface with Obelisk CORE.
-These methods all return a :any:`Coroutine`.
+These methods all return a :class:`Awaitable`.
 
 Relevant entrance points are :class:`Core`.
 
@@ -48,7 +48,9 @@ class ObeliskPosition(BaseModel):
 
 
 class IncomingDatapoint(BaseModel):
-    """A datapoint to be submitted to Obelisk. These are validated quite extensively, but not fully."""
+    """ A datapoint to be submitted to Obelisk. These are validated quite extensively, but not fully.
+    .. automethod:: check_metric_type(self)
+    """
     timestamp: Optional[AwareDatetime] = None
     metric: str
     value: Any

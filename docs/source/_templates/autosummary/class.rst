@@ -3,19 +3,20 @@
 .. currentmodule:: {{ module }}
 
 .. autoclass:: {{ objname }}
-   :members:
    :show-inheritance:
-   :inherited-members:
 
    {% block methods %}
    .. automethod:: __init__
+      :no-index:
 
    {% if methods %}
    .. rubric:: {{ _('Methods') }}
 
    .. autosummary::
    {% for item in methods %}
-      ~{{ name }}.{{ item }}
+   {% if item not in inherited_members %}
+   .. automethod:: {{ item }}
+   {%- endif %}
    {%- endfor %}
    {% endif %}
    {% endblock %}
@@ -26,7 +27,9 @@
 
    .. autosummary::
    {% for item in attributes %}
-      ~{{ name }}.{{ item }}
+   {% if item not in inherited_members %}
+   .. autoattribute:: {{ item }}
+   {%- endif %}
    {%- endfor %}
    {% endif %}
    {% endblock %}

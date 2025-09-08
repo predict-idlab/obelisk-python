@@ -48,6 +48,7 @@ cover/
 # Sphinx documentation
 docs/_build/
 docs/build/
+docs/source/_autosummary/
 
 # PyBuilder
 .pybuilder/

@@ -7,7 +7,6 @@ It brings retry strategies and optional async support
 
 .. autosummary::
    :toctree: _autosummary
-   :template: custom-module-template.rst
    :recursive:
 
    obelisk
