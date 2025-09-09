@@ -2,7 +2,7 @@
 This module contains the asynchronous API to interface with Obelisk CORE.
 These methods all return a :class:`Awaitable`.
 
-Relevant entrance points are :class:`Core`.
+Relevant entrance points are :class:`Client`.
 
 This API vaguely resembles that of clients to previous Obelisk versions,
 but also significantly diverts from it where the underlying Obelisk CORE API does so.
@@ -159,7 +159,7 @@ class QueryResult(BaseModel):
     items: List[Datapoint]
 
 
-class Core(BaseClient):
+class Client(BaseClient):
     page_limit: int = 250
     """How many datapoints to request per page in a cursored fetch"""
 

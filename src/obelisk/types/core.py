@@ -1,3 +1,19 @@
+"""
+Types specific to Obelisk CORE, including an RSQL filter implementation
+
+To create a filter, look at :class:`Filter`.
+Example:
+
+>>> from datetime import datetime
+>>> f = (Filter().add_and(
+...     Comparison.equal('source', 'test source'),
+...     Comparison.is_in('metricType', ['number', 'number[]']),
+... ).add_or(
+...     Comparison.less('timestamp', datetime.fromtimestamp(1757422128))
+... ))
+>>> print(f)
+((('source'=='test source');('metricType'=in=('number', 'number[]'))),('timestamp'<'2025-09-09T14:48:48'))
+"""
 from __future__ import annotations
 from abc import ABC
 from datetime import datetime
@@ -5,7 +21,9 @@ from typing import Any, Iterable, List
 
 
 FieldName = str # TODO: validate field names?
-"""https://obelisk.pages.ilabt.imec.be/obelisk-core/query.html#available-data-point-fields"""
+"""https://obelisk.pages.ilabt.imec.be/obelisk-core/query.html#available-data-point-fields
+Field names are not validated at this time, due to the inherent complexity.
+"""
 
 
 class Constraint(ABC):
