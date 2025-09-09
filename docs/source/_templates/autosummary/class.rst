@@ -16,6 +16,7 @@
    {% for item in methods %}
    {% if item not in inherited_members %}
    .. automethod:: {{ item }}
+      :no-index-entry:
    {%- endif %}
    {%- endfor %}
    {% endif %}
@@ -29,6 +30,7 @@
    {% for item in attributes %}
    {% if item not in inherited_members %}
    .. autoattribute:: {{ item }}
+      :no-index-entry:
    {%- endif %}
    {%- endfor %}
    {% endif %}

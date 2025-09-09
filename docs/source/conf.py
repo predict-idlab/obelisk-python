@@ -28,6 +28,7 @@ extensions = [
     'sphinx.ext.autosummary',
     'sphinx.ext.viewcode',
     'sphinx.ext.doctest',
+    'sphinx.ext.intersphinx',
 ]
 autosummary_generate = True
 autosummary_ignore_module_all = False
@@ -49,3 +50,8 @@ autodoc_default_options = {
 }
 autoclass_content = 'class'
 autodoc_member_order = 'groupwise'
+
+intersphinx_mapping = {
+    'python': ('https://docs.python.org/3', None),
+    'pydantic': ('https://docs.pydantic.dev/latest', None),
+}

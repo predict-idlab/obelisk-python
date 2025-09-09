@@ -9,12 +9,13 @@ but also significantly diverts from it where the underlying Obelisk CORE API doe
 """
 from obelisk.asynchronous.base import BaseClient
 from obelisk.exceptions import ObeliskError
+from obelisk.types.core import FieldName, Filter
 
 from datetime import datetime, timedelta
 import httpx
 import json
-from pydantic import BaseModel, AwareDatetime, ValidationError, model_validator
-from typing import AsyncIterator, Dict, Iterator, List, Literal, Optional, Any, get_args
+from pydantic import BaseModel, AwareDatetime, ConfigDict, Field, ValidationError, model_validator
+from typing import Annotated, AsyncIterator, Dict, Iterator, List, Literal, Optional, Any, get_args
 from typing_extensions import Self
 from numbers import Number
 
@@ -25,10 +26,6 @@ DataType = Literal['number', 'number[]', 'json', 'bool', 'string']
 
 Aggregator = Literal['last', 'min', 'mean', 'max', 'count', 'stddev']
 """Type of aggregation Obelisk can process"""
-
-
-FieldName = str # TODO: validate field names?
-"""https://obelisk.pages.ilabt.imec.be/obelisk-core/query.html#available-data-point-fields"""
 
 
 Datapoint = Dict[str, Any]
@@ -93,9 +90,12 @@ class QueryParams(BaseModel):
     fields: Optional[List[FieldName]] = None
     orderBy: Optional[List[str]] = None # More complex than just FieldName, can be prefixed with - to invert sort
     dataType: Optional[DataType] = None
-    filter: Optional[str] = None # TODO: Validating this must be a nightmare
+    filter_: Annotated[Optional[str|Filter], Field(serialization_alias='filter')] = None
+    """Filter in `RSQL format <https://obelisk.pages.ilabt.imec.be/obelisk-core/query.html#rsql-format>`__ Suffix to avoid collisions."""
     cursor: Optional[str] = None
     limit: int = 1000
+
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
     @model_validator(mode='after')
     def check_datatype_needed(self) -> Self:
@@ -106,7 +106,7 @@ class QueryParams(BaseModel):
         return self
 
     def to_dict(self) -> Dict:
-        return self.model_dump(exclude_none=True)
+        return self.model_dump(exclude_none=True, by_alias=True)
 
 
 class ChunkedParams(BaseModel):
@@ -116,10 +116,13 @@ class ChunkedParams(BaseModel):
     fields: Optional[List[FieldName]] = None
     orderBy: Optional[List[str]] = None # More complex than just FieldName, can be prefixed with - to invert sort
     dataType: Optional[DataType] = None
-    filter: Optional[str] = None
+    filter_: Optional[str | Filter] = None
+    """Underscore suffix to avoid name collisions"""
     start: datetime
     end: datetime
     jump: timedelta = timedelta(hours=1)
+
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
     @model_validator(mode='after')
     def check_datatype_needed(self) -> Self:
@@ -133,9 +136,9 @@ class ChunkedParams(BaseModel):
         current_start = self.start
         while current_start < self.end:
             current_end = current_start + self.jump
-            filter=f'timestamp>={current_start.isoformat()};timestamp<{current_end.isoformat()}'
-            if self.filter:
-                filter += f';{self.filter}'
+            filter_=f'timestamp>={current_start.isoformat()};timestamp<{current_end.isoformat()}'
+            if self.filter_:
+                filter_ += f';{self.filter_}'
 
             yield QueryParams(
                 dataset=self.dataset,
@@ -144,7 +147,7 @@ class ChunkedParams(BaseModel):
                 fields=self.fields,
                 orderBy=self.orderBy,
                 dataType=self.dataType,
-                filter=filter
+                filter_=filter_
             )
 
             current_start += self.jump
