@@ -15,13 +15,25 @@ from datetime import datetime, timedelta
 import httpx
 import json
 from pydantic import BaseModel, AwareDatetime, ConfigDict, Field, ValidationError, model_validator
-from typing import Annotated, AsyncIterator, Dict, Iterator, List, Literal, Optional, Any, get_args
+from typing import Annotated, AsyncIterator, Dict, Iterator, List, Literal, Optional, Any, cast, get_args
 from typing_extensions import Self
 from numbers import Number
 
 
 DataType = Literal['number', 'number[]', 'json', 'bool', 'string']
 """The possible types of data Obelisk can accept"""
+
+
+def type_suffix(metric: str) -> DataType:
+    split = metric.split('::')
+
+    if len(split) != 2:
+        raise ValueError("Incorrect amount of type qualifiers")
+
+    suffix = split[1]
+    if suffix not in get_args(DataType):
+        raise ValueError(f"Invalid type suffix, should be one of {', '.join(get_args(DataType))}")
+    return cast(DataType, suffix)
 
 
 Aggregator = Literal['last', 'min', 'mean', 'max', 'count', 'stddev']
@@ -56,14 +68,7 @@ class IncomingDatapoint(BaseModel):
 
     @model_validator(mode='after')
     def check_metric_type(self) -> Self:
-        split = self.metric.split('::')
-
-        if len(split) != 2:
-            raise ValueError("Incorrect amount of type qualifiers")
-
-        suffix = split[1]
-        if suffix not in get_args(DataType):
-            raise ValueError(f"Invalid type suffix, should be one of {', '.join(get_args(DataType))}")
+        suffix = type_suffix(self.metric)
 
         if suffix == 'number' and not isinstance(self.value, Number):
             raise ValueError(f"Type suffix mismatch, expected number, got {type(self.value)}")
