@@ -63,7 +63,7 @@ class ObeliskKind(str, Enum):
             case ObeliskKind.HFS:
                 return 'https://obelisk-hfs.discover.ilabt.imec.be/auth/realms/obelisk-hfs/protocol/openid-connect/token'
             case ObeliskKind.CORE:
-                raise NotImplementedError()
+                return 'https://auth.obelisk.discover.ilabt.imec.be/realms/obelisk/protocol/openid-connect/token'
 
     @property
     def root_url(self) -> str:
@@ -73,7 +73,7 @@ class ObeliskKind(str, Enum):
             case ObeliskKind.HFS:
                 return 'https://obelisk-hfs.discover.ilabt.imec.be'
             case ObeliskKind.CORE:
-                raise NotImplementedError()
+                return 'https://obelisk.discover.ilabt.imec.be/datasets'
 
     @property
     def query_url(self) -> str:

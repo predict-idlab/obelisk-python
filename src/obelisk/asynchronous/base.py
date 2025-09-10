@@ -32,13 +32,6 @@ class BaseClient:
 
     log: logging.Logger
 
-    _token_url = 'https://obelisk.ilabt.imec.be/api/v3/auth/token'
-    _root_url = 'https://obelisk.ilabt.imec.be/api/v3'
-    _metadata_url = 'https://obelisk.ilabt.imec.be/api/v3/catalog/graphql'
-    _events_url = 'https://obelisk.ilabt.imec.be/api/v3/data/query/events'
-    _ingest_url = 'https://obelisk.ilabt.imec.be/api/v3/data/ingest'
-    _streams_url = 'https://obelisk.ilabt.imec.be/api/v3/data/streams'
-
     def __init__(self, client: str, secret: str,
                  retry_strategy: RetryStrategy = NoRetryStrategy(),
                  kind: ObeliskKind = ObeliskKind.CLASSIC) -> None:
@@ -48,12 +41,6 @@ class BaseClient:
         self.kind = kind
 
         self.log = logging.getLogger('obelisk')
-
-        self._token_url = kind.token_url
-        self._root_url = kind.root_url
-        self._events_url = kind.query_url
-        self._ingest_url = kind.ingest_url
-        self._streams_url = kind.stream_url
 
     async def _get_token(self):
         auth_string = str(base64.b64encode(
@@ -74,7 +61,7 @@ class BaseClient:
             while not response or await retry.should_retry():
                 try:
                     request = await client.post(
-                        self._token_url,
+                        self.kind.token_url,
                         json=payload if self.kind.use_json_auth else None,
                         data=payload if not self.kind.use_json_auth else None,
                         headers=headers)

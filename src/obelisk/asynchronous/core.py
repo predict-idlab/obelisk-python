@@ -193,7 +193,7 @@ class Client(BaseClient):
         """
 
         response = await self.http_post(
-            f"{self._ingest_url}/{dataset}/data/ingest", data=[x.model_dump(mode='json') for x in data]
+            f"{self.kind.root_url}/{dataset}/data/ingest", data=[x.model_dump(mode='json') for x in data]
         )
         if response.status_code != 204:
             msg = f"An error occured during data ingest. Status {response.status_code}, message: {response.text}"
@@ -206,7 +206,7 @@ class Client(BaseClient):
             params: QueryParams
     ) -> QueryResult:
         response = await self.http_get(
-            f"{self._events_url}/{params.dataset}/data/query",
+            f"{self.kind.root_url}/{params.dataset}/data/query",
             params=params.to_dict()
         )
 

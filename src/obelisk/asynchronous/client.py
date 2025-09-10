@@ -90,7 +90,7 @@ class Obelisk(BaseClient):
             "limitBy": limit_by,
         }
         response = await self.http_post(
-            self._events_url, data={k: v for k, v in payload.items() if v is not None}
+            self.kind.query_url, data={k: v for k, v in payload.items() if v is not None}
         )
         if response.status_code != 200:
             self.log.warning(f"Unexpected status code: {response.status_code}")
@@ -274,7 +274,7 @@ class Obelisk(BaseClient):
         }
 
         response = await self.http_post(
-            f"{self._ingest_url}/{dataset}", data=data, params=params
+            f"{self.kind.ingest_url}/{dataset}", data=data, params=params
         )
         if response.status_code != 204:
             msg = f"An error occured during data ingest. Status {response.status_code}, message: {response.text}"
