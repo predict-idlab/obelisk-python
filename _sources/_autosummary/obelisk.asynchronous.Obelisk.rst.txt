@@ -41,8 +41,6 @@ obelisk.asynchronous.Obelisk
    
    
    
-   
-   
    .. autoattribute:: retry_strategy
       :no-index-entry:
    

@@ -44,8 +44,6 @@ obelisk.asynchronous.core.Client
    .. autoattribute:: page_limit
       :no-index-entry:
    
-   
-   
    .. autoattribute:: retry_strategy
       :no-index-entry:
    
