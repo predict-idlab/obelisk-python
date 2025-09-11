@@ -20,9 +20,9 @@ class BaseClient:
     _client: str = ""
     _secret: str = ""
 
-    token: Optional[str] = None
+    _token: Optional[str] = None
     """Current authentication token"""
-    token_expires: Optional[datetime] = None
+    _token_expires: Optional[datetime] = None
     """Deadline after which token is no longer useable"""
 
     grace_period: timedelta = timedelta(seconds=10)
@@ -80,13 +80,13 @@ class BaseClient:
                     self.log.warning(f"Could not authenticate, {response['error']}")
                     raise AuthenticationError
 
-            self.token = response['access_token']
-            self.token_expires = (datetime.now()
+            self._token = response['access_token']
+            self._token_expires = (datetime.now()
                                   + timedelta(seconds=response['expires_in']))
 
     async def _verify_token(self):
-        if (self.token is None
-                or self.token_expires < (datetime.now() - self.grace_period)):
+        if (self._token is None
+                or self._token_expires < (datetime.now() - self.grace_period)):
             retry = self.retry_strategy.make()
             first = True
             while first or await retry.should_retry():
@@ -113,7 +113,7 @@ class BaseClient:
         await self._verify_token()
 
         headers = {
-            'Authorization': f'Bearer {self.token}',
+            'Authorization': f'Bearer {self._token}',
             'Content-Type': 'application/json'
         }
         if params is None:
@@ -160,7 +160,7 @@ class BaseClient:
         await self._verify_token()
 
         headers = {
-            'Authorization': f'Bearer {self.token}',
+            'Authorization': f'Bearer {self._token}',
             'Content-Type': 'application/json'
         }
         if params is None:
