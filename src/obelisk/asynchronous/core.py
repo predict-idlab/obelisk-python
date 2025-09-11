@@ -25,6 +25,13 @@ DataType = Literal['number', 'number[]', 'json', 'bool', 'string']
 
 
 def type_suffix(metric: str) -> DataType:
+    """
+    Extracts the :any:`DataType` from a string metric,
+    useful for the dataType field in queries.
+
+    Throws a :py:exc:`ValueError` if the provided string does not appear to be a typed metric,
+    or the found type suffix is not a known one.
+    """
     split = metric.split('::')
 
     if len(split) != 2:
@@ -96,7 +103,12 @@ class QueryParams(BaseModel):
     orderBy: Optional[List[str]] = None # More complex than just FieldName, can be prefixed with - to invert sort
     dataType: Optional[DataType] = None
     filter_: Annotated[Optional[str|Filter], Field(serialization_alias='filter')] = None
-    """Filter in `RSQL format <https://obelisk.pages.ilabt.imec.be/obelisk-core/query.html#rsql-format>`__ Suffix to avoid collisions."""
+    """
+    Obelisk CORE handles filtering in `RSQL format <https://obelisk.pages.ilabt.imec.be/obelisk-core/query.html#rsql-format>`__ ,
+    to make it easier to also programatically write these filters, we provide the :class:`Filter` option as well.
+
+    Suffix to avoid collisions.
+    """
     cursor: Optional[str] = None
     limit: int = 1000
 

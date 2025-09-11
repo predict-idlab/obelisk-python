@@ -2,6 +2,7 @@
 Obelisk-py is a client for the Obelisk data platform.
 We support both "classic" Obelisk and HFS,
 each with a synchronous and async API.
+We also support Obelisk CORE, in async only for now.
 The PyPi package name is ``obelisk-py``, the Python module is called ``obelisk``.
 
 Your starting point will be one of the Obelisk instances in :mod:`~.sync` or :mod:`~.asynchronous` depending on your preferred API.

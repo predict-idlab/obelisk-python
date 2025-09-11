@@ -15,5 +15,5 @@ def test_basic_filter():
             Comparison.is_in('metricType', ['number', 'number[]']),
         )
 
-    expected = f"(((('source'=='test source')),('timestamp'<'{test_dt.isoformat()}')),('metricType'=in=('number', 'number[]')))"
+    expected = f"((('source'=='test source'),'timestamp'<'{test_dt.isoformat()}'),'metricType'=in=('number', 'number[]'))"
     assert str(f) == expected
