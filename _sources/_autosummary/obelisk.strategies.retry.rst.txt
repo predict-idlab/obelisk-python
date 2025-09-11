@@ -1,6 +1,7 @@
 obelisk.strategies.retry
 ========================
 
+.. currentmodule:: obelisk.strategies
 .. automodule:: obelisk.strategies.retry
 
    
@@ -8,7 +9,6 @@ obelisk.strategies.retry
 
    .. autosummary::
       :toctree:
-      :template: custom-class-template.rst
    
       ExponentialBackoffStrategy
       ImmediateRetryStrategy

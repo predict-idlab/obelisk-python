@@ -14,7 +14,7 @@
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="obelisk.asynchronous.client" href="obelisk.asynchronous.client.html" />
+    <link rel="next" title="obelisk.asynchronous.Obelisk" href="obelisk.asynchronous.Obelisk.html" />
     <link rel="prev" title="obelisk" href="obelisk.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
@@ -36,23 +36,22 @@
   <section id="module-obelisk.asynchronous">
 <span id="obelisk-asynchronous"></span><h1>obelisk.asynchronous<a class="headerlink" href="#module-obelisk.asynchronous" title="Link to this heading">¶</a></h1>
 <p>This module contains the asynchronous API to Obelisk-py.
-These methods all return a <code class="xref any docutils literal notranslate"><span class="pre">Coroutine</span></code>.</p>
-<p>Relevant entrance points are <a class="reference internal" href="obelisk.asynchronous.producer.Producer.html#obelisk.asynchronous.producer.Producer" title="obelisk.asynchronous.producer.Producer"><code class="xref py py-class docutils literal notranslate"><span class="pre">producer.Producer</span></code></a> to publish data to Obelisk,
-or <a class="reference internal" href="obelisk.asynchronous.consumer.Consumer.html#obelisk.asynchronous.consumer.Consumer" title="obelisk.asynchronous.consumer.Consumer"><code class="xref py py-class docutils literal notranslate"><span class="pre">consumer.Consumer</span></code></a> to consume data.</p>
+These methods all return an <a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Awaitable" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">collections.abc.Awaitable</span></code></a>.</p>
+<p>Relevant entrance points are <a class="reference internal" href="obelisk.asynchronous.Obelisk.html#obelisk.asynchronous.Obelisk" title="obelisk.asynchronous.client.Obelisk"><code class="xref py py-class docutils literal notranslate"><span class="pre">client.Obelisk</span></code></a>.
+It can be imported from the <code class="xref py py-mod docutils literal notranslate"><span class="pre">client</span></code> module, or directly from this one.</p>
+<p class="rubric">Classes</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="obelisk.asynchronous.Obelisk.html#obelisk.asynchronous.Obelisk" title="obelisk.asynchronous.Obelisk"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Obelisk</span></code></a>(client, secret, retry_strategy, kind)</p></td>
+<td><p>Component that contains all the logic to consume data from the Obelisk API (e.g. historical data, sse).</p></td>
+</tr>
+</tbody>
+</table>
 <p class="rubric">Modules</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="obelisk.asynchronous.client.html#module-obelisk.asynchronous.client" title="obelisk.asynchronous.client"><code class="xref py py-obj docutils literal notranslate"><span class="pre">client</span></code></a></p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="obelisk.asynchronous.consumer.html#module-obelisk.asynchronous.consumer" title="obelisk.asynchronous.consumer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">consumer</span></code></a></p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="obelisk.asynchronous.consumer_test.html#module-obelisk.asynchronous.consumer_test" title="obelisk.asynchronous.consumer_test"><code class="xref py py-obj docutils literal notranslate"><span class="pre">consumer_test</span></code></a></p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="obelisk.asynchronous.producer.html#module-obelisk.asynchronous.producer" title="obelisk.asynchronous.producer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">producer</span></code></a></p></td>
-<td><p></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="obelisk.asynchronous.core.html#module-obelisk.asynchronous.core" title="obelisk.asynchronous.core"><code class="xref py py-obj docutils literal notranslate"><span class="pre">core</span></code></a></p></td>
+<td><p>This module contains the asynchronous API to interface with Obelisk CORE.</p></td>
 </tr>
 </tbody>
 </table>
@@ -88,10 +87,8 @@ or <a class="reference internal" href="obelisk.asynchronous.consumer.Consumer.ht
 <li class="toctree-l1 current"><a class="reference internal" href="obelisk.html">obelisk</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="obelisk.html#error-handling">Error handling</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">obelisk.asynchronous</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="obelisk.asynchronous.client.html">obelisk.asynchronous.client</a></li>
-<li class="toctree-l3"><a class="reference internal" href="obelisk.asynchronous.consumer.html">obelisk.asynchronous.consumer</a></li>
-<li class="toctree-l3"><a class="reference internal" href="obelisk.asynchronous.consumer_test.html">obelisk.asynchronous.consumer_test</a></li>
-<li class="toctree-l3"><a class="reference internal" href="obelisk.asynchronous.producer.html">obelisk.asynchronous.producer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="obelisk.asynchronous.Obelisk.html">obelisk.asynchronous.Obelisk</a></li>
+<li class="toctree-l3"><a class="reference internal" href="obelisk.asynchronous.core.html">obelisk.asynchronous.core</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="obelisk.exceptions.html">obelisk.exceptions</a></li>
@@ -108,7 +105,7 @@ or <a class="reference internal" href="obelisk.asynchronous.consumer.Consumer.ht
   <li><a href="../index.html">Documentation overview</a><ul>
   <li><a href="obelisk.html">obelisk</a><ul>
       <li>Previous: <a href="obelisk.html" title="previous chapter">obelisk</a></li>
-      <li>Next: <a href="obelisk.asynchronous.client.html" title="next chapter">obelisk.asynchronous.client</a></li>
+      <li>Next: <a href="obelisk.asynchronous.Obelisk.html" title="next chapter">obelisk.asynchronous.Obelisk</a></li>
   </ul></li>
   </ul></li>
 </ul>

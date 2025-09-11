@@ -1,6 +1,7 @@
 obelisk.strategies
 ==================
 
+.. currentmodule:: obelisk
 .. automodule:: obelisk.strategies
 
    
@@ -8,7 +9,6 @@ obelisk.strategies
 
 .. autosummary::
    :toctree:
-   :template: custom-module-template.rst
    :recursive:
 
    retry

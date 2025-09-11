@@ -4,20 +4,23 @@ obelisk.strategies.retry.ExponentialBackoffStrategy
 .. currentmodule:: obelisk.strategies.retry
 
 .. autoclass:: ExponentialBackoffStrategy
-   :members:
    :show-inheritance:
-   :inherited-members:
 
    
    .. automethod:: __init__
+      :no-index:
 
    
    .. rubric:: Methods
 
    .. autosummary::
    
-      ~ExponentialBackoffStrategy.__init__
-      ~ExponentialBackoffStrategy.make
+   
+   .. automethod:: __init__
+      :no-index-entry:
+   
+   .. automethod:: make
+      :no-index-entry:
    
    
 
@@ -27,8 +30,14 @@ obelisk.strategies.retry.ExponentialBackoffStrategy
 
    .. autosummary::
    
-      ~ExponentialBackoffStrategy.max_retries
-      ~ExponentialBackoffStrategy.backoff
-      ~ExponentialBackoffStrategy.max_backoff
+   
+   .. autoattribute:: max_retries
+      :no-index-entry:
+   
+   .. autoattribute:: backoff
+      :no-index-entry:
+   
+   .. autoattribute:: max_backoff
+      :no-index-entry:
    
    

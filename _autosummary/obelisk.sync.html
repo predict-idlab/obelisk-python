@@ -14,7 +14,7 @@
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="obelisk.sync.consumer" href="obelisk.sync.consumer.html" />
+    <link rel="next" title="obelisk.sync.Obelisk" href="obelisk.sync.Obelisk.html" />
     <link rel="prev" title="obelisk.strategies.retry.RetryStrategy" href="obelisk.strategies.retry.RetryStrategy.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
@@ -35,26 +35,19 @@
             
   <section id="module-obelisk.sync">
 <span id="obelisk-sync"></span><h1>obelisk.sync<a class="headerlink" href="#module-obelisk.sync" title="Link to this heading">¶</a></h1>
-<p>This module provides wrappers for the classes in <cite>obelisk.asynchronous</cite> with a synchronous API.
+<p>This module provides wrappers for the classes in <a class="reference internal" href="obelisk.asynchronous.html#module-obelisk.asynchronous" title="obelisk.asynchronous"><code class="xref py py-mod docutils literal notranslate"><span class="pre">obelisk.asynchronous</span></code></a> with a synchronous API.
 These hold on to a private event loop and block until a result is available.</p>
-<p>There is no synchronous alternative to <cite>obelisk.asynchronous.client.Client</cite>.</p>
 <section id="note">
 <h2>Note<a class="headerlink" href="#note" title="Link to this heading">¶</a></h2>
 <p>Please note that the sync module <em>will not</em> work in an asynchronous context (i.e. in any method returning a Future, or a Jupyter notebook).
 This is because it is internally nothing more than a wrapper over the asynchronous implementation.
 Use the asynchronous implementation in these situations.</p>
 </section>
-<p class="rubric">Modules</p>
+<p class="rubric">Classes</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="obelisk.sync.consumer.html#module-obelisk.sync.consumer" title="obelisk.sync.consumer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">consumer</span></code></a></p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="obelisk.sync.consumer_test.html#module-obelisk.sync.consumer_test" title="obelisk.sync.consumer_test"><code class="xref py py-obj docutils literal notranslate"><span class="pre">consumer_test</span></code></a></p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="obelisk.sync.producer.html#module-obelisk.sync.producer" title="obelisk.sync.producer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">producer</span></code></a></p></td>
-<td><p></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="obelisk.sync.Obelisk.html#obelisk.sync.Obelisk" title="obelisk.sync.Obelisk"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Obelisk</span></code></a>(client, secret, retry_strategy, kind)</p></td>
+<td><p>Component that contains all the logic to consume data from the Obelisk API (e.g. historical data, sse).</p></td>
 </tr>
 </tbody>
 </table>
@@ -94,9 +87,7 @@ Use the asynchronous implementation in these situations.</p>
 <li class="toctree-l2"><a class="reference internal" href="obelisk.strategies.html">obelisk.strategies</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">obelisk.sync</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#note">Note</a></li>
-<li class="toctree-l3"><a class="reference internal" href="obelisk.sync.consumer.html">obelisk.sync.consumer</a></li>
-<li class="toctree-l3"><a class="reference internal" href="obelisk.sync.consumer_test.html">obelisk.sync.consumer_test</a></li>
-<li class="toctree-l3"><a class="reference internal" href="obelisk.sync.producer.html">obelisk.sync.producer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="obelisk.sync.Obelisk.html">obelisk.sync.Obelisk</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="obelisk.types.html">obelisk.types</a></li>
@@ -110,7 +101,7 @@ Use the asynchronous implementation in these situations.</p>
   <li><a href="../index.html">Documentation overview</a><ul>
   <li><a href="obelisk.html">obelisk</a><ul>
       <li>Previous: <a href="obelisk.strategies.retry.RetryStrategy.html" title="previous chapter">obelisk.strategies.retry.RetryStrategy</a></li>
-      <li>Next: <a href="obelisk.sync.consumer.html" title="next chapter">obelisk.sync.consumer</a></li>
+      <li>Next: <a href="obelisk.sync.Obelisk.html" title="next chapter">obelisk.sync.Obelisk</a></li>
   </ul></li>
   </ul></li>
 </ul>

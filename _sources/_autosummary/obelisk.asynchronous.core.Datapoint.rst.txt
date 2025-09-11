@@ -1,0 +1,6 @@
+obelisk.asynchronous.core.Datapoint
+===================================
+
+.. currentmodule:: obelisk.asynchronous.core
+
+.. autodata:: Datapoint

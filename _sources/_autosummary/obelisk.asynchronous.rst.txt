@@ -1,17 +1,21 @@
 obelisk.asynchronous
 ====================
 
+.. currentmodule:: obelisk
 .. automodule:: obelisk.asynchronous
 
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+      :toctree:
+   
+      Obelisk
    
 .. rubric:: Modules
 
 .. autosummary::
    :toctree:
-   :template: custom-module-template.rst
    :recursive:
 
-   client
-   consumer
-   consumer_test
-   producer
+   core

@@ -4,20 +4,23 @@ obelisk.strategies.retry.ImmediateRetryStrategy
 .. currentmodule:: obelisk.strategies.retry
 
 .. autoclass:: ImmediateRetryStrategy
-   :members:
    :show-inheritance:
-   :inherited-members:
 
    
    .. automethod:: __init__
+      :no-index:
 
    
    .. rubric:: Methods
 
    .. autosummary::
    
-      ~ImmediateRetryStrategy.__init__
-      ~ImmediateRetryStrategy.make
+   
+   .. automethod:: __init__
+      :no-index-entry:
+   
+   .. automethod:: make
+      :no-index-entry:
    
    
 

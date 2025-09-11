@@ -1,0 +1,165 @@
+obelisk.types.core.FieldName
+============================
+
+.. currentmodule:: obelisk.types.core
+
+.. autoclass:: FieldName
+   :show-inheritance:
+
+   
+   .. automethod:: __init__
+      :no-index:
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+   
+   
+   .. automethod:: capitalize
+      :no-index-entry:
+   
+   .. automethod:: casefold
+      :no-index-entry:
+   
+   .. automethod:: center
+      :no-index-entry:
+   
+   .. automethod:: count
+      :no-index-entry:
+   
+   .. automethod:: encode
+      :no-index-entry:
+   
+   .. automethod:: endswith
+      :no-index-entry:
+   
+   .. automethod:: expandtabs
+      :no-index-entry:
+   
+   .. automethod:: find
+      :no-index-entry:
+   
+   .. automethod:: format
+      :no-index-entry:
+   
+   .. automethod:: format_map
+      :no-index-entry:
+   
+   .. automethod:: index
+      :no-index-entry:
+   
+   .. automethod:: isalnum
+      :no-index-entry:
+   
+   .. automethod:: isalpha
+      :no-index-entry:
+   
+   .. automethod:: isascii
+      :no-index-entry:
+   
+   .. automethod:: isdecimal
+      :no-index-entry:
+   
+   .. automethod:: isdigit
+      :no-index-entry:
+   
+   .. automethod:: isidentifier
+      :no-index-entry:
+   
+   .. automethod:: islower
+      :no-index-entry:
+   
+   .. automethod:: isnumeric
+      :no-index-entry:
+   
+   .. automethod:: isprintable
+      :no-index-entry:
+   
+   .. automethod:: isspace
+      :no-index-entry:
+   
+   .. automethod:: istitle
+      :no-index-entry:
+   
+   .. automethod:: isupper
+      :no-index-entry:
+   
+   .. automethod:: join
+      :no-index-entry:
+   
+   .. automethod:: ljust
+      :no-index-entry:
+   
+   .. automethod:: lower
+      :no-index-entry:
+   
+   .. automethod:: lstrip
+      :no-index-entry:
+   
+   .. automethod:: maketrans
+      :no-index-entry:
+   
+   .. automethod:: partition
+      :no-index-entry:
+   
+   .. automethod:: removeprefix
+      :no-index-entry:
+   
+   .. automethod:: removesuffix
+      :no-index-entry:
+   
+   .. automethod:: replace
+      :no-index-entry:
+   
+   .. automethod:: rfind
+      :no-index-entry:
+   
+   .. automethod:: rindex
+      :no-index-entry:
+   
+   .. automethod:: rjust
+      :no-index-entry:
+   
+   .. automethod:: rpartition
+      :no-index-entry:
+   
+   .. automethod:: rsplit
+      :no-index-entry:
+   
+   .. automethod:: rstrip
+      :no-index-entry:
+   
+   .. automethod:: split
+      :no-index-entry:
+   
+   .. automethod:: splitlines
+      :no-index-entry:
+   
+   .. automethod:: startswith
+      :no-index-entry:
+   
+   .. automethod:: strip
+      :no-index-entry:
+   
+   .. automethod:: swapcase
+      :no-index-entry:
+   
+   .. automethod:: title
+      :no-index-entry:
+   
+   .. automethod:: translate
+      :no-index-entry:
+   
+   .. automethod:: upper
+      :no-index-entry:
+   
+   .. automethod:: zfill
+      :no-index-entry:
+   
+   
+
+   
+   
+   

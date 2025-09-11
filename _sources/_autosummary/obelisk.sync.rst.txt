@@ -1,16 +1,14 @@
 obelisk.sync
 ============
 
+.. currentmodule:: obelisk
 .. automodule:: obelisk.sync
 
    
-.. rubric:: Modules
+   .. rubric:: Classes
 
-.. autosummary::
-   :toctree:
-   :template: custom-module-template.rst
-   :recursive:
-
-   consumer
-   consumer_test
-   producer
+   .. autosummary::
+      :toctree:
+   
+      Obelisk
+   

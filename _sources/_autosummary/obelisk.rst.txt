@@ -1,6 +1,7 @@
 ﻿obelisk
 =======
 
+.. currentmodule:: obelisk
 .. automodule:: obelisk
 
    
@@ -8,7 +9,6 @@
 
 .. autosummary::
    :toctree:
-   :template: custom-module-template.rst
    :recursive:
 
    asynchronous

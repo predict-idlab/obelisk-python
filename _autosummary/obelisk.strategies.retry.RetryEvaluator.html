@@ -38,37 +38,23 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="obelisk.strategies.retry.RetryEvaluator">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">obelisk.strategies.retry.</span></span><span class="sig-name descname"><span class="pre">RetryEvaluator</span></span><a class="reference internal" href="../_modules/obelisk/strategies/retry.html#RetryEvaluator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#obelisk.strategies.retry.RetryEvaluator" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/abc.html#abc.ABC" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></a></p>
 <p>This class performs the actual retry handling.
 It can keep track of internal state as it so wishes,
 to perform the function of <a class="reference internal" href="#obelisk.strategies.retry.RetryEvaluator.should_retry" title="obelisk.strategies.retry.RetryEvaluator.should_retry"><code class="xref py py-meth docutils literal notranslate"><span class="pre">should_retry()</span></code></a>.</p>
-<p class="rubric">Methods</p>
-<table class="autosummary longtable docutils align-default">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#obelisk.strategies.retry.RetryEvaluator.should_retry" title="obelisk.strategies.retry.RetryEvaluator.should_retry"><code class="xref py py-obj docutils literal notranslate"><span class="pre">should_retry</span></code></a>()</p></td>
-<td><p>This method should return True if the strategy should retry, but may wait internally if it deems necessary.</p></td>
-</tr>
-</tbody>
-</table>
 <dl class="py method">
-<dt class="sig sig-object py" id="obelisk.strategies.retry.RetryEvaluator.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#obelisk.strategies.retry.RetryEvaluator.__init__" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
 <dd></dd></dl>
 
 <p class="rubric">Methods</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#obelisk.strategies.retry.RetryEvaluator.__init__" title="obelisk.strategies.retry.RetryEvaluator.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(*args, **kwargs)</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#obelisk.strategies.retry.RetryEvaluator.should_retry" title="obelisk.strategies.retry.RetryEvaluator.should_retry"><code class="xref py py-obj docutils literal notranslate"><span class="pre">should_retry</span></code></a>()</p></td>
-<td><p>This method should return True if the strategy should retry, but may wait internally if it deems necessary.</p></td>
-</tr>
 </tbody>
 </table>
 <dl class="py method">
 <dt class="sig sig-object py" id="obelisk.strategies.retry.RetryEvaluator.should_retry">
-<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">should_retry</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../_modules/obelisk/strategies/retry.html#RetryEvaluator.should_retry"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#obelisk.strategies.retry.RetryEvaluator.should_retry" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">should_retry</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="../_modules/obelisk/strategies/retry.html#RetryEvaluator.should_retry"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#obelisk.strategies.retry.RetryEvaluator.should_retry" title="Link to this definition">¶</a></dt>
 <dd><p>This method should return True if the strategy should retry,
 but may wait internally if it deems necessary.</p>
 </dd></dl>
@@ -115,7 +101,6 @@ but may wait internally if it deems necessary.</p>
 <li class="toctree-l4"><a class="reference internal" href="obelisk.strategies.retry.NoRetryStrategy.html">obelisk.strategies.retry.NoRetryStrategy</a></li>
 <li class="toctree-l4 current"><a class="current reference internal" href="#">obelisk.strategies.retry.RetryEvaluator</a><ul>
 <li class="toctree-l5"><a class="reference internal" href="#obelisk.strategies.retry.RetryEvaluator"><code class="docutils literal notranslate"><span class="pre">RetryEvaluator</span></code></a><ul>
-<li class="toctree-l6"><a class="reference internal" href="#obelisk.strategies.retry.RetryEvaluator.__init__"><code class="docutils literal notranslate"><span class="pre">RetryEvaluator.__init__()</span></code></a></li>
 <li class="toctree-l6"><a class="reference internal" href="#obelisk.strategies.retry.RetryEvaluator.should_retry"><code class="docutils literal notranslate"><span class="pre">RetryEvaluator.should_retry()</span></code></a></li>
 </ul>
 </li>

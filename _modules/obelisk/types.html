@@ -99,7 +99,68 @@
 <a class="viewcode-back" href="../../_autosummary/obelisk.types.ObeliskKind.html#obelisk.types.ObeliskKind">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ObeliskKind</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Enum</span><span class="p">):</span>
     <span class="n">CLASSIC</span> <span class="o">=</span> <span class="s1">&#39;classic&#39;</span>
-    <span class="n">HFS</span> <span class="o">=</span> <span class="s1">&#39;hfs&#39;</span></div>
+    <span class="n">HFS</span> <span class="o">=</span> <span class="s1">&#39;hfs&#39;</span>
+    <span class="n">CORE</span> <span class="o">=</span> <span class="s1">&#39;core&#39;</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">token_url</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">match</span> <span class="bp">self</span><span class="p">:</span>
+            <span class="k">case</span> <span class="n">ObeliskKind</span><span class="o">.</span><span class="n">CLASSIC</span><span class="p">:</span>
+                <span class="k">return</span> <span class="s1">&#39;https://obelisk.ilabt.imec.be/api/v3/auth/token&#39;</span>
+            <span class="k">case</span> <span class="n">ObeliskKind</span><span class="o">.</span><span class="n">HFS</span><span class="p">:</span>
+                <span class="k">return</span> <span class="s1">&#39;https://obelisk-hfs.discover.ilabt.imec.be/auth/realms/obelisk-hfs/protocol/openid-connect/token&#39;</span>
+            <span class="k">case</span> <span class="n">ObeliskKind</span><span class="o">.</span><span class="n">CORE</span><span class="p">:</span>
+                <span class="k">return</span> <span class="s1">&#39;https://auth.obelisk.discover.ilabt.imec.be/realms/obelisk/protocol/openid-connect/token&#39;</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">root_url</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">match</span> <span class="bp">self</span><span class="p">:</span>
+            <span class="k">case</span> <span class="n">ObeliskKind</span><span class="o">.</span><span class="n">CLASSIC</span><span class="p">:</span>
+                <span class="k">return</span> <span class="s1">&#39;https://obelisk.ilabt.imec.be/api/v3&#39;</span>
+            <span class="k">case</span> <span class="n">ObeliskKind</span><span class="o">.</span><span class="n">HFS</span><span class="p">:</span>
+                <span class="k">return</span> <span class="s1">&#39;https://obelisk-hfs.discover.ilabt.imec.be&#39;</span>
+            <span class="k">case</span> <span class="n">ObeliskKind</span><span class="o">.</span><span class="n">CORE</span><span class="p">:</span>
+                <span class="k">return</span> <span class="s1">&#39;https://obelisk.discover.ilabt.imec.be/datasets&#39;</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">query_url</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">match</span> <span class="bp">self</span><span class="p">:</span>
+            <span class="k">case</span> <span class="n">ObeliskKind</span><span class="o">.</span><span class="n">CLASSIC</span><span class="p">:</span>
+                <span class="k">return</span> <span class="s1">&#39;https://obelisk.ilabt.imec.be/api/v3/data/query/events&#39;</span>
+            <span class="k">case</span> <span class="n">ObeliskKind</span><span class="o">.</span><span class="n">HFS</span><span class="p">:</span>
+                <span class="k">return</span> <span class="s1">&#39;https://obelisk-hfs.discover.ilabt.imec.be/data/query/events&#39;</span>
+            <span class="k">case</span> <span class="n">ObeliskKind</span><span class="o">.</span><span class="n">CORE</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">ingest_url</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">match</span> <span class="bp">self</span><span class="p">:</span>
+            <span class="k">case</span> <span class="n">ObeliskKind</span><span class="o">.</span><span class="n">CLASSIC</span><span class="p">:</span>
+                <span class="k">return</span> <span class="s1">&#39;https://obelisk.ilabt.imec.be/api/v3/data/ingest&#39;</span>
+            <span class="k">case</span> <span class="n">ObeliskKind</span><span class="o">.</span><span class="n">HFS</span><span class="p">:</span>
+                <span class="k">return</span> <span class="s1">&#39;https://obelisk-hfs.discover.ilabt.imec.be/data/ingest&#39;</span>
+            <span class="k">case</span> <span class="n">ObeliskKind</span><span class="o">.</span><span class="n">CORE</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">stream_url</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">match</span> <span class="bp">self</span><span class="p">:</span>
+            <span class="k">case</span> <span class="n">ObeliskKind</span><span class="o">.</span><span class="n">CLASSIC</span><span class="p">:</span>
+                <span class="k">return</span> <span class="s1">&#39;https://obelisk.ilabt.imec.be/api/v3/data/streams&#39;</span>
+            <span class="k">case</span> <span class="n">ObeliskKind</span><span class="o">.</span><span class="n">HFS</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">None</span>
+            <span class="k">case</span> <span class="n">ObeliskKind</span><span class="o">.</span><span class="n">CORE</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">use_json_auth</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">match</span> <span class="bp">self</span><span class="p">:</span>
+            <span class="k">case</span> <span class="n">ObeliskKind</span><span class="o">.</span><span class="n">CLASSIC</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">True</span>
+            <span class="k">case</span> <span class="n">ObeliskKind</span><span class="o">.</span><span class="n">HFS</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">False</span>
+            <span class="k">case</span> <span class="n">ObeliskKind</span><span class="o">.</span><span class="n">CORE</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">False</span></div>
 
 </pre></div>
 

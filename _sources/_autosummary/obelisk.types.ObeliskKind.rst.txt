@@ -1,69 +1,68 @@
-﻿obelisk.types.ObeliskKind
+obelisk.types.ObeliskKind
 =========================
 
 .. currentmodule:: obelisk.types
 
 .. autoclass:: ObeliskKind
-   :members:
    :show-inheritance:
-   :inherited-members:
 
    
    .. automethod:: __init__
+      :no-index:
 
    
    .. rubric:: Methods
 
    .. autosummary::
    
-      ~ObeliskKind.encode
-      ~ObeliskKind.replace
-      ~ObeliskKind.split
-      ~ObeliskKind.rsplit
-      ~ObeliskKind.join
-      ~ObeliskKind.capitalize
-      ~ObeliskKind.casefold
-      ~ObeliskKind.title
-      ~ObeliskKind.center
-      ~ObeliskKind.count
-      ~ObeliskKind.expandtabs
-      ~ObeliskKind.find
-      ~ObeliskKind.partition
-      ~ObeliskKind.index
-      ~ObeliskKind.ljust
-      ~ObeliskKind.lower
-      ~ObeliskKind.lstrip
-      ~ObeliskKind.rfind
-      ~ObeliskKind.rindex
-      ~ObeliskKind.rjust
-      ~ObeliskKind.rstrip
-      ~ObeliskKind.rpartition
-      ~ObeliskKind.splitlines
-      ~ObeliskKind.strip
-      ~ObeliskKind.swapcase
-      ~ObeliskKind.translate
-      ~ObeliskKind.upper
-      ~ObeliskKind.startswith
-      ~ObeliskKind.endswith
-      ~ObeliskKind.removeprefix
-      ~ObeliskKind.removesuffix
-      ~ObeliskKind.isascii
-      ~ObeliskKind.islower
-      ~ObeliskKind.isupper
-      ~ObeliskKind.istitle
-      ~ObeliskKind.isspace
-      ~ObeliskKind.isdecimal
-      ~ObeliskKind.isdigit
-      ~ObeliskKind.isnumeric
-      ~ObeliskKind.isalpha
-      ~ObeliskKind.isalnum
-      ~ObeliskKind.isidentifier
-      ~ObeliskKind.isprintable
-      ~ObeliskKind.zfill
-      ~ObeliskKind.format
-      ~ObeliskKind.format_map
-      ~ObeliskKind.maketrans
-      ~ObeliskKind.__init__
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
    
    
 
@@ -73,7 +72,32 @@
 
    .. autosummary::
    
-      ~ObeliskKind.CLASSIC
-      ~ObeliskKind.HFS
+   
+   .. autoattribute:: token_url
+      :no-index-entry:
+   
+   .. autoattribute:: root_url
+      :no-index-entry:
+   
+   .. autoattribute:: query_url
+      :no-index-entry:
+   
+   .. autoattribute:: ingest_url
+      :no-index-entry:
+   
+   .. autoattribute:: stream_url
+      :no-index-entry:
+   
+   .. autoattribute:: use_json_auth
+      :no-index-entry:
+   
+   .. autoattribute:: CLASSIC
+      :no-index-entry:
+   
+   .. autoattribute:: HFS
+      :no-index-entry:
+   
+   .. autoattribute:: CORE
+      :no-index-entry:
    
    

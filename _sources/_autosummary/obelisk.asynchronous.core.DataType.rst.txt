@@ -1,0 +1,6 @@
+obelisk.asynchronous.core.DataType
+==================================
+
+.. currentmodule:: obelisk.asynchronous.core
+
+.. autodata:: DataType

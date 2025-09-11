@@ -1,0 +1,70 @@
+obelisk.types.core.Comparison
+=============================
+
+.. currentmodule:: obelisk.types.core
+
+.. autoclass:: Comparison
+   :show-inheritance:
+
+   
+   .. automethod:: __init__
+      :no-index:
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+   
+   .. automethod:: __init__
+      :no-index-entry:
+   
+   .. automethod:: equal
+      :no-index-entry:
+   
+   .. automethod:: greater
+      :no-index-entry:
+   
+   .. automethod:: greater_equal
+      :no-index-entry:
+   
+   .. automethod:: is_in
+      :no-index-entry:
+   
+   .. automethod:: is_not_in
+      :no-index-entry:
+   
+   .. automethod:: less
+      :no-index-entry:
+   
+   .. automethod:: less_equal
+      :no-index-entry:
+   
+   .. automethod:: not_equal
+      :no-index-entry:
+   
+   .. automethod:: not_null
+      :no-index-entry:
+   
+   .. automethod:: null
+      :no-index-entry:
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+   
+   .. autoattribute:: left
+      :no-index-entry:
+   
+   .. autoattribute:: right
+      :no-index-entry:
+   
+   .. autoattribute:: op
+      :no-index-entry:
+   
+   

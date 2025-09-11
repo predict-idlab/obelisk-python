@@ -1,0 +1,34 @@
+obelisk.types.core.Or
+=====================
+
+.. currentmodule:: obelisk.types.core
+
+.. autoclass:: Or
+   :show-inheritance:
+
+   
+   .. automethod:: __init__
+      :no-index:
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+   
+   .. automethod:: __init__
+      :no-index-entry:
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+   
+   .. autoattribute:: content
+      :no-index-entry:
+   
+   

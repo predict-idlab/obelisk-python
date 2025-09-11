@@ -1,0 +1,24 @@
+obelisk.types.core.Constraint
+=============================
+
+.. currentmodule:: obelisk.types.core
+
+.. autoclass:: Constraint
+   :show-inheritance:
+
+   
+   .. automethod:: __init__
+      :no-index:
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+   
+   
+   
+
+   
+   
+   

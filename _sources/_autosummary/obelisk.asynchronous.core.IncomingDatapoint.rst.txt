@@ -1,0 +1,77 @@
+obelisk.asynchronous.core.IncomingDatapoint
+===========================================
+
+.. currentmodule:: obelisk.asynchronous.core
+
+.. autoclass:: IncomingDatapoint
+   :show-inheritance:
+
+   
+   .. automethod:: __init__
+      :no-index:
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+   
+   
+   .. automethod:: check_metric_type
+      :no-index-entry:
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+   
+   
+   .. autoattribute:: model_config
+      :no-index-entry:
+   
+   
+   
+   
+   .. autoattribute:: timestamp
+      :no-index-entry:
+   
+   .. autoattribute:: metric
+      :no-index-entry:
+   
+   .. autoattribute:: value
+      :no-index-entry:
+   
+   .. autoattribute:: labels
+      :no-index-entry:
+   
+   .. autoattribute:: location
+      :no-index-entry:
+   
+   

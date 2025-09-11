@@ -31,185 +31,302 @@
           <div class="body" role="main">
             
   <h1>Source code for obelisk.asynchronous.client</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">base64</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">math</span><span class="w"> </span><span class="kn">import</span> <span class="n">floor</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncGenerator</span><span class="p">,</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Optional</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">httpx</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">ValidationError</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">obelisk.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">AuthenticationError</span><span class="p">,</span> <span class="n">ObeliskError</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">obelisk.strategies.retry</span><span class="w"> </span><span class="kn">import</span> <span class="n">RetryStrategy</span><span class="p">,</span> \
-    <span class="n">NoRetryStrategy</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">obelisk.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">ObeliskKind</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">obelisk.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">ObeliskError</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">obelisk.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">Datapoint</span><span class="p">,</span> <span class="n">IngestMode</span><span class="p">,</span> <span class="n">QueryResult</span><span class="p">,</span> <span class="n">TimestampPrecision</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">obelisk.asynchronous.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseClient</span>
 
 
-<div class="viewcode-block" id="Client">
-<a class="viewcode-back" href="../../../_autosummary/obelisk.asynchronous.client.Client.html#obelisk.asynchronous.client.Client">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">Client</span><span class="p">:</span>
+<div class="viewcode-block" id="Obelisk">
+<a class="viewcode-back" href="../../../_autosummary/obelisk.asynchronous.Obelisk.html#obelisk.asynchronous.Obelisk">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Obelisk</span><span class="p">(</span><span class="n">BaseClient</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Base class handling Obelisk auth and doing the core HTTP communication.</span>
-<span class="sd">    Only exists in asynchronous variety, as it is not usually directly useful for user code.</span>
+<span class="sd">    Component that contains all the logic to consume data from</span>
+<span class="sd">    the Obelisk API (e.g. historical data, sse).</span>
+
+<span class="sd">    Obelisk API Documentation:</span>
+<span class="sd">    https://obelisk.docs.apiary.io/</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">_client</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
-    <span class="n">_secret</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
-
-    <span class="n">token</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Current authentication token&quot;&quot;&quot;</span>
-    <span class="n">token_expires</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">datetime</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Deadline after which token is no longer useable&quot;&quot;&quot;</span>
-
-    <span class="n">grace_period</span><span class="p">:</span> <span class="n">timedelta</span> <span class="o">=</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Controls how much before the expiration deadline a token will be refreshed.&quot;&quot;&quot;</span>
-    <span class="n">retry_strategy</span><span class="p">:</span> <span class="n">RetryStrategy</span>
-    <span class="n">kind</span><span class="p">:</span> <span class="n">ObeliskKind</span>
-
-    <span class="n">log</span><span class="p">:</span> <span class="n">logging</span><span class="o">.</span><span class="n">Logger</span>
-
-    <span class="n">_token_url</span> <span class="o">=</span> <span class="s1">&#39;https://obelisk.ilabt.imec.be/api/v3/auth/token&#39;</span>
-    <span class="n">_root_url</span> <span class="o">=</span> <span class="s1">&#39;https://obelisk.ilabt.imec.be/api/v3&#39;</span>
-    <span class="n">_metadata_url</span> <span class="o">=</span> <span class="s1">&#39;https://obelisk.ilabt.imec.be/api/v3/catalog/graphql&#39;</span>
-    <span class="n">_events_url</span> <span class="o">=</span> <span class="s1">&#39;https://obelisk.ilabt.imec.be/api/v3/data/query/events&#39;</span>
-    <span class="n">_ingest_url</span> <span class="o">=</span> <span class="s1">&#39;https://obelisk.ilabt.imec.be/api/v3/data/ingest&#39;</span>
-    <span class="n">_streams_url</span> <span class="o">=</span> <span class="s1">&#39;https://obelisk.ilabt.imec.be/api/v3/data/streams&#39;</span>
-
-<div class="viewcode-block" id="Client.__init__">
-<a class="viewcode-back" href="../../../_autosummary/obelisk.asynchronous.client.Client.html#obelisk.asynchronous.client.Client.__init__">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">secret</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-                 <span class="n">retry_strategy</span><span class="p">:</span> <span class="n">RetryStrategy</span> <span class="o">=</span> <span class="n">NoRetryStrategy</span><span class="p">(),</span>
-                 <span class="n">kind</span><span class="p">:</span> <span class="n">ObeliskKind</span> <span class="o">=</span> <span class="n">ObeliskKind</span><span class="o">.</span><span class="n">CLASSIC</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_client</span> <span class="o">=</span> <span class="n">client</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_secret</span> <span class="o">=</span> <span class="n">secret</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">retry_strategy</span> <span class="o">=</span> <span class="n">retry_strategy</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">kind</span> <span class="o">=</span> <span class="n">kind</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;obelisk&#39;</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="n">ObeliskKind</span><span class="o">.</span><span class="n">HFS</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_token_url</span> <span class="o">=</span> <span class="s1">&#39;https://obelisk-hfs.discover.ilabt.imec.be/auth/realms/obelisk-hfs/protocol/openid-connect/token&#39;</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_root_url</span> <span class="o">=</span> <span class="s1">&#39;https://obelisk-hfs.discover.ilabt.imec.be&#39;</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_events_url</span> <span class="o">=</span> <span class="s1">&#39;https://obelisk-hfs.discover.ilabt.imec.be/data/query/events&#39;</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_ingest_url</span> <span class="o">=</span> <span class="s1">&#39;https://obelisk-hfs.discover.ilabt.imec.be/data/ingest&#39;</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_token_url</span> <span class="o">=</span> <span class="s1">&#39;https://obelisk.ilabt.imec.be/api/v3/auth/token&#39;</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_root_url</span> <span class="o">=</span> <span class="s1">&#39;https://obelisk.ilabt.imec.be/api/v3&#39;</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_metadata_url</span> <span class="o">=</span> <span class="s1">&#39;https://obelisk.ilabt.imec.be/api/v3/catalog/graphql&#39;</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_events_url</span> <span class="o">=</span> <span class="s1">&#39;https://obelisk.ilabt.imec.be/api/v3/data/query/events&#39;</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_ingest_url</span> <span class="o">=</span> <span class="s1">&#39;https://obelisk.ilabt.imec.be/api/v3/data/ingest&#39;</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_streams_url</span> <span class="o">=</span> <span class="s1">&#39;https://obelisk.ilabt.imec.be/api/v3/data/streams&#39;</span></div>
-
-
-    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_get_token</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">auth_string</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">base64</span><span class="o">.</span><span class="n">b64encode</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_secret</span><span class="si">}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)),</span> <span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
-        <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s1">&#39;Authorization&#39;</span><span class="p">:</span> <span class="sa">f</span><span class="s1">&#39;Basic </span><span class="si">{</span><span class="n">auth_string</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;Content-Type&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;application/x-www-form-urlencoded&#39;</span>
-                             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="n">ObeliskKind</span><span class="o">.</span><span class="n">HFS</span> <span class="k">else</span> <span class="s1">&#39;application/json&#39;</span><span class="p">)</span>
-        <span class="p">}</span>
-        <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s1">&#39;grant_type&#39;</span><span class="p">:</span> <span class="s1">&#39;client_credentials&#39;</span>
-        <span class="p">}</span>
-
-        <span class="k">async</span> <span class="k">with</span> <span class="n">httpx</span><span class="o">.</span><span class="n">AsyncClient</span><span class="p">()</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
-            <span class="n">response</span> <span class="o">=</span> <span class="kc">None</span>
-            <span class="n">request</span> <span class="o">=</span> <span class="kc">None</span>
-            <span class="n">last_error</span> <span class="o">=</span> <span class="kc">None</span>
-            <span class="n">retry</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">retry_strategy</span><span class="o">.</span><span class="n">make</span><span class="p">()</span>
-            <span class="k">while</span> <span class="ow">not</span> <span class="n">response</span><span class="p">:</span>
-                <span class="k">try</span><span class="p">:</span>
-                    <span class="n">request</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">_token_url</span><span class="p">,</span>
-                        <span class="n">json</span><span class="o">=</span><span class="n">payload</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="n">ObeliskKind</span><span class="o">.</span><span class="n">CLASSIC</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
-                        <span class="n">data</span><span class="o">=</span><span class="n">payload</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="n">ObeliskKind</span><span class="o">.</span><span class="n">HFS</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
-                        <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span>
-
-                    <span class="n">response</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
-                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                    <span class="n">last_error</span> <span class="o">=</span> <span class="n">e</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
-                    <span class="k">if</span> <span class="k">await</span> <span class="n">retry</span><span class="o">.</span><span class="n">should_retry</span><span class="p">():</span>
-                        <span class="k">continue</span>
-                    <span class="k">else</span><span class="p">:</span>
-                        <span class="k">break</span>
-
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">response</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">request</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="p">(</span><span class="n">last_error</span> <span class="k">if</span> <span class="n">last_error</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">ObeliskError</span><span class="p">(</span><span class="s2">&quot;No response&quot;</span><span class="p">))</span>
-
-            <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">status_code</span> <span class="o">!=</span> <span class="mi">200</span><span class="p">:</span>
-                <span class="k">if</span> <span class="s1">&#39;error&#39;</span> <span class="ow">in</span> <span class="n">response</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not authenticate, </span><span class="si">{</span><span class="n">response</span><span class="p">[</span><span class="s1">&#39;error&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-                    <span class="k">raise</span> <span class="n">AuthenticationError</span>
-
-            <span class="bp">self</span><span class="o">.</span><span class="n">token</span> <span class="o">=</span> <span class="n">response</span><span class="p">[</span><span class="s1">&#39;access_token&#39;</span><span class="p">]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">token_expires</span> <span class="o">=</span> <span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
-                                  <span class="o">+</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="n">response</span><span class="p">[</span><span class="s1">&#39;expires_in&#39;</span><span class="p">]))</span>
-
-    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_verify_token</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">token</span> <span class="ow">is</span> <span class="kc">None</span>
-                <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">token_expires</span> <span class="o">&lt;</span> <span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">grace_period</span><span class="p">)):</span>
-            <span class="n">retry</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">retry_strategy</span><span class="o">.</span><span class="n">make</span><span class="p">()</span>
-            <span class="n">first</span> <span class="o">=</span> <span class="kc">True</span>
-            <span class="k">while</span> <span class="n">first</span> <span class="ow">or</span> <span class="k">await</span> <span class="n">retry</span><span class="o">.</span><span class="n">should_retry</span><span class="p">():</span>
-                <span class="n">first</span> <span class="o">=</span> <span class="kc">False</span>
-                <span class="k">try</span><span class="p">:</span>
-                    <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_token</span><span class="p">()</span>
-                    <span class="k">return</span>
-                <span class="k">except</span><span class="p">:</span>
-                    <span class="k">continue</span>
-
-<div class="viewcode-block" id="Client.http_post">
-<a class="viewcode-back" href="../../../_autosummary/obelisk.asynchronous.client.Client.html#obelisk.asynchronous.client.Client.http_post">[docs]</a>
-    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">http_post</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                        <span class="n">params</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">httpx</span><span class="o">.</span><span class="n">Response</span><span class="p">:</span>
+<div class="viewcode-block" id="Obelisk.fetch_single_chunk">
+<a class="viewcode-back" href="../../../_autosummary/obelisk.asynchronous.Obelisk.html#obelisk.asynchronous.Obelisk.fetch_single_chunk">[docs]</a>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">fetch_single_chunk</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">datasets</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+        <span class="n">metrics</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">fields</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">from_timestamp</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">to_timestamp</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">order_by</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">filter_</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">limit</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">limit_by</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">cursor</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">QueryResult</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Send an HTTP POST request to Obelisk,</span>
-<span class="sd">        with proper auth.</span>
+<span class="sd">        Queries one chunk of events from Obelisk for given parameters,</span>
+<span class="sd">        does not handle paging over Cursors.</span>
 
-<span class="sd">        Possibly refreshes the authentication token and performs backoff as per `retry_strategy`.</span>
-<span class="sd">        This method is not of stable latency because of these properties.</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
 
-<span class="sd">        No validation is performed on the input data,</span>
-<span class="sd">        callers are responsible for formatting it in a method Obelisk understands.</span>
+<span class="sd">        datasets : List[str]</span>
+<span class="sd">            List of Dataset IDs.</span>
+<span class="sd">        metrics : Optional[List[str]] = None</span>
+<span class="sd">            List of Metric IDs or wildcards (e.g. `*::number`), defaults to all metrics.</span>
+<span class="sd">        fields : Optional[List[str]] = None</span>
+<span class="sd">            List of fields to return in the result set.</span>
+<span class="sd">            Defaults to `[metric, source, value]`</span>
+<span class="sd">        from_timestamp : Optional[int] = None</span>
+<span class="sd">            Limit output to events after (and including)</span>
+<span class="sd">            this UTC millisecond timestamp, if present.</span>
+<span class="sd">        to_timestamp : Optional[int] = None</span>
+<span class="sd">            Limit output to events before (and excluding)</span>
+<span class="sd">            this UTC millisecond timestamp, if present.</span>
+<span class="sd">        order_by : Optional[dict] = None</span>
+<span class="sd">            Specifies the ordering of the output,</span>
+<span class="sd">            defaults to ascending by timestamp.</span>
+<span class="sd">            See Obelisk docs for format. Caller is responsible for validity.</span>
+<span class="sd">        filter_ : Optional[dict] = None</span>
+<span class="sd">            Limit output to events matching the specified Filter expression.</span>
+<span class="sd">            See Obelisk docs, caller is responsible for validity.</span>
+<span class="sd">        limit : Optional[int] = None</span>
+<span class="sd">            Limit output to a maximum number of events.</span>
+<span class="sd">            Also determines the page size.</span>
+<span class="sd">            Default is server-determined, usually 2500.</span>
+<span class="sd">        limit_by : Optional[dict] = None</span>
+<span class="sd">            Limit the combination of a specific set of Index fields</span>
+<span class="sd">            to a specified maximum number.</span>
+<span class="sd">        cursor : Optional[str] = None</span>
+<span class="sd">            Specifies the next cursor,</span>
+<span class="sd">            used when paging through large result sets.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_verify_token</span><span class="p">()</span>
+        <span class="c1"># pylint: disable=too-many-arguments</span>
+        <span class="n">data_range</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;datasets&quot;</span><span class="p">:</span> <span class="n">datasets</span><span class="p">}</span>
+        <span class="k">if</span> <span class="n">metrics</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">data_range</span><span class="p">[</span><span class="s2">&quot;metrics&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">metrics</span>
 
-        <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s1">&#39;Authorization&#39;</span><span class="p">:</span> <span class="sa">f</span><span class="s1">&#39;Bearer </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">token</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;Content-Type&#39;</span><span class="p">:</span> <span class="s1">&#39;application/json&#39;</span>
+        <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;dataRange&quot;</span><span class="p">:</span> <span class="n">data_range</span><span class="p">,</span>
+            <span class="s2">&quot;cursor&quot;</span><span class="p">:</span> <span class="n">cursor</span><span class="p">,</span>
+            <span class="s2">&quot;fields&quot;</span><span class="p">:</span> <span class="n">fields</span><span class="p">,</span>
+            <span class="s2">&quot;from&quot;</span><span class="p">:</span> <span class="n">from_timestamp</span><span class="p">,</span>
+            <span class="s2">&quot;to&quot;</span><span class="p">:</span> <span class="n">to_timestamp</span><span class="p">,</span>
+            <span class="s2">&quot;orderBy&quot;</span><span class="p">:</span> <span class="n">order_by</span><span class="p">,</span>
+            <span class="s2">&quot;filter&quot;</span><span class="p">:</span> <span class="n">filter_</span><span class="p">,</span>
+            <span class="s2">&quot;limit&quot;</span><span class="p">:</span> <span class="n">limit</span><span class="p">,</span>
+            <span class="s2">&quot;limitBy&quot;</span><span class="p">:</span> <span class="n">limit_by</span><span class="p">,</span>
         <span class="p">}</span>
-        <span class="k">if</span> <span class="n">params</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">params</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="k">async</span> <span class="k">with</span> <span class="n">httpx</span><span class="o">.</span><span class="n">AsyncClient</span><span class="p">()</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
-            <span class="n">response</span> <span class="o">=</span> <span class="kc">None</span>
-            <span class="n">retry</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">retry_strategy</span><span class="o">.</span><span class="n">make</span><span class="p">()</span>
-            <span class="n">last_error</span> <span class="o">=</span> <span class="kc">None</span>
-            <span class="k">while</span> <span class="ow">not</span> <span class="n">response</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">response</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Retrying, last response: </span><span class="si">{</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">http_post</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">kind</span><span class="o">.</span><span class="n">query_url</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">payload</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">}</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">!=</span> <span class="mi">200</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unexpected status code: </span><span class="si">{</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">ObeliskError</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="n">reason_phrase</span><span class="p">)</span>
 
-                <span class="k">try</span><span class="p">:</span>
-                    <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">url</span><span class="p">,</span>
-                                                 <span class="n">json</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
-                                                 <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">params</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span>
-                                                         <span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">},</span>
-                                                 <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">js</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">QueryResult</span><span class="o">.</span><span class="n">model_validate</span><span class="p">(</span><span class="n">js</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">json</span><span class="o">.</span><span class="n">JSONDecodeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Obelisk response is not a JSON object: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">ObeliskError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">ValidationError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Response cannot be validated: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">ObeliskError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span></div>
 
-                    <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">//</span> <span class="mi">100</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
-                        <span class="k">return</span> <span class="n">response</span>
-                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
-                    <span class="n">last_error</span> <span class="o">=</span> <span class="n">e</span>
-                    <span class="k">if</span> <span class="k">await</span> <span class="n">retry</span><span class="o">.</span><span class="n">should_retry</span><span class="p">():</span>
-                        <span class="k">continue</span>
-                    <span class="k">else</span><span class="p">:</span>
-                        <span class="k">break</span>
 
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">response</span> <span class="ow">and</span> <span class="n">last_error</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="n">last_error</span>
-            <span class="k">return</span> <span class="n">response</span></div>
+<div class="viewcode-block" id="Obelisk.query">
+<a class="viewcode-back" href="../../../_autosummary/obelisk.asynchronous.Obelisk.html#obelisk.asynchronous.Obelisk.query">[docs]</a>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">query</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">datasets</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+        <span class="n">metrics</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">fields</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">from_timestamp</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">to_timestamp</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">order_by</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">filter_</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">limit</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">limit_by</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Datapoint</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Queries data from obelisk,</span>
+<span class="sd">        automatically iterating when a cursor is returned.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+
+<span class="sd">        datasets : List[str]</span>
+<span class="sd">            List of Dataset IDs.</span>
+<span class="sd">        metrics : Optional[List[str]] = None</span>
+<span class="sd">            List of Metric IDs or wildcards (e.g. `*::number`), defaults to all metrics.</span>
+<span class="sd">        fields : Optional[List[str]] = None</span>
+<span class="sd">            List of fields to return in the result set.</span>
+<span class="sd">            Defaults to `[metric, source, value]`</span>
+<span class="sd">        from_timestamp : Optional[int] = None</span>
+<span class="sd">            Limit output to events after (and including)</span>
+<span class="sd">            this UTC millisecond timestamp, if present.</span>
+<span class="sd">        to_timestamp : Optional[int] = None</span>
+<span class="sd">            Limit output to events before (and excluding)</span>
+<span class="sd">            this UTC millisecond timestamp, if present.</span>
+<span class="sd">        order_by : Optional[dict] = None</span>
+<span class="sd">            Specifies the ordering of the output,</span>
+<span class="sd">            defaults to ascending by timestamp.</span>
+<span class="sd">            See Obelisk docs for format. Caller is responsible for validity.</span>
+<span class="sd">        filter_ : Optional[dict] = None</span>
+<span class="sd">            Limit output to events matching the specified Filter expression.</span>
+<span class="sd">            See Obelisk docs, caller is responsible for validity.</span>
+<span class="sd">        limit : Optional[int] = None</span>
+<span class="sd">            Limit output to a maximum number of events.</span>
+<span class="sd">            Also determines the page size.</span>
+<span class="sd">            Default is server-determined, usually 2500.</span>
+<span class="sd">        limit_by : Optional[dict] = None</span>
+<span class="sd">            Limit the combination of a specific set of Index fields</span>
+<span class="sd">            to a specified maximum number.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">cursor</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="n">Literal</span><span class="p">[</span><span class="kc">True</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">result_set</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Datapoint</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">while</span> <span class="n">cursor</span><span class="p">:</span>
+            <span class="n">actual_cursor</span> <span class="o">=</span> <span class="n">cursor</span> <span class="k">if</span> <span class="n">cursor</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">True</span> <span class="k">else</span> <span class="kc">None</span>
+            <span class="n">result</span><span class="p">:</span> <span class="n">QueryResult</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">fetch_single_chunk</span><span class="p">(</span>
+                <span class="n">datasets</span><span class="o">=</span><span class="n">datasets</span><span class="p">,</span>
+                <span class="n">metrics</span><span class="o">=</span><span class="n">metrics</span><span class="p">,</span>
+                <span class="n">fields</span><span class="o">=</span><span class="n">fields</span><span class="p">,</span>
+                <span class="n">from_timestamp</span><span class="o">=</span><span class="n">from_timestamp</span><span class="p">,</span>
+                <span class="n">to_timestamp</span><span class="o">=</span><span class="n">to_timestamp</span><span class="p">,</span>
+                <span class="n">order_by</span><span class="o">=</span><span class="n">order_by</span><span class="p">,</span>
+                <span class="n">filter_</span><span class="o">=</span><span class="n">filter_</span><span class="p">,</span>
+                <span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">,</span>
+                <span class="n">limit_by</span><span class="o">=</span><span class="n">limit_by</span><span class="p">,</span>
+                <span class="n">cursor</span><span class="o">=</span><span class="n">actual_cursor</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">result_set</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">items</span><span class="p">)</span>
+            <span class="n">cursor</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">cursor</span>
+
+            <span class="k">if</span> <span class="n">limit</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">result_set</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">limit</span><span class="p">:</span>
+<span class="w">                </span><span class="sd">&quot;&quot;&quot;On Obelisk HFS, limit is actually page size,</span>
+<span class="sd">                so continuing to read the cursor will result in a larger than desired</span>
+<span class="sd">                set of results.</span>
+
+<span class="sd">                On the other hand, if the limit is very large,</span>
+<span class="sd">                we may need to iterate before we reach the desired limit after all.</span>
+<span class="sd">                &quot;&quot;&quot;</span>
+                <span class="k">break</span>
+
+        <span class="k">return</span> <span class="n">result_set</span></div>
+
+
+
+<div class="viewcode-block" id="Obelisk.query_time_chunked">
+<a class="viewcode-back" href="../../../_autosummary/obelisk.asynchronous.Obelisk.html#obelisk.asynchronous.Obelisk.query_time_chunked">[docs]</a>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">query_time_chunked</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">datasets</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+        <span class="n">metrics</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+        <span class="n">from_time</span><span class="p">:</span> <span class="n">datetime</span><span class="p">,</span>
+        <span class="n">to_time</span><span class="p">:</span> <span class="n">datetime</span><span class="p">,</span>
+        <span class="n">jump</span><span class="p">:</span> <span class="n">timedelta</span><span class="p">,</span>
+        <span class="n">filter_</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">direction</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;asc&quot;</span><span class="p">,</span> <span class="s2">&quot;desc&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;asc&quot;</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Datapoint</span><span class="p">],</span> <span class="kc">None</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Fetches all data matching the provided filters,</span>
+<span class="sd">        yielding one chunk at a time.</span>
+<span class="sd">        One &quot;chunk&quot; may require several Obelisk calls to resolve cursors.</span>
+<span class="sd">        By necessity iterates over time, no other ordering is supported.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+
+<span class="sd">        datasets : List[str]</span>
+<span class="sd">            Dataset IDs to query from</span>
+<span class="sd">        metrics : List[str]</span>
+<span class="sd">            IDs of metrics to query</span>
+<span class="sd">        from_time : `datetime.datetime`</span>
+<span class="sd">            Start time to fetch from</span>
+<span class="sd">        to_time : `datetime.datetime`</span>
+<span class="sd">            End time to fetch until.</span>
+<span class="sd">        jump : `datetime.timedelta`</span>
+<span class="sd">            Size of one yielded chunk</span>
+<span class="sd">        filter_ : Optional[dict] = None</span>
+<span class="sd">            Obelisk filter, caller is responsible for correct format</span>
+<span class="sd">        direction : Literal[&#39;asc&#39;, &#39;desc&#39;] = &#39;asc&#39;</span>
+<span class="sd">            Yield older data or newer data first, defaults to older first.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">current_start</span> <span class="o">=</span> <span class="n">from_time</span>
+        <span class="k">while</span> <span class="n">current_start</span> <span class="o">&lt;</span> <span class="n">to_time</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">query</span><span class="p">(</span>
+                <span class="n">datasets</span><span class="o">=</span><span class="n">datasets</span><span class="p">,</span>
+                <span class="n">metrics</span><span class="o">=</span><span class="n">metrics</span><span class="p">,</span>
+                <span class="n">from_timestamp</span><span class="o">=</span><span class="n">floor</span><span class="p">(</span><span class="n">current_start</span><span class="o">.</span><span class="n">timestamp</span><span class="p">()</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">),</span>
+                <span class="n">to_timestamp</span><span class="o">=</span><span class="n">floor</span><span class="p">((</span><span class="n">current_start</span> <span class="o">+</span> <span class="n">jump</span><span class="p">)</span><span class="o">.</span><span class="n">timestamp</span><span class="p">()</span> <span class="o">*</span> <span class="mi">1000</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span>
+                <span class="n">order_by</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;field&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;timestamp&quot;</span><span class="p">],</span> <span class="s2">&quot;ordering&quot;</span><span class="p">:</span> <span class="n">direction</span><span class="p">},</span>
+                <span class="n">filter_</span><span class="o">=</span><span class="n">filter_</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">current_start</span> <span class="o">+=</span> <span class="n">jump</span></div>
+
+
+<div class="viewcode-block" id="Obelisk.send">
+<a class="viewcode-back" href="../../../_autosummary/obelisk.asynchronous.Obelisk.html#obelisk.asynchronous.Obelisk.send">[docs]</a>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">send</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">dataset</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">data</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">dict</span><span class="p">],</span>
+        <span class="n">precision</span><span class="p">:</span> <span class="n">TimestampPrecision</span> <span class="o">=</span> <span class="n">TimestampPrecision</span><span class="o">.</span><span class="n">MILLISECONDS</span><span class="p">,</span>
+        <span class="n">mode</span><span class="p">:</span> <span class="n">IngestMode</span> <span class="o">=</span> <span class="n">IngestMode</span><span class="o">.</span><span class="n">DEFAULT</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">httpx</span><span class="o">.</span><span class="n">Response</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Publishes data to Obelisk</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        dataset : str</span>
+<span class="sd">            ID for the dataset to publish to</span>
+<span class="sd">        data : List[dict]</span>
+<span class="sd">            List of Obelisk-acceptable datapoints.</span>
+<span class="sd">            Exact format varies between Classic or HFS,</span>
+<span class="sd">            caller is responsible for formatting.</span>
+<span class="sd">        precision : :class:`~obelisk.types.TimestampPrecision` = TimestampPrecision.MILLISECONDS</span>
+<span class="sd">            Precision used in the numeric timestamps contained in data.</span>
+<span class="sd">            Ensure it matches to avoid weird errors.</span>
+<span class="sd">        mode : :class:`~obelisk.types.IngestMode` = IngestMode.DEFAULT</span>
+<span class="sd">            See docs for :class:`~obelisk.types.IngestMode`.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+
+<span class="sd">        ObeliskError</span>
+<span class="sd">            When the resulting status code is not 204, an empty :exc:`~obelisk.exceptions.ObeliskError` is raised.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">params</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;datasetId&quot;</span><span class="p">:</span> <span class="n">dataset</span><span class="p">,</span>
+            <span class="s2">&quot;timestampPrecision&quot;</span><span class="p">:</span> <span class="n">precision</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+            <span class="s2">&quot;mode&quot;</span><span class="p">:</span> <span class="n">mode</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+        <span class="p">}</span>
+
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">http_post</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">kind</span><span class="o">.</span><span class="n">ingest_url</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">dataset</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">!=</span> <span class="mi">204</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;An error occured during data ingest. Status </span><span class="si">{</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="si">}</span><span class="s2">, message: </span><span class="si">{</span><span class="n">response</span><span class="o">.</span><span class="n">text</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">ObeliskError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">response</span></div>
 </div>
 
 </pre></div>

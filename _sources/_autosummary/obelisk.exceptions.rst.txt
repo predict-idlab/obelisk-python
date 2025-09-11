@@ -1,6 +1,7 @@
 obelisk.exceptions
 ==================
 
+.. currentmodule:: obelisk
 .. automodule:: obelisk.exceptions
 
    

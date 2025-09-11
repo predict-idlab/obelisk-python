@@ -1,0 +1,95 @@
+obelisk.asynchronous.core.ChunkedParams
+=======================================
+
+.. currentmodule:: obelisk.asynchronous.core
+
+.. autoclass:: ChunkedParams
+   :show-inheritance:
+
+   
+   .. automethod:: __init__
+      :no-index:
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+   
+   
+   .. automethod:: check_datatype_needed
+      :no-index-entry:
+   
+   .. automethod:: chunks
+      :no-index-entry:
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+   
+   
+   .. autoattribute:: model_config
+      :no-index-entry:
+   
+   
+   
+   
+   .. autoattribute:: dataset
+      :no-index-entry:
+   
+   .. autoattribute:: groupBy
+      :no-index-entry:
+   
+   .. autoattribute:: aggregator
+      :no-index-entry:
+   
+   .. autoattribute:: fields
+      :no-index-entry:
+   
+   .. autoattribute:: orderBy
+      :no-index-entry:
+   
+   .. autoattribute:: dataType
+      :no-index-entry:
+   
+   .. autoattribute:: filter_
+      :no-index-entry:
+   
+   .. autoattribute:: start
+      :no-index-entry:
+   
+   .. autoattribute:: end
+      :no-index-entry:
+   
+   .. autoattribute:: jump
+      :no-index-entry:
+   
+   

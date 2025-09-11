@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>obelisk.asynchronous.core &#8212; Obelisk-Py  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css?v=27fed22d" />
+    <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for obelisk.asynchronous.core</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This module contains the asynchronous API to interface with Obelisk CORE.</span>
+<span class="sd">These methods all return a :class:`Awaitable`.</span>
+
+<span class="sd">Relevant entrance points are :class:`Client`.</span>
+
+<span class="sd">This API vaguely resembles that of clients to previous Obelisk versions,</span>
+<span class="sd">but also significantly diverts from it where the underlying Obelisk CORE API does so.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">obelisk.asynchronous.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseClient</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">obelisk.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">ObeliskError</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">obelisk.types.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">FieldName</span><span class="p">,</span> <span class="n">Filter</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">httpx</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">AwareDatetime</span><span class="p">,</span> <span class="n">ConfigDict</span><span class="p">,</span> <span class="n">Field</span><span class="p">,</span> <span class="n">ValidationError</span><span class="p">,</span> <span class="n">model_validator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Annotated</span><span class="p">,</span> <span class="n">AsyncIterator</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Iterator</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">cast</span><span class="p">,</span> <span class="n">get_args</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing_extensions</span><span class="w"> </span><span class="kn">import</span> <span class="n">Self</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">numbers</span><span class="w"> </span><span class="kn">import</span> <span class="n">Number</span>
+
+
+<span class="n">DataType</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;number&#39;</span><span class="p">,</span> <span class="s1">&#39;number[]&#39;</span><span class="p">,</span> <span class="s1">&#39;json&#39;</span><span class="p">,</span> <span class="s1">&#39;bool&#39;</span><span class="p">,</span> <span class="s1">&#39;string&#39;</span><span class="p">]</span>
+<span class="sd">&quot;&quot;&quot;The possible types of data Obelisk can accept&quot;&quot;&quot;</span>
+
+
+<div class="viewcode-block" id="type_suffix">
+<a class="viewcode-back" href="../../../_autosummary/obelisk.asynchronous.core.type_suffix.html#obelisk.asynchronous.core.type_suffix">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">type_suffix</span><span class="p">(</span><span class="n">metric</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DataType</span><span class="p">:</span>
+    <span class="n">split</span> <span class="o">=</span> <span class="n">metric</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;::&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">split</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Incorrect amount of type qualifiers&quot;</span><span class="p">)</span>
+
+    <span class="n">suffix</span> <span class="o">=</span> <span class="n">split</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">suffix</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">get_args</span><span class="p">(</span><span class="n">DataType</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid type suffix, should be one of </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">get_args</span><span class="p">(</span><span class="n">DataType</span><span class="p">))</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="n">DataType</span><span class="p">,</span> <span class="n">suffix</span><span class="p">)</span></div>
+
+
+
+<span class="n">Aggregator</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;last&#39;</span><span class="p">,</span> <span class="s1">&#39;min&#39;</span><span class="p">,</span> <span class="s1">&#39;mean&#39;</span><span class="p">,</span> <span class="s1">&#39;max&#39;</span><span class="p">,</span> <span class="s1">&#39;count&#39;</span><span class="p">,</span> <span class="s1">&#39;stddev&#39;</span><span class="p">]</span>
+<span class="sd">&quot;&quot;&quot;Type of aggregation Obelisk can process&quot;&quot;&quot;</span>
+
+
+<span class="n">Datapoint</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
+<span class="sd">&quot;&quot;&quot;Datapoints resulting from queries are modeled as simple dicts, as fields can come and go depending on query.&quot;&quot;&quot;</span>
+
+
+<div class="viewcode-block" id="ObeliskPosition">
+<a class="viewcode-back" href="../../../_autosummary/obelisk.asynchronous.core.ObeliskPosition.html#obelisk.asynchronous.core.ObeliskPosition">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ObeliskPosition</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Format for coordinates as expected by Obelisk.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">lat</span><span class="p">:</span> <span class="nb">float</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Latitude&quot;&quot;&quot;</span>
+    <span class="n">lng</span><span class="p">:</span> <span class="nb">float</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Longitude&quot;&quot;&quot;</span>
+    <span class="n">elevation</span><span class="p">:</span> <span class="nb">float</span></div>
+
+
+
+<div class="viewcode-block" id="IncomingDatapoint">
+<a class="viewcode-back" href="../../../_autosummary/obelisk.asynchronous.core.IncomingDatapoint.html#obelisk.asynchronous.core.IncomingDatapoint">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">IncomingDatapoint</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; A datapoint to be submitted to Obelisk. These are validated quite extensively, but not fully.</span>
+<span class="sd">    .. automethod:: check_metric_type(self)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">timestamp</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AwareDatetime</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">metric</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">value</span><span class="p">:</span> <span class="n">Any</span>
+    <span class="n">labels</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">location</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ObeliskPosition</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="IncomingDatapoint.check_metric_type">
+<a class="viewcode-back" href="../../../_autosummary/obelisk.asynchronous.core.IncomingDatapoint.html#obelisk.asynchronous.core.IncomingDatapoint.check_metric_type">[docs]</a>
+    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s1">&#39;after&#39;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">check_metric_type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
+        <span class="n">suffix</span> <span class="o">=</span> <span class="n">type_suffix</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">metric</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">suffix</span> <span class="o">==</span> <span class="s1">&#39;number&#39;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">Number</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Type suffix mismatch, expected number, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">suffix</span> <span class="o">==</span> <span class="s1">&#39;number[]&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="nb">list</span> <span class="ow">or</span> <span class="nb">any</span><span class="p">([</span><span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">Number</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">]):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Type suffix mismatch, expected value of number[]&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Do not check json, most things should be serialisable</span>
+
+        <span class="k">if</span> <span class="n">suffix</span> <span class="o">==</span> <span class="s1">&#39;bool&#39;</span> <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="nb">bool</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Type suffix mismatch, expected bool, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">suffix</span> <span class="o">==</span> <span class="s1">&#39;string&#39;</span> <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="nb">str</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Type suffix mismatch, expected bool, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="QueryParams">
+<a class="viewcode-back" href="../../../_autosummary/obelisk.asynchronous.core.QueryParams.html#obelisk.asynchronous.core.QueryParams">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">QueryParams</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="n">dataset</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">groupBy</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">FieldName</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">aggregator</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Aggregator</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">fields</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">FieldName</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">orderBy</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span> <span class="c1"># More complex than just FieldName, can be prefixed with - to invert sort</span>
+    <span class="n">dataType</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">DataType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">filter_</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="o">|</span><span class="n">Filter</span><span class="p">],</span> <span class="n">Field</span><span class="p">(</span><span class="n">serialization_alias</span><span class="o">=</span><span class="s1">&#39;filter&#39;</span><span class="p">)]</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Filter in `RSQL format &lt;https://obelisk.pages.ilabt.imec.be/obelisk-core/query.html#rsql-format&gt;`__ Suffix to avoid collisions.&quot;&quot;&quot;</span>
+    <span class="n">cursor</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1000</span>
+
+    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">arbitrary_types_allowed</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<div class="viewcode-block" id="QueryParams.check_datatype_needed">
+<a class="viewcode-back" href="../../../_autosummary/obelisk.asynchronous.core.QueryParams.html#obelisk.asynchronous.core.QueryParams.check_datatype_needed">[docs]</a>
+    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s1">&#39;after&#39;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">check_datatype_needed</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="s1">&#39;value&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataType</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Value field requested, must specify datatype&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+<div class="viewcode-block" id="QueryParams.to_dict">
+<a class="viewcode-back" href="../../../_autosummary/obelisk.asynchronous.core.QueryParams.html#obelisk.asynchronous.core.QueryParams.to_dict">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(</span><span class="n">exclude_none</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">by_alias</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="ChunkedParams">
+<a class="viewcode-back" href="../../../_autosummary/obelisk.asynchronous.core.ChunkedParams.html#obelisk.asynchronous.core.ChunkedParams">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ChunkedParams</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="n">dataset</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">groupBy</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">FieldName</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">aggregator</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Aggregator</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">fields</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">FieldName</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">orderBy</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span> <span class="c1"># More complex than just FieldName, can be prefixed with - to invert sort</span>
+    <span class="n">dataType</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">DataType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">filter_</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span> <span class="o">|</span> <span class="n">Filter</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Underscore suffix to avoid name collisions&quot;&quot;&quot;</span>
+    <span class="n">start</span><span class="p">:</span> <span class="n">datetime</span>
+    <span class="n">end</span><span class="p">:</span> <span class="n">datetime</span>
+    <span class="n">jump</span><span class="p">:</span> <span class="n">timedelta</span> <span class="o">=</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">hours</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">arbitrary_types_allowed</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ChunkedParams.check_datatype_needed">
+<a class="viewcode-back" href="../../../_autosummary/obelisk.asynchronous.core.ChunkedParams.html#obelisk.asynchronous.core.ChunkedParams.check_datatype_needed">[docs]</a>
+    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s1">&#39;after&#39;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">check_datatype_needed</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="s1">&#39;value&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataType</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Value field requested, must specify datatype&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+<div class="viewcode-block" id="ChunkedParams.chunks">
+<a class="viewcode-back" href="../../../_autosummary/obelisk.asynchronous.core.ChunkedParams.html#obelisk.asynchronous.core.ChunkedParams.chunks">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">chunks</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">QueryParams</span><span class="p">]:</span>
+        <span class="n">current_start</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">start</span>
+        <span class="k">while</span> <span class="n">current_start</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">end</span><span class="p">:</span>
+            <span class="n">current_end</span> <span class="o">=</span> <span class="n">current_start</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">jump</span>
+            <span class="n">filter_</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;timestamp&gt;=</span><span class="si">{</span><span class="n">current_start</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span><span class="si">}</span><span class="s1">;timestamp&lt;</span><span class="si">{</span><span class="n">current_end</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter_</span><span class="p">:</span>
+                <span class="n">filter_</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">&#39;;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">filter_</span><span class="si">}</span><span class="s1">&#39;</span>
+
+            <span class="k">yield</span> <span class="n">QueryParams</span><span class="p">(</span>
+                <span class="n">dataset</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="p">,</span>
+                <span class="n">groupBy</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">groupBy</span><span class="p">,</span>
+                <span class="n">aggregator</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">aggregator</span><span class="p">,</span>
+                <span class="n">fields</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">,</span>
+                <span class="n">orderBy</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">orderBy</span><span class="p">,</span>
+                <span class="n">dataType</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dataType</span><span class="p">,</span>
+                <span class="n">filter_</span><span class="o">=</span><span class="n">filter_</span>
+            <span class="p">)</span>
+
+            <span class="n">current_start</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">jump</span></div>
+</div>
+
+
+
+
+<div class="viewcode-block" id="QueryResult">
+<a class="viewcode-back" href="../../../_autosummary/obelisk.asynchronous.core.QueryResult.html#obelisk.asynchronous.core.QueryResult">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">QueryResult</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="n">cursor</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">items</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Datapoint</span><span class="p">]</span></div>
+
+
+
+<div class="viewcode-block" id="Client">
+<a class="viewcode-back" href="../../../_autosummary/obelisk.asynchronous.core.Client.html#obelisk.asynchronous.core.Client">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Client</span><span class="p">(</span><span class="n">BaseClient</span><span class="p">):</span>
+    <span class="n">page_limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">250</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;How many datapoints to request per page in a cursored fetch&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Client.send">
+<a class="viewcode-back" href="../../../_autosummary/obelisk.asynchronous.core.Client.html#obelisk.asynchronous.core.Client.send">[docs]</a>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">send</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">dataset</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">data</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">IncomingDatapoint</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">httpx</span><span class="o">.</span><span class="n">Response</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Publishes data to Obelisk</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        dataset : str</span>
+<span class="sd">            ID for the dataset to publish to</span>
+<span class="sd">        data : List[IncomingDatapoint]</span>
+<span class="sd">            List of Obelisk-acceptable datapoints.</span>
+<span class="sd">            Exact format varies between Classic or HFS,</span>
+<span class="sd">            caller is responsible for formatting.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+
+<span class="sd">        ObeliskError</span>
+<span class="sd">            When the resulting status code is not 204, an :exc:`~obelisk.exceptions.ObeliskError` is raised.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">http_post</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">kind</span><span class="o">.</span><span class="n">root_url</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">dataset</span><span class="si">}</span><span class="s2">/data/ingest&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s1">&#39;json&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">data</span><span class="p">]</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">!=</span> <span class="mi">204</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;An error occured during data ingest. Status </span><span class="si">{</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="si">}</span><span class="s2">, message: </span><span class="si">{</span><span class="n">response</span><span class="o">.</span><span class="n">text</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">ObeliskError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">response</span></div>
+
+
+<div class="viewcode-block" id="Client.fetch_single_chunk">
+<a class="viewcode-back" href="../../../_autosummary/obelisk.asynchronous.core.Client.html#obelisk.asynchronous.core.Client.fetch_single_chunk">[docs]</a>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">fetch_single_chunk</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">params</span><span class="p">:</span> <span class="n">QueryParams</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">QueryResult</span><span class="p">:</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">http_get</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">kind</span><span class="o">.</span><span class="n">root_url</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">params</span><span class="o">.</span><span class="n">dataset</span><span class="si">}</span><span class="s2">/data/query&quot;</span><span class="p">,</span>
+            <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">!=</span> <span class="mi">200</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unexpected status code: </span><span class="si">{</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">ObeliskError</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="n">reason_phrase</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">js</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">QueryResult</span><span class="o">.</span><span class="n">model_validate</span><span class="p">(</span><span class="n">js</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">json</span><span class="o">.</span><span class="n">JSONDecodeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Obelisk response is not a JSON object: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">ObeliskError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">ValidationError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Response cannot be validated: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">ObeliskError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Client.query">
+<a class="viewcode-back" href="../../../_autosummary/obelisk.asynchronous.core.Client.html#obelisk.asynchronous.core.Client.query">[docs]</a>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">query</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">params</span><span class="p">:</span> <span class="n">QueryParams</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Datapoint</span><span class="p">]:</span>
+        <span class="n">params</span><span class="o">.</span><span class="n">cursor</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">result_set</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Datapoint</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">result_limit</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">limit</span>
+
+        <span class="c1"># Obelisk CORE does not actually stop emitting a cursor when done, limit serves as page limit</span>
+        <span class="n">params</span><span class="o">.</span><span class="n">limit</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">page_limit</span>
+
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">result</span><span class="p">:</span> <span class="n">QueryResult</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">fetch_single_chunk</span><span class="p">(</span>
+                <span class="n">params</span>
+            <span class="p">)</span>
+            <span class="n">result_set</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">items</span><span class="p">)</span>
+            <span class="n">params</span><span class="o">.</span><span class="n">cursor</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">cursor</span>
+
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">result_set</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">result_limit</span><span class="p">:</span>
+                <span class="k">break</span>
+
+        <span class="k">return</span> <span class="n">result_set</span></div>
+
+
+<div class="viewcode-block" id="Client.query_time_chunked">
+<a class="viewcode-back" href="../../../_autosummary/obelisk.asynchronous.core.Client.html#obelisk.asynchronous.core.Client.query_time_chunked">[docs]</a>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">query_time_chunked</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">params</span><span class="p">:</span> <span class="n">ChunkedParams</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncIterator</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Datapoint</span><span class="p">]]:</span>
+        <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">params</span><span class="o">.</span><span class="n">chunks</span><span class="p">():</span>
+            <span class="k">yield</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">query</span><span class="p">(</span>
+                <span class="n">chunk</span>
+            <span class="p">)</span></div>
+</div>
+
+
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">Obelisk-Py</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../_autosummary/obelisk.html">obelisk</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2025-2025, PreDiCT - IDLab.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.2.3</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

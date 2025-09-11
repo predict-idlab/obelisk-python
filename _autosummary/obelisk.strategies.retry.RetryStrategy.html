@@ -38,33 +38,19 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="obelisk.strategies.retry.RetryStrategy">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">obelisk.strategies.retry.</span></span><span class="sig-name descname"><span class="pre">RetryStrategy</span></span><a class="reference internal" href="../_modules/obelisk/strategies/retry.html#RetryStrategy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#obelisk.strategies.retry.RetryStrategy" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/abc.html#abc.ABC" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></a></p>
 <p>Base class for all retry strategies, whether predefined or user-made.
 The strategy has as its sole purpose to create instances of <a class="reference internal" href="obelisk.strategies.retry.RetryEvaluator.html#obelisk.strategies.retry.RetryEvaluator" title="obelisk.strategies.retry.RetryEvaluator"><code class="xref py py-class docutils literal notranslate"><span class="pre">RetryEvaluator</span></code></a>
 that can be used for a specific operation.</p>
 <p>Each individual failable operation will request a separate evaluator using the make method.</p>
-<p class="rubric">Methods</p>
-<table class="autosummary longtable docutils align-default">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#obelisk.strategies.retry.RetryStrategy.make" title="obelisk.strategies.retry.RetryStrategy.make"><code class="xref py py-obj docutils literal notranslate"><span class="pre">make</span></code></a>()</p></td>
-<td><p>Create an instance of a RetryEvaluator.</p></td>
-</tr>
-</tbody>
-</table>
 <dl class="py method">
-<dt class="sig sig-object py" id="obelisk.strategies.retry.RetryStrategy.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#obelisk.strategies.retry.RetryStrategy.__init__" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
 <dd></dd></dl>
 
 <p class="rubric">Methods</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#obelisk.strategies.retry.RetryStrategy.__init__" title="obelisk.strategies.retry.RetryStrategy.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(*args, **kwargs)</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#obelisk.strategies.retry.RetryStrategy.make" title="obelisk.strategies.retry.RetryStrategy.make"><code class="xref py py-obj docutils literal notranslate"><span class="pre">make</span></code></a>()</p></td>
-<td><p>Create an instance of a RetryEvaluator.</p></td>
-</tr>
 </tbody>
 </table>
 <dl class="py method">
@@ -117,7 +103,6 @@ Custom strategies should also subclass RetryEvaluator</p>
 <li class="toctree-l4"><a class="reference internal" href="obelisk.strategies.retry.RetryEvaluator.html">obelisk.strategies.retry.RetryEvaluator</a></li>
 <li class="toctree-l4 current"><a class="current reference internal" href="#">obelisk.strategies.retry.RetryStrategy</a><ul>
 <li class="toctree-l5"><a class="reference internal" href="#obelisk.strategies.retry.RetryStrategy"><code class="docutils literal notranslate"><span class="pre">RetryStrategy</span></code></a><ul>
-<li class="toctree-l6"><a class="reference internal" href="#obelisk.strategies.retry.RetryStrategy.__init__"><code class="docutils literal notranslate"><span class="pre">RetryStrategy.__init__()</span></code></a></li>
 <li class="toctree-l6"><a class="reference internal" href="#obelisk.strategies.retry.RetryStrategy.make"><code class="docutils literal notranslate"><span class="pre">RetryStrategy.make()</span></code></a></li>
 </ul>
 </li>

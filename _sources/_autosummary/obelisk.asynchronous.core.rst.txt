@@ -1,0 +1,35 @@
+obelisk.asynchronous.core
+=========================
+
+.. currentmodule:: obelisk.asynchronous
+.. automodule:: obelisk.asynchronous.core
+
+   
+   .. rubric:: Module Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      DataType
+      Aggregator
+      Datapoint
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+   
+      type_suffix
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+      :toctree:
+   
+      ChunkedParams
+      Client
+      IncomingDatapoint
+      ObeliskPosition
+      QueryParams
+      QueryResult
+   

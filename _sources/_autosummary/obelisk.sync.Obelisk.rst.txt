@@ -1,0 +1,49 @@
+obelisk.sync.Obelisk
+====================
+
+.. currentmodule:: obelisk.sync
+
+.. autoclass:: Obelisk
+   :show-inheritance:
+
+   
+   .. automethod:: __init__
+      :no-index:
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+   
+   .. automethod:: __init__
+      :no-index-entry:
+   
+   .. automethod:: fetch_single_chunk
+      :no-index-entry:
+   
+   .. automethod:: query
+      :no-index-entry:
+   
+   .. automethod:: query_time_chunked
+      :no-index-entry:
+   
+   .. automethod:: send
+      :no-index-entry:
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+   
+   .. autoattribute:: loop
+      :no-index-entry:
+   
+   .. autoattribute:: async_obelisk
+      :no-index-entry:
+   
+   

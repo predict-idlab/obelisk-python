@@ -37,56 +37,53 @@
 <h1>obelisk.strategies.retry.ExponentialBackoffStrategy<a class="headerlink" href="#obelisk-strategies-retry-exponentialbackoffstrategy" title="Link to this heading">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="obelisk.strategies.retry.ExponentialBackoffStrategy">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">obelisk.strategies.retry.</span></span><span class="sig-name descname"><span class="pre">ExponentialBackoffStrategy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">max_retries</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backoff</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">timedelta</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">datetime.timedelta(seconds=2)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_backoff</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">timedelta</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">datetime.timedelta(days=1)</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/obelisk/strategies/retry.html#ExponentialBackoffStrategy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#obelisk.strategies.retry.ExponentialBackoffStrategy" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">obelisk.strategies.retry.</span></span><span class="sig-name descname"><span class="pre">ExponentialBackoffStrategy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">max_retries</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backoff</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.timedelta" title="(in Python v3.13)"><span class="pre">timedelta</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">datetime.timedelta(seconds=2)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_backoff</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.timedelta" title="(in Python v3.13)"><span class="pre">timedelta</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">datetime.timedelta(days=1)</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/obelisk/strategies/retry.html#ExponentialBackoffStrategy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#obelisk.strategies.retry.ExponentialBackoffStrategy" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="obelisk.strategies.retry.RetryStrategy.html#obelisk.strategies.retry.RetryStrategy" title="obelisk.strategies.retry.RetryStrategy"><code class="xref py py-class docutils literal notranslate"><span class="pre">RetryStrategy</span></code></a></p>
 <p>Retry strategy implementing the exponential backoff algorithm.
 Every failure up to <cite>max_retries</cite> will result in a sleep
 of t ** n seconds, with t being the backoff and n amount of failures.</p>
 <p>Note that backoff values less than one second will count as zero.</p>
-<p class="rubric">Methods</p>
-<table class="autosummary longtable docutils align-default">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#obelisk.strategies.retry.ExponentialBackoffStrategy.make" title="obelisk.strategies.retry.ExponentialBackoffStrategy.make"><code class="xref py py-obj docutils literal notranslate"><span class="pre">make</span></code></a>()</p></td>
-<td><p>Create an instance of a RetryEvaluator.</p></td>
-</tr>
-</tbody>
-</table>
 <dl class="py method">
-<dt class="sig sig-object py" id="obelisk.strategies.retry.ExponentialBackoffStrategy.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">max_retries</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backoff</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">timedelta</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">datetime.timedelta(seconds=2)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_backoff</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">timedelta</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">datetime.timedelta(days=1)</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/obelisk/strategies/retry.html#ExponentialBackoffStrategy.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#obelisk.strategies.retry.ExponentialBackoffStrategy.__init__" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">max_retries</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backoff</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.timedelta" title="(in Python v3.13)"><span class="pre">timedelta</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">datetime.timedelta(seconds=2)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_backoff</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.timedelta" title="(in Python v3.13)"><span class="pre">timedelta</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">datetime.timedelta(days=1)</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/obelisk/strategies/retry.html#ExponentialBackoffStrategy.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd></dd></dl>
 
 <p class="rubric">Methods</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#obelisk.strategies.retry.ExponentialBackoffStrategy.__init__" title="obelisk.strategies.retry.ExponentialBackoffStrategy.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>([max_retries, backoff, max_backoff])</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#obelisk.strategies.retry.ExponentialBackoffStrategy.make" title="obelisk.strategies.retry.ExponentialBackoffStrategy.make"><code class="xref py py-obj docutils literal notranslate"><span class="pre">make</span></code></a>()</p></td>
-<td><p>Create an instance of a RetryEvaluator.</p></td>
-</tr>
 </tbody>
 </table>
-<p class="rubric">Attributes</p>
-<table class="autosummary longtable docutils align-default">
-<tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">max_retries</span></code></p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">backoff</span></code></p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">max_backoff</span></code></p></td>
-<td><p></p></td>
-</tr>
-</tbody>
-</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="obelisk.strategies.retry.ExponentialBackoffStrategy.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">max_retries</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backoff</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.timedelta" title="(in Python v3.13)"><span class="pre">timedelta</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">datetime.timedelta(seconds=2)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_backoff</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.timedelta" title="(in Python v3.13)"><span class="pre">timedelta</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">datetime.timedelta(days=1)</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/obelisk/strategies/retry.html#ExponentialBackoffStrategy.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#obelisk.strategies.retry.ExponentialBackoffStrategy.__init__" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="obelisk.strategies.retry.ExponentialBackoffStrategy.make">
 <span class="sig-name descname"><span class="pre">make</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="obelisk.strategies.retry.RetryEvaluator.html#obelisk.strategies.retry.RetryEvaluator" title="obelisk.strategies.retry.RetryEvaluator"><span class="pre">RetryEvaluator</span></a></span></span><a class="reference internal" href="../_modules/obelisk/strategies/retry.html#ExponentialBackoffStrategy.make"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#obelisk.strategies.retry.ExponentialBackoffStrategy.make" title="Link to this definition">¶</a></dt>
 <dd><p>Create an instance of a RetryEvaluator.
 Custom strategies should also subclass RetryEvaluator</p>
 </dd></dl>
+
+<p class="rubric">Attributes</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+</tbody>
+</table>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="obelisk.strategies.retry.ExponentialBackoffStrategy.max_retries">
+<span class="sig-name descname"><span class="pre">max_retries</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><a class="headerlink" href="#obelisk.strategies.retry.ExponentialBackoffStrategy.max_retries" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="obelisk.strategies.retry.ExponentialBackoffStrategy.backoff">
+<span class="sig-name descname"><span class="pre">backoff</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.timedelta" title="(in Python v3.13)"><span class="pre">timedelta</span></a></em><a class="headerlink" href="#obelisk.strategies.retry.ExponentialBackoffStrategy.backoff" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="obelisk.strategies.retry.ExponentialBackoffStrategy.max_backoff">
+<span class="sig-name descname"><span class="pre">max_backoff</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.timedelta" title="(in Python v3.13)"><span class="pre">timedelta</span></a></em><a class="headerlink" href="#obelisk.strategies.retry.ExponentialBackoffStrategy.max_backoff" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
 
 </dd></dl>
 
@@ -129,6 +126,9 @@ Custom strategies should also subclass RetryEvaluator</p>
 <li class="toctree-l5"><a class="reference internal" href="#obelisk.strategies.retry.ExponentialBackoffStrategy"><code class="docutils literal notranslate"><span class="pre">ExponentialBackoffStrategy</span></code></a><ul>
 <li class="toctree-l6"><a class="reference internal" href="#obelisk.strategies.retry.ExponentialBackoffStrategy.__init__"><code class="docutils literal notranslate"><span class="pre">ExponentialBackoffStrategy.__init__()</span></code></a></li>
 <li class="toctree-l6"><a class="reference internal" href="#obelisk.strategies.retry.ExponentialBackoffStrategy.make"><code class="docutils literal notranslate"><span class="pre">ExponentialBackoffStrategy.make()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="#obelisk.strategies.retry.ExponentialBackoffStrategy.max_retries"><code class="docutils literal notranslate"><span class="pre">ExponentialBackoffStrategy.max_retries</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="#obelisk.strategies.retry.ExponentialBackoffStrategy.backoff"><code class="docutils literal notranslate"><span class="pre">ExponentialBackoffStrategy.backoff</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="#obelisk.strategies.retry.ExponentialBackoffStrategy.max_backoff"><code class="docutils literal notranslate"><span class="pre">ExponentialBackoffStrategy.max_backoff</span></code></a></li>
 </ul>
 </li>
 </ul>

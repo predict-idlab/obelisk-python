@@ -1,0 +1,55 @@
+obelisk.asynchronous.Obelisk
+============================
+
+.. currentmodule:: obelisk.asynchronous
+
+.. autoclass:: Obelisk
+   :show-inheritance:
+
+   
+   .. automethod:: __init__
+      :no-index:
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+   
+   
+   .. automethod:: fetch_single_chunk
+      :no-index-entry:
+   
+   
+   
+   .. automethod:: query
+      :no-index-entry:
+   
+   .. automethod:: query_time_chunked
+      :no-index-entry:
+   
+   .. automethod:: send
+      :no-index-entry:
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+   
+   
+   
+   
+   .. autoattribute:: retry_strategy
+      :no-index-entry:
+   
+   .. autoattribute:: kind
+      :no-index-entry:
+   
+   .. autoattribute:: log
+      :no-index-entry:
+   
+   

@@ -1,6 +1,7 @@
 obelisk.types
 =============
 
+.. currentmodule:: obelisk
 .. automodule:: obelisk.types
 
    
@@ -8,7 +9,6 @@ obelisk.types
 
    .. autosummary::
       :toctree:
-      :template: custom-class-template.rst
    
       Datapoint
       IngestMode
@@ -16,3 +16,10 @@ obelisk.types
       QueryResult
       TimestampPrecision
    
+.. rubric:: Modules
+
+.. autosummary::
+   :toctree:
+   :recursive:
+
+   core

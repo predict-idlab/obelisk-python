@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>obelisk.asynchronous.core &#8212; Obelisk-Py  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=27fed22d" />
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="obelisk.asynchronous.core.DataType" href="obelisk.asynchronous.core.DataType.html" />
+    <link rel="prev" title="obelisk.asynchronous.Obelisk" href="obelisk.asynchronous.Obelisk.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="module-obelisk.asynchronous.core">
+<span id="obelisk-asynchronous-core"></span><h1>obelisk.asynchronous.core<a class="headerlink" href="#module-obelisk.asynchronous.core" title="Link to this heading">¶</a></h1>
+<p>This module contains the asynchronous API to interface with Obelisk CORE.
+These methods all return a <code class="xref py py-class docutils literal notranslate"><span class="pre">Awaitable</span></code>.</p>
+<p>Relevant entrance points are <a class="reference internal" href="obelisk.asynchronous.core.Client.html#obelisk.asynchronous.core.Client" title="obelisk.asynchronous.core.Client"><code class="xref py py-class docutils literal notranslate"><span class="pre">Client</span></code></a>.</p>
+<p>This API vaguely resembles that of clients to previous Obelisk versions,
+but also significantly diverts from it where the underlying Obelisk CORE API does so.</p>
+<p class="rubric">Module Attributes</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="obelisk.asynchronous.core.DataType.html#obelisk.asynchronous.core.DataType" title="obelisk.asynchronous.core.DataType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DataType</span></code></a></p></td>
+<td><p>The possible types of data Obelisk can accept</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="obelisk.asynchronous.core.Aggregator.html#obelisk.asynchronous.core.Aggregator" title="obelisk.asynchronous.core.Aggregator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Aggregator</span></code></a></p></td>
+<td><p>Type of aggregation Obelisk can process</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="obelisk.asynchronous.core.Datapoint.html#obelisk.asynchronous.core.Datapoint" title="obelisk.asynchronous.core.Datapoint"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Datapoint</span></code></a></p></td>
+<td><p>Datapoints resulting from queries are modeled as simple dicts, as fields can come and go depending on query.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Functions</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="obelisk.asynchronous.core.type_suffix.html#obelisk.asynchronous.core.type_suffix" title="obelisk.asynchronous.core.type_suffix"><code class="xref py py-obj docutils literal notranslate"><span class="pre">type_suffix</span></code></a>(metric)</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Classes</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="obelisk.asynchronous.core.ChunkedParams.html#obelisk.asynchronous.core.ChunkedParams" title="obelisk.asynchronous.core.ChunkedParams"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ChunkedParams</span></code></a>(*, dataset[, groupBy, ...])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="obelisk.asynchronous.core.Client.html#obelisk.asynchronous.core.Client" title="obelisk.asynchronous.core.Client"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Client</span></code></a>(client, secret, retry_strategy, kind)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="obelisk.asynchronous.core.IncomingDatapoint.html#obelisk.asynchronous.core.IncomingDatapoint" title="obelisk.asynchronous.core.IncomingDatapoint"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IncomingDatapoint</span></code></a>(*[, timestamp, labels, ...])</p></td>
+<td><p>A datapoint to be submitted to Obelisk.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="obelisk.asynchronous.core.ObeliskPosition.html#obelisk.asynchronous.core.ObeliskPosition" title="obelisk.asynchronous.core.ObeliskPosition"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ObeliskPosition</span></code></a>(*, lat, lng, elevation)</p></td>
+<td><p>Format for coordinates as expected by Obelisk.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="obelisk.asynchronous.core.QueryParams.html#obelisk.asynchronous.core.QueryParams" title="obelisk.asynchronous.core.QueryParams"><code class="xref py py-obj docutils literal notranslate"><span class="pre">QueryParams</span></code></a>(*, dataset[, groupBy, ...])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="obelisk.asynchronous.core.QueryResult.html#obelisk.asynchronous.core.QueryResult" title="obelisk.asynchronous.core.QueryResult"><code class="xref py py-obj docutils literal notranslate"><span class="pre">QueryResult</span></code></a>(*[, cursor])</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">Obelisk-Py</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="obelisk.html">obelisk</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="obelisk.html#error-handling">Error handling</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="obelisk.asynchronous.html">obelisk.asynchronous</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="obelisk.asynchronous.Obelisk.html">obelisk.asynchronous.Obelisk</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">obelisk.asynchronous.core</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="obelisk.asynchronous.core.DataType.html">obelisk.asynchronous.core.DataType</a></li>
+<li class="toctree-l4"><a class="reference internal" href="obelisk.asynchronous.core.Aggregator.html">obelisk.asynchronous.core.Aggregator</a></li>
+<li class="toctree-l4"><a class="reference internal" href="obelisk.asynchronous.core.Datapoint.html">obelisk.asynchronous.core.Datapoint</a></li>
+<li class="toctree-l4"><a class="reference internal" href="obelisk.asynchronous.core.type_suffix.html">obelisk.asynchronous.core.type_suffix</a></li>
+<li class="toctree-l4"><a class="reference internal" href="obelisk.asynchronous.core.ChunkedParams.html">obelisk.asynchronous.core.ChunkedParams</a></li>
+<li class="toctree-l4"><a class="reference internal" href="obelisk.asynchronous.core.Client.html">obelisk.asynchronous.core.Client</a></li>
+<li class="toctree-l4"><a class="reference internal" href="obelisk.asynchronous.core.IncomingDatapoint.html">obelisk.asynchronous.core.IncomingDatapoint</a></li>
+<li class="toctree-l4"><a class="reference internal" href="obelisk.asynchronous.core.ObeliskPosition.html">obelisk.asynchronous.core.ObeliskPosition</a></li>
+<li class="toctree-l4"><a class="reference internal" href="obelisk.asynchronous.core.QueryParams.html">obelisk.asynchronous.core.QueryParams</a></li>
+<li class="toctree-l4"><a class="reference internal" href="obelisk.asynchronous.core.QueryResult.html">obelisk.asynchronous.core.QueryResult</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="obelisk.exceptions.html">obelisk.exceptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="obelisk.strategies.html">obelisk.strategies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="obelisk.sync.html">obelisk.sync</a></li>
+<li class="toctree-l2"><a class="reference internal" href="obelisk.types.html">obelisk.types</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="obelisk.html">obelisk</a><ul>
+  <li><a href="obelisk.asynchronous.html">obelisk.asynchronous</a><ul>
+      <li>Previous: <a href="obelisk.asynchronous.Obelisk.html" title="previous chapter">obelisk.asynchronous.Obelisk</a></li>
+      <li>Next: <a href="obelisk.asynchronous.core.DataType.html" title="next chapter">obelisk.asynchronous.core.DataType</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2025-2025, PreDiCT - IDLab.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.2.3</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="../_sources/_autosummary/obelisk.asynchronous.core.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

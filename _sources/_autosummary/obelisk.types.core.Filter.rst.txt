@@ -1,0 +1,40 @@
+obelisk.types.core.Filter
+=========================
+
+.. currentmodule:: obelisk.types.core
+
+.. autoclass:: Filter
+   :show-inheritance:
+
+   
+   .. automethod:: __init__
+      :no-index:
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+   
+   .. automethod:: __init__
+      :no-index-entry:
+   
+   .. automethod:: add_and
+      :no-index-entry:
+   
+   .. automethod:: add_or
+      :no-index-entry:
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+   
+   .. autoattribute:: content
+      :no-index-entry:
+   
+   

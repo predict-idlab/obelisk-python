@@ -39,9 +39,9 @@
 We support both “classic” Obelisk and HFS,
 each with a synchronous and async API.
 The PyPi package name is <code class="docutils literal notranslate"><span class="pre">obelisk-py</span></code>, the Python module is called <code class="docutils literal notranslate"><span class="pre">obelisk</span></code>.</p>
-<p>Your starting point will be one of the Consumer or Producer instances in <a class="reference internal" href="obelisk.sync.html#module-obelisk.sync" title="obelisk.sync"><code class="xref py py-mod docutils literal notranslate"><span class="pre">sync</span></code></a> or <a class="reference internal" href="obelisk.asynchronous.html#module-obelisk.asynchronous" title="obelisk.asynchronous"><code class="xref py py-mod docutils literal notranslate"><span class="pre">asynchronous</span></code></a> depending on your preferred API.</p>
-<p>Each of the <cite>sync</cite> or <cite>asynchronous</cite> modules will contain two main classes, those being Producer and Consumer.
-Those submit or fetch data respectively.</p>
+<p>Your starting point will be one of the Obelisk instances in <a class="reference internal" href="obelisk.sync.html#module-obelisk.sync" title="obelisk.sync"><code class="xref py py-mod docutils literal notranslate"><span class="pre">sync</span></code></a> or <a class="reference internal" href="obelisk.asynchronous.html#module-obelisk.asynchronous" title="obelisk.asynchronous"><code class="xref py py-mod docutils literal notranslate"><span class="pre">asynchronous</span></code></a> depending on your preferred API.</p>
+<p>The Obelisk classes in these modules both implement the same interface,
+but the asynchronous implementation returns Coroutines.</p>
 <section id="error-handling">
 <h2>Error handling<a class="headerlink" href="#error-handling" title="Link to this heading">¶</a></h2>
 <p>Obelisk-py comes with robust retry logic to handle any errors that may come up.
@@ -62,7 +62,7 @@ Several predefined strategies are available in <a class="reference internal" hre
 <td><p></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="obelisk.sync.html#module-obelisk.sync" title="obelisk.sync"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sync</span></code></a></p></td>
-<td><p>This module provides wrappers for the classes in <cite>obelisk.asynchronous</cite> with a synchronous API.</p></td>
+<td><p>This module provides wrappers for the classes in <a class="reference internal" href="obelisk.asynchronous.html#module-obelisk.asynchronous" title="obelisk.asynchronous"><code class="xref py py-mod docutils literal notranslate"><span class="pre">obelisk.asynchronous</span></code></a> with a synchronous API.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="obelisk.types.html#module-obelisk.types" title="obelisk.types"><code class="xref py py-obj docutils literal notranslate"><span class="pre">types</span></code></a></p></td>
 <td><p></p></td>

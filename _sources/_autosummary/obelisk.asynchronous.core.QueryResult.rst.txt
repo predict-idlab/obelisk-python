@@ -1,0 +1,65 @@
+obelisk.asynchronous.core.QueryResult
+=====================================
+
+.. currentmodule:: obelisk.asynchronous.core
+
+.. autoclass:: QueryResult
+   :show-inheritance:
+
+   
+   .. automethod:: __init__
+      :no-index:
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+   
+   
+   .. autoattribute:: model_config
+      :no-index-entry:
+   
+   
+   
+   
+   .. autoattribute:: cursor
+      :no-index-entry:
+   
+   .. autoattribute:: items
+      :no-index-entry:
+   
+   

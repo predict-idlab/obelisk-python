@@ -1,0 +1,68 @@
+obelisk.asynchronous.core.ObeliskPosition
+=========================================
+
+.. currentmodule:: obelisk.asynchronous.core
+
+.. autoclass:: ObeliskPosition
+   :show-inheritance:
+
+   
+   .. automethod:: __init__
+      :no-index:
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+   
+   
+   .. autoattribute:: model_config
+      :no-index-entry:
+   
+   
+   
+   
+   .. autoattribute:: lat
+      :no-index-entry:
+   
+   .. autoattribute:: lng
+      :no-index-entry:
+   
+   .. autoattribute:: elevation
+      :no-index-entry:
+   
+   
