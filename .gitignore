@@ -48,6 +48,7 @@ cover/
 # Sphinx documentation
 docs/_build/
 docs/build/
+docs/source/_autosummary/
 
 # PyBuilder
 .pybuilder/
@@ -74,6 +75,7 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+pyrightconfig.json
 
 # Spyder project settings
 .spyderproject

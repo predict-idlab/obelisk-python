@@ -1,16 +1,22 @@
 import asyncio
 from datetime import datetime, timedelta
-from typing import List, Literal, Generator, Optional
 from math import floor
+from typing import Generator, List, Literal, Optional
 
-from obelisk.asynchronous.consumer import \
-    Consumer as AsyncConsumer
-from obelisk.strategies.retry import RetryStrategy, \
-    NoRetryStrategy
-from obelisk.types import QueryResult, Datapoint, ObeliskKind
+import httpx
+
+from obelisk.asynchronous import Obelisk as AsyncObelisk
+from obelisk.strategies.retry import NoRetryStrategy, RetryStrategy
+from obelisk.types import (
+    Datapoint,
+    IngestMode,
+    ObeliskKind,
+    QueryResult,
+    TimestampPrecision,
+)
 
 
-class Consumer:
+class Obelisk:
     """
     Component that contains all the logic to consume data from
     the Obelisk API (e.g. historical data, sse).
@@ -23,22 +29,32 @@ class Consumer:
 
     loop: asyncio.AbstractEventLoop
     """Event loop used to run interal async operations"""
-    async_consumer: AsyncConsumer
+    async_obelisk: AsyncObelisk
     """The actual implementation this synchronous wrapper refers to"""
 
-    def __init__(self, client: str, secret: str,
-                 retry_strategy: RetryStrategy = NoRetryStrategy(),
-                 kind: ObeliskKind = ObeliskKind.CLASSIC):
-        self.async_consumer = AsyncConsumer(client, secret, retry_strategy, kind)
+    def __init__(
+        self,
+        client: str,
+        secret: str,
+        retry_strategy: RetryStrategy = NoRetryStrategy(),
+        kind: ObeliskKind = ObeliskKind.CLASSIC,
+    ):
+        self.async_obelisk = AsyncObelisk(client, secret, retry_strategy, kind)
         self.loop = asyncio.get_event_loop()
 
-    def single_chunk(self, datasets: List[str], metrics: Optional[List[str]] = None,
-                     fields: Optional[dict] = None,
-                     from_timestamp: Optional[int] = None, to_timestamp: Optional[int] = None,
-                     order_by: Optional[dict] = None,
-                     filter_: Optional[dict] = None,
-                     limit: Optional[int] = None, limit_by: Optional[dict] = None,
-                     cursor: Optional[str] = None) -> QueryResult:
+    def fetch_single_chunk(
+        self,
+        datasets: List[str],
+        metrics: Optional[List[str]] = None,
+        fields: Optional[dict] = None,
+        from_timestamp: Optional[int] = None,
+        to_timestamp: Optional[int] = None,
+        order_by: Optional[dict] = None,
+        filter_: Optional[dict] = None,
+        limit: Optional[int] = None,
+        limit_by: Optional[dict] = None,
+        cursor: Optional[str] = None,
+    ) -> QueryResult:
         """
         Queries one chunk of events from Obelisk for given parameters,
         does not handle paging over Cursors.
@@ -78,23 +94,36 @@ class Consumer:
             used when paging through large result sets.
         """
 
-        self.async_consumer.log.info("Starting task")
+        self.async_obelisk.log.info("Starting task")
         task = self.loop.create_task(
-            self.async_consumer.single_chunk(datasets, metrics, fields, from_timestamp,
-                                             to_timestamp, order_by, filter_,
-                                             limit, limit_by, cursor))
-        self.async_consumer.log.info("Blocking...")
+            self.async_obelisk.fetch_single_chunk(
+                datasets,
+                metrics,
+                fields,
+                from_timestamp,
+                to_timestamp,
+                order_by,
+                filter_,
+                limit,
+                limit_by,
+                cursor,
+            )
+        )
+        self.async_obelisk.log.info("Blocking...")
         return self.loop.run_until_complete(task)
 
-
-    def query(self, datasets: List[str], metrics: Optional[List[str]] = None,
-            fields: Optional[dict] = None,
-            from_timestamp: Optional[int] = None,
-            to_timestamp: Optional[int] = None,
-            order_by: Optional[dict] = None,
-            filter_: Optional[dict] = None,
-            limit: Optional[int] = None,
-            limit_by: Optional[dict] = None) -> List[Datapoint]:
+    def query(
+        self,
+        datasets: List[str],
+        metrics: Optional[List[str]] = None,
+        fields: Optional[dict] = None,
+        from_timestamp: Optional[int] = None,
+        to_timestamp: Optional[int] = None,
+        order_by: Optional[dict] = None,
+        filter_: Optional[dict] = None,
+        limit: Optional[int] = None,
+        limit_by: Optional[dict] = None,
+    ) -> List[Datapoint]:
         """
         Queries data from obelisk,
         automatically iterating when a cursor is returned.
@@ -131,19 +160,31 @@ class Consumer:
             to a specified maximum number.
         """
 
-
         task = self.loop.create_task(
-            self.async_consumer.query(datasets, metrics, fields, from_timestamp,
-                                    to_timestamp, order_by, filter_, limit,
-                                    limit_by))
+            self.async_obelisk.query(
+                datasets,
+                metrics,
+                fields,
+                from_timestamp,
+                to_timestamp,
+                order_by,
+                filter_,
+                limit,
+                limit_by,
+            )
+        )
         return self.loop.run_until_complete(task)
 
-
-    def query_time_chunked(self, datasets: List[str], metrics: List[str],
-                        from_time: datetime, to_time: datetime,
-                        jump: timedelta, filter_: Optional[dict] = None,
-                        direction: Literal['asc', 'desc'] = 'asc'
-                        ) -> Generator[List[Datapoint], None, None]:
+    def query_time_chunked(
+        self,
+        datasets: List[str],
+        metrics: List[str],
+        from_time: datetime,
+        to_time: datetime,
+        jump: timedelta,
+        filter_: Optional[dict] = None,
+        direction: Literal["asc", "desc"] = "asc",
+    ) -> Generator[List[Datapoint], None, None]:
         """
         Fetches all data matching the provided filters,
         yielding one chunk at a time.
@@ -171,9 +212,48 @@ class Consumer:
 
         current_start = from_time
         while current_start < to_time:
-            yield self.query(datasets=datasets, metrics=metrics,
-                                from_timestamp=floor(current_start.timestamp() * 1000),
-                                to_timestamp=floor((current_start + jump).timestamp() * 1000 - 1),
-                                order_by={"field": ["timestamp"], "ordering": direction},
-                                filter_=filter_)
+            yield self.query(
+                datasets=datasets,
+                metrics=metrics,
+                from_timestamp=floor(current_start.timestamp() * 1000),
+                to_timestamp=floor((current_start + jump).timestamp() * 1000 - 1),
+                order_by={"field": ["timestamp"], "ordering": direction},
+                filter_=filter_,
+            )
             current_start += jump
+
+    def send(
+        self,
+        dataset: str,
+        data: List[dict],
+        precision: TimestampPrecision = TimestampPrecision.MILLISECONDS,
+        mode: IngestMode = IngestMode.DEFAULT,
+    ) -> httpx.Response:
+        """
+        Publishes data to Obelisk
+
+        Parameters
+        ----------
+        dataset : str
+            ID for the dataset to publish to
+        data : List[dict]
+            List of Obelisk-acceptable datapoints.
+            Exact format varies between Classic or HFS,
+            caller is responsible for formatting.
+        precision : TimestampPrecision = TimestampPrecision.MILLISECONDS
+            Precision used in the numeric timestamps contained in data.
+            Ensure it matches to avoid weird errors.
+        mode : IngestMode = IngestMode.DEFAULT
+            See docs for :class:`~obelisk.types.IngestMode`.
+
+        Raises
+        ------
+
+        ObeliskError
+            When the resulting status code is not 204, an empty :exc:`~obelisk.exceptions.ObeliskError` is raised.
+        """
+
+        task = self.loop.create_task(
+            self.async_obelisk.send(dataset, data, precision, mode)
+        )
+        return self.loop.run_until_complete(task)

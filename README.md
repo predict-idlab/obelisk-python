@@ -65,6 +65,10 @@ Building is as follows:
 # uv run sphinx-build -M html docs/source/ docs/build/
 ```
 
+In case of major restructuring, it may be needed to clean up the contents of `docs/_autosummary` and potentially other rst files in `docs`,
+followed by re-running the build.
+Manually triggering sphinx-apidoc is unnecessary.
+
 ## Credits
 
 Base implementation originally by Pieter Moens <Pieter.Moens@ugent.be>,

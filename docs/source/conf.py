@@ -27,10 +27,11 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.autosummary',
     'sphinx.ext.viewcode',
-    'numpydoc',
     'sphinx.ext.doctest',
+    'sphinx.ext.intersphinx',
 ]
 autosummary_generate = True
+autosummary_ignore_module_all = False
 
 templates_path = ['_templates']
 exclude_patterns = []
@@ -42,3 +43,15 @@ exclude_patterns = []
 
 html_theme = 'alabaster'
 html_static_path = ['_static']
+
+autodoc_default_options = {
+    'inherited-members': False,
+    'undoc-members': True,
+}
+autoclass_content = 'class'
+autodoc_member_order = 'groupwise'
+
+intersphinx_mapping = {
+    'python': ('https://docs.python.org/3', None),
+    'pydantic': ('https://docs.pydantic.dev/latest', None),
+}
