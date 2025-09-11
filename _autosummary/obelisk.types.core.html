@@ -46,7 +46,7 @@ Example:</p>
 <span class="gp">... </span>    <span class="n">Comparison</span><span class="o">.</span><span class="n">less</span><span class="p">(</span><span class="s1">&#39;timestamp&#39;</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="mi">1757422128</span><span class="p">))</span>
 <span class="gp">... </span><span class="p">))</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
-<span class="go">(((&#39;source&#39;==&#39;test source&#39;);(&#39;metricType&#39;=in=(&#39;number&#39;, &#39;number[]&#39;))),(&#39;timestamp&#39;&lt;&#39;2025-09-09T14:48:48&#39;))</span>
+<span class="go">((&#39;source&#39;==&#39;test source&#39;;&#39;metricType&#39;=in=(&#39;number&#39;, &#39;number[]&#39;)),&#39;timestamp&#39;&lt;&#39;2025-09-09T14:48:48&#39;)</span>
 </pre></div>
 </div>
 <p class="rubric">Module Attributes</p>
@@ -64,13 +64,13 @@ Example:</p>
 <td><p></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="obelisk.types.core.Comparison.html#obelisk.types.core.Comparison" title="obelisk.types.core.Comparison"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Comparison</span></code></a>(left, right, op)</p></td>
-<td><p></p></td>
+<td><p>Comparisons are the basic items of a <a class="reference internal" href="obelisk.types.core.Filter.html#obelisk.types.core.Filter" title="obelisk.types.core.Filter"><code class="xref py py-class docutils literal notranslate"><span class="pre">Filter</span></code></a>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="obelisk.types.core.Constraint.html#obelisk.types.core.Constraint" title="obelisk.types.core.Constraint"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Constraint</span></code></a>()</p></td>
-<td><p></p></td>
+<td><p>Constraints are simply groups of <a class="reference internal" href="obelisk.types.core.Comparison.html#obelisk.types.core.Comparison" title="obelisk.types.core.Comparison"><code class="xref py py-class docutils literal notranslate"><span class="pre">Comparison</span></code></a>, such as <a class="reference internal" href="obelisk.types.core.And.html#obelisk.types.core.And" title="obelisk.types.core.And"><code class="xref py py-class docutils literal notranslate"><span class="pre">And</span></code></a>, or <a class="reference internal" href="obelisk.types.core.Or.html#obelisk.types.core.Or" title="obelisk.types.core.Or"><code class="xref py py-class docutils literal notranslate"><span class="pre">Or</span></code></a>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="obelisk.types.core.Filter.html#obelisk.types.core.Filter" title="obelisk.types.core.Filter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Filter</span></code></a>([content])</p></td>
-<td><p></p></td>
+<td><p>Filter is an easier way to programatically create filters for the Obelisk CORE platform.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="obelisk.types.core.Or.html#obelisk.types.core.Or" title="obelisk.types.core.Or"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Or</span></code></a>(*args)</p></td>
 <td><p></p></td>

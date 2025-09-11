@@ -39,6 +39,10 @@
 <dt class="sig sig-object py" id="obelisk.types.core.Constraint">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">obelisk.types.core.</span></span><span class="sig-name descname"><span class="pre">Constraint</span></span><a class="reference internal" href="../_modules/obelisk/types/core.html#Constraint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#obelisk.types.core.Constraint" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/abc.html#abc.ABC" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></a></p>
+<p>Constraints are simply groups of <a class="reference internal" href="obelisk.types.core.Comparison.html#obelisk.types.core.Comparison" title="obelisk.types.core.Comparison"><code class="xref py py-class docutils literal notranslate"><span class="pre">Comparison</span></code></a>,
+such as <a class="reference internal" href="obelisk.types.core.And.html#obelisk.types.core.And" title="obelisk.types.core.And"><code class="xref py py-class docutils literal notranslate"><span class="pre">And</span></code></a>, or <a class="reference internal" href="obelisk.types.core.Or.html#obelisk.types.core.Or" title="obelisk.types.core.Or"><code class="xref py py-class docutils literal notranslate"><span class="pre">Or</span></code></a>.</p>
+<p>These constraints always enclose their contents in parentheses,
+to avoid confusing precendence situations in serialised format.</p>
 <dl class="py method">
 <dt class="sig sig-object py">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>

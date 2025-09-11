@@ -45,7 +45,7 @@
 <span class="sd">...     Comparison.less(&#39;timestamp&#39;, datetime.fromtimestamp(1757422128))</span>
 <span class="sd">... ))</span>
 <span class="sd">&gt;&gt;&gt; print(f)</span>
-<span class="sd">(((&#39;source&#39;==&#39;test source&#39;);(&#39;metricType&#39;=in=(&#39;number&#39;, &#39;number[]&#39;))),(&#39;timestamp&#39;&lt;&#39;2025-09-09T14:48:48&#39;))</span>
+<span class="sd">((&#39;source&#39;==&#39;test source&#39;;&#39;metricType&#39;=in=(&#39;number&#39;, &#39;number[]&#39;)),&#39;timestamp&#39;&lt;&#39;2025-09-09T14:48:48&#39;)</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">ABC</span>
@@ -53,7 +53,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">List</span>
 
 
-<span class="n">FieldName</span> <span class="o">=</span> <span class="nb">str</span> <span class="c1"># TODO: validate field names?</span>
+<span class="n">FieldName</span> <span class="o">=</span> <span class="nb">str</span>
 <span class="sd">&quot;&quot;&quot;https://obelisk.pages.ilabt.imec.be/obelisk-core/query.html#available-data-point-fields</span>
 <span class="sd">Field names are not validated at this time, due to the inherent complexity.</span>
 <span class="sd">&quot;&quot;&quot;</span>
@@ -62,6 +62,13 @@
 <div class="viewcode-block" id="Constraint">
 <a class="viewcode-back" href="../../../_autosummary/obelisk.types.core.Constraint.html#obelisk.types.core.Constraint">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Constraint</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Constraints are simply groups of :class:`Comparison`,</span>
+<span class="sd">    such as :class:`And`, or :class:`Or`.</span>
+
+<span class="sd">    These constraints always enclose their contents in parentheses,</span>
+<span class="sd">    to avoid confusing precendence situations in serialised format.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">pass</span></div>
 
 
@@ -69,6 +76,17 @@
 <div class="viewcode-block" id="Comparison">
 <a class="viewcode-back" href="../../../_autosummary/obelisk.types.core.Comparison.html#obelisk.types.core.Comparison">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Comparison</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Comparisons are the basic items of a :class:`Filter`.</span>
+<span class="sd">    They consist of a field name, operator, and possibly a value on the right.</span>
+
+<span class="sd">    It is strongly suggested you create comparisons by using the staticmethods</span>
+<span class="sd">    on this class, rather than trying to construct them yourselves.</span>
+
+<span class="sd">    When serializing to RSQL format,</span>
+<span class="sd">    each argument is single quoted as to accept any otherwise reserved characters,</span>
+<span class="sd">    and serialised using :func:`str`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">left</span><span class="p">:</span> <span class="n">FieldName</span>
     <span class="n">right</span><span class="p">:</span> <span class="n">Any</span>
     <span class="n">op</span><span class="p">:</span> <span class="nb">str</span>
@@ -83,10 +101,10 @@
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="n">right</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sstr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">right</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">right</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;(&#39;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">right</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;(&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">right</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">right</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">right</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
 
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;(&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">left</span><span class="si">}</span><span class="s2">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">op</span><span class="si">}{</span><span class="n">right</span><span class="si">}</span><span class="s2">)&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">left</span><span class="si">}</span><span class="s2">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">op</span><span class="si">}{</span><span class="n">right</span><span class="si">}</span><span class="s2">&quot;</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_sstr</span><span class="p">(</span><span class="n">item</span><span class="p">:</span> <span class="n">Any</span><span class="p">):</span>
@@ -210,6 +228,18 @@
 <div class="viewcode-block" id="Filter">
 <a class="viewcode-back" href="../../../_autosummary/obelisk.types.core.Filter.html#obelisk.types.core.Filter">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Filter</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Filter is an easier way to programatically create filters for the Obelisk CORE platform.</span>
+
+<span class="sd">    We still recommend you familiarise yourself with the CORE filter documentation,</span>
+<span class="sd">    as not everything is typechecked.</span>
+<span class="sd">    Specifically, the left hand side of any comparison is left unchecked.</span>
+<span class="sd">    Checking this would be borderline impossible with the optional arguments to some fields,</span>
+<span class="sd">    and the dot notation for labels.</span>
+
+<span class="sd">    As this field is not checked, we also do not check whether the type of left operand</span>
+<span class="sd">    and right operand make sense in the provided comparison.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">content</span><span class="p">:</span> <span class="n">Item</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
 
 <div class="viewcode-block" id="Filter.__init__">
@@ -224,6 +254,14 @@
 <div class="viewcode-block" id="Filter.add_and">
 <a class="viewcode-back" href="../../../_autosummary/obelisk.types.core.Filter.html#obelisk.types.core.Filter.add_and">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">add_and</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">other</span><span class="p">:</span> <span class="n">Item</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Filter</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Encloses the current filter contents, if any,</span>
+<span class="sd">        in an :class:`And`, along with any other provided Items.</span>
+
+<span class="sd">        &gt;&gt;&gt; str(Filter(Comparison.not_null(&#39;labels.username&#39;))</span>
+<span class="sd">        ... .add_and(Comparison.equal(&#39;labels.username&#39;, &#39;stpletin&#39;), Comparison.less_equal(&#39;timestamp&#39;, &#39;2025-01-12T00:00:00Z&#39;)))</span>
+<span class="sd">        &quot;(&#39;labels.username&#39;=notnull=;&#39;labels.username&#39;==&#39;stpletin&#39;;&#39;timestamp&#39;&lt;=&#39;2025-01-12T00:00:00Z&#39;)&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">content</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">content</span> <span class="o">=</span> <span class="n">And</span><span class="p">(</span><span class="o">*</span><span class="n">other</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
@@ -234,6 +272,14 @@
 <div class="viewcode-block" id="Filter.add_or">
 <a class="viewcode-back" href="../../../_autosummary/obelisk.types.core.Filter.html#obelisk.types.core.Filter.add_or">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">add_or</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">other</span><span class="p">:</span> <span class="n">Item</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Filter</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Encloses the current filter contents, if any,</span>
+<span class="sd">        in an :class:`Or`, along with any other provided Items.</span>
+
+<span class="sd">        &gt;&gt;&gt; str(Filter(Comparison.not_null(&#39;labels.username&#39;))</span>
+<span class="sd">        ... .add_or(Comparison.equal(&#39;labels.username&#39;, &#39;stpletin&#39;), Comparison.less_equal(&#39;timestamp&#39;, &#39;2025-01-12T00:00:00Z&#39;)))</span>
+<span class="sd">        &quot;(&#39;labels.username&#39;=notnull=,&#39;labels.username&#39;==&#39;stpletin&#39;,&#39;timestamp&#39;&lt;=&#39;2025-01-12T00:00:00Z&#39;)&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">content</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">content</span> <span class="o">=</span> <span class="n">Or</span><span class="p">(</span><span class="o">*</span><span class="n">other</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
