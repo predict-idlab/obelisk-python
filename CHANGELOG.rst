@@ -1,3 +1,12 @@
+Version 2.0.0
+-------------
+
+:Date: September 11, 2025
+
+* Move split Consumer and Producer implementations into joint Client
+* Implement Obelisk CORE in async mode.
+* Token and token expiry are now private fields of BaseClient
+
 Version 1.0.0
 -------------
 
