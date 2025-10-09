@@ -256,7 +256,7 @@ class Client(BaseClient):
             result_set.extend(result.items)
             params.cursor = result.cursor
 
-            if len(result_set) >= result_limit:
+            if len(result_set) >= result_limit or result.cursor is None:
                 break
 
         return result_set
