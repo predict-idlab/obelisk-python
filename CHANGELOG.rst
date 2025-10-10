@@ -1,7 +1,14 @@
+Version 2.0.2
+-------------
+
+:Date: October 10, 2025
+
+* Fix: Remove kind parameter from CORE client, see #13 and #12
+
 Version 2.0.1
 -------------
 
-:Date: Oktober 9, 2025
+:Date: October 9, 2025
 
 * Fix: CORE `query` now bails when less data is available than requested
 
