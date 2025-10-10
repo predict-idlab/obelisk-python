@@ -8,21 +8,15 @@ on:
       - main
 
 jobs:
-  # Do not lint for now, as the code is not yet compliant
-  #lint:
-  #  name: Lint
-  #  runs-on: ubuntu-latest
-  #  steps:
-  #    - uses: actions/checkout@v4
-  #    - uses: astral-sh/setup-uv@v3
-  #    - name: Ruff lint
-  #      run: uv run ruff check .
-  #    - name: Ruff format
-  #      run: uv run ruff format --diff .
-  #    # This isn't a general Python lint, this style is just used in this repository
-  #    - name: Prettier format
-  #      run: npx prettier --prose-wrap always --check "**/*.md"
-
+  lint:
+    name: Run linting and format
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - run: uv python install python3.13
+      - run: uv run ruff check src/obelisk/
+      - run: uv run ruff format --check src/obelisk/
   test:
     name: Run tests
     strategy:
@@ -33,6 +27,4 @@ jobs:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v6
       - run: uv python install python3.13
-      - run: uv run ruff check src/obelisk/
-      - run: uv run ruff format --check src/obelisk/
       - run: uv run pytest
