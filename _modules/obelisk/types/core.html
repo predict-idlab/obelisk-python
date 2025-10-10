@@ -47,6 +47,7 @@
 <span class="sd">&gt;&gt;&gt; print(f)</span>
 <span class="sd">((&#39;source&#39;==&#39;test source&#39;;&#39;metricType&#39;=in=(&#39;number&#39;, &#39;number[]&#39;)),&#39;timestamp&#39;&lt;&#39;2025-09-09T14:48:48&#39;)</span>
 <span class="sd">&quot;&quot;&quot;</span>
+
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">ABC</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
@@ -69,13 +70,14 @@
 <span class="sd">    These constraints always enclose their contents in parentheses,</span>
 <span class="sd">    to avoid confusing precendence situations in serialised format.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">pass</span></div>
 
 
 
 <div class="viewcode-block" id="Comparison">
 <a class="viewcode-back" href="../../../_autosummary/obelisk.types.core.Comparison.html#obelisk.types.core.Comparison">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">Comparison</span><span class="p">():</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Comparison</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Comparisons are the basic items of a :class:`Filter`.</span>
 <span class="sd">    They consist of a field name, operator, and possibly a value on the right.</span>
@@ -87,6 +89,7 @@
 <span class="sd">    each argument is single quoted as to accept any otherwise reserved characters,</span>
 <span class="sd">    and serialised using :func:`str`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">left</span><span class="p">:</span> <span class="n">FieldName</span>
     <span class="n">right</span><span class="p">:</span> <span class="n">Any</span>
     <span class="n">op</span><span class="p">:</span> <span class="nb">str</span>
@@ -101,7 +104,7 @@
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="n">right</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sstr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">right</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">right</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;(&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">right</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">right</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;(&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">right</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">right</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">right</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
 
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">left</span><span class="si">}</span><span class="s2">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">op</span><span class="si">}{</span><span class="n">right</span><span class="si">}</span><span class="s2">&quot;</span>
@@ -227,7 +230,7 @@
 
 <div class="viewcode-block" id="Filter">
 <a class="viewcode-back" href="../../../_autosummary/obelisk.types.core.Filter.html#obelisk.types.core.Filter">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">Filter</span><span class="p">():</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Filter</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Filter is an easier way to programatically create filters for the Obelisk CORE platform.</span>
 
@@ -240,6 +243,7 @@
 <span class="sd">    As this field is not checked, we also do not check whether the type of left operand</span>
 <span class="sd">    and right operand make sense in the provided comparison.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">content</span><span class="p">:</span> <span class="n">Item</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
 
 <div class="viewcode-block" id="Filter.__init__">

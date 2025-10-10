@@ -39,6 +39,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">timedelta</span>
 
+
 <div class="viewcode-block" id="RetryEvaluator">
 <a class="viewcode-back" href="../../../_autosummary/obelisk.strategies.retry.RetryEvaluator.html#obelisk.strategies.retry.RetryEvaluator">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">RetryEvaluator</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
@@ -58,6 +59,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 </div>
+
 
 
 <div class="viewcode-block" id="RetryStrategy">
@@ -83,12 +85,14 @@
 </div>
 
 
+
 <div class="viewcode-block" id="NoRetryStrategy">
 <a class="viewcode-back" href="../../../_autosummary/obelisk.strategies.retry.NoRetryStrategy.html#obelisk.strategies.retry.NoRetryStrategy">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">NoRetryStrategy</span><span class="p">(</span><span class="n">RetryStrategy</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Retry strategy that simply does not retry.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
 <div class="viewcode-block" id="NoRetryStrategy.make">
 <a class="viewcode-back" href="../../../_autosummary/obelisk.strategies.retry.NoRetryStrategy.html#obelisk.strategies.retry.NoRetryStrategy.make">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">make</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RetryEvaluator</span><span class="p">:</span>
@@ -100,6 +104,7 @@
 </div>
 
 
+
 <div class="viewcode-block" id="ImmediateRetryStrategy">
 <a class="viewcode-back" href="../../../_autosummary/obelisk.strategies.retry.ImmediateRetryStrategy.html#obelisk.strategies.retry.ImmediateRetryStrategy">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ImmediateRetryStrategy</span><span class="p">(</span><span class="n">RetryStrategy</span><span class="p">):</span>
@@ -107,6 +112,7 @@
 <span class="sd">    Retry strategy that tries again without delay,</span>
 <span class="sd">    up to a user defined maximum amount of times.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
 <div class="viewcode-block" id="ImmediateRetryStrategy.__init__">
 <a class="viewcode-back" href="../../../_autosummary/obelisk.strategies.retry.ImmediateRetryStrategy.html#obelisk.strategies.retry.ImmediateRetryStrategy.__init__">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">max_retries</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -119,6 +125,7 @@
         <span class="k">class</span><span class="w"> </span><span class="nc">ImmediateRetryEvaluator</span><span class="p">(</span><span class="n">RetryEvaluator</span><span class="p">):</span>
             <span class="n">count</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
             <span class="n">max_retries</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_retries</span>
+
             <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">should_retry</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">count</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_retries</span><span class="p">:</span>
                     <span class="k">return</span> <span class="kc">False</span>
@@ -127,6 +134,7 @@
 
         <span class="k">return</span> <span class="n">ImmediateRetryEvaluator</span><span class="p">()</span></div>
 </div>
+
 
 
 <div class="viewcode-block" id="ExponentialBackoffStrategy">
@@ -139,15 +147,19 @@
 
 <span class="sd">    Note that backoff values less than one second will count as zero.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">max_retries</span><span class="p">:</span> <span class="nb">int</span>
     <span class="n">backoff</span><span class="p">:</span> <span class="n">timedelta</span>
     <span class="n">max_backoff</span><span class="p">:</span> <span class="n">timedelta</span>
 
 <div class="viewcode-block" id="ExponentialBackoffStrategy.__init__">
 <a class="viewcode-back" href="../../../_autosummary/obelisk.strategies.retry.ExponentialBackoffStrategy.html#obelisk.strategies.retry.ExponentialBackoffStrategy.__init__">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">max_retries</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
-                 <span class="n">backoff</span><span class="p">:</span> <span class="n">timedelta</span> <span class="o">=</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span>
-                 <span class="n">max_backoff</span><span class="p">:</span> <span class="n">timedelta</span> <span class="o">=</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">hours</span><span class="o">=</span><span class="mi">24</span><span class="p">))</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">max_retries</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
+        <span class="n">backoff</span><span class="p">:</span> <span class="n">timedelta</span> <span class="o">=</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span>
+        <span class="n">max_backoff</span><span class="p">:</span> <span class="n">timedelta</span> <span class="o">=</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">hours</span><span class="o">=</span><span class="mi">24</span><span class="p">),</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">max_retries</span> <span class="o">=</span> <span class="n">max_retries</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">backoff</span> <span class="o">=</span> <span class="n">backoff</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">max_backoff</span> <span class="o">=</span> <span class="n">max_backoff</span></div>
@@ -167,7 +179,8 @@
                     <span class="k">return</span> <span class="kc">False</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
                 <span class="k">await</span> <span class="n">sleep</span><span class="p">(</span>
-                    <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_backoff</span><span class="o">.</span><span class="n">seconds</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">backoff</span><span class="o">.</span><span class="n">seconds</span> <span class="o">**</span> <span class="bp">self</span><span class="o">.</span><span class="n">count</span><span class="p">))</span>
+                    <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_backoff</span><span class="o">.</span><span class="n">seconds</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">backoff</span><span class="o">.</span><span class="n">seconds</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">count</span><span class="p">)</span>
+                <span class="p">)</span>
                 <span class="k">return</span> <span class="kc">True</span>
 
         <span class="k">return</span> <span class="n">ExponentialBackoffEvaluator</span><span class="p">()</span></div>

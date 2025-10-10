@@ -52,9 +52,9 @@
 <span class="sd">    Does not apply to HFS</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">DEFAULT</span> <span class="o">=</span> <span class="s1">&#39;default&#39;</span>
-    <span class="n">STREAM_ONLY</span> <span class="o">=</span> <span class="s1">&#39;stream_only&#39;</span>
-    <span class="n">STORE_ONLY</span> <span class="o">=</span> <span class="s1">&#39;store_only&#39;</span></div>
+    <span class="n">DEFAULT</span> <span class="o">=</span> <span class="s2">&quot;default&quot;</span>
+    <span class="n">STREAM_ONLY</span> <span class="o">=</span> <span class="s2">&quot;stream_only&quot;</span>
+    <span class="n">STORE_ONLY</span> <span class="o">=</span> <span class="s2">&quot;store_only&quot;</span></div>
 
 
 
@@ -67,17 +67,17 @@
 <span class="sd">    but interpreted by Obelisk as milliseconds, it would erroneously be somewhere in the past.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">__choices__</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;SECONDS&#39;</span><span class="p">,</span> <span class="s1">&#39;MILLISECONDS&#39;</span><span class="p">,</span> <span class="s1">&#39;MICROSECONDS&#39;</span><span class="p">)</span>
+    <span class="n">__choices__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;SECONDS&quot;</span><span class="p">,</span> <span class="s2">&quot;MILLISECONDS&quot;</span><span class="p">,</span> <span class="s2">&quot;MICROSECONDS&quot;</span><span class="p">)</span>
 
-    <span class="n">SECONDS</span> <span class="o">=</span> <span class="s1">&#39;seconds&#39;</span>
-    <span class="n">MILLISECONDS</span> <span class="o">=</span> <span class="s1">&#39;milliseconds&#39;</span>
-    <span class="n">MICROSECONDS</span> <span class="o">=</span> <span class="s1">&#39;microseconds&#39;</span></div>
+    <span class="n">SECONDS</span> <span class="o">=</span> <span class="s2">&quot;seconds&quot;</span>
+    <span class="n">MILLISECONDS</span> <span class="o">=</span> <span class="s2">&quot;milliseconds&quot;</span>
+    <span class="n">MICROSECONDS</span> <span class="o">=</span> <span class="s2">&quot;microseconds&quot;</span></div>
 
 
 
 <div class="viewcode-block" id="Datapoint">
 <a class="viewcode-back" href="../../_autosummary/obelisk.types.Datapoint.html#obelisk.types.Datapoint">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">Datapoint</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="s1">&#39;allow&#39;</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Datapoint</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="s2">&quot;allow&quot;</span><span class="p">):</span>
     <span class="n">timestamp</span><span class="p">:</span> <span class="nb">int</span>
     <span class="n">value</span><span class="p">:</span> <span class="n">Any</span>
     <span class="n">dataset</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
@@ -98,37 +98,37 @@
 <div class="viewcode-block" id="ObeliskKind">
 <a class="viewcode-back" href="../../_autosummary/obelisk.types.ObeliskKind.html#obelisk.types.ObeliskKind">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ObeliskKind</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Enum</span><span class="p">):</span>
-    <span class="n">CLASSIC</span> <span class="o">=</span> <span class="s1">&#39;classic&#39;</span>
-    <span class="n">HFS</span> <span class="o">=</span> <span class="s1">&#39;hfs&#39;</span>
-    <span class="n">CORE</span> <span class="o">=</span> <span class="s1">&#39;core&#39;</span>
+    <span class="n">CLASSIC</span> <span class="o">=</span> <span class="s2">&quot;classic&quot;</span>
+    <span class="n">HFS</span> <span class="o">=</span> <span class="s2">&quot;hfs&quot;</span>
+    <span class="n">CORE</span> <span class="o">=</span> <span class="s2">&quot;core&quot;</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">token_url</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">match</span> <span class="bp">self</span><span class="p">:</span>
             <span class="k">case</span> <span class="n">ObeliskKind</span><span class="o">.</span><span class="n">CLASSIC</span><span class="p">:</span>
-                <span class="k">return</span> <span class="s1">&#39;https://obelisk.ilabt.imec.be/api/v3/auth/token&#39;</span>
+                <span class="k">return</span> <span class="s2">&quot;https://obelisk.ilabt.imec.be/api/v3/auth/token&quot;</span>
             <span class="k">case</span> <span class="n">ObeliskKind</span><span class="o">.</span><span class="n">HFS</span><span class="p">:</span>
-                <span class="k">return</span> <span class="s1">&#39;https://obelisk-hfs.discover.ilabt.imec.be/auth/realms/obelisk-hfs/protocol/openid-connect/token&#39;</span>
+                <span class="k">return</span> <span class="s2">&quot;https://obelisk-hfs.discover.ilabt.imec.be/auth/realms/obelisk-hfs/protocol/openid-connect/token&quot;</span>
             <span class="k">case</span> <span class="n">ObeliskKind</span><span class="o">.</span><span class="n">CORE</span><span class="p">:</span>
-                <span class="k">return</span> <span class="s1">&#39;https://auth.obelisk.discover.ilabt.imec.be/realms/obelisk/protocol/openid-connect/token&#39;</span>
+                <span class="k">return</span> <span class="s2">&quot;https://auth.obelisk.discover.ilabt.imec.be/realms/obelisk/protocol/openid-connect/token&quot;</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">root_url</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">match</span> <span class="bp">self</span><span class="p">:</span>
             <span class="k">case</span> <span class="n">ObeliskKind</span><span class="o">.</span><span class="n">CLASSIC</span><span class="p">:</span>
-                <span class="k">return</span> <span class="s1">&#39;https://obelisk.ilabt.imec.be/api/v3&#39;</span>
+                <span class="k">return</span> <span class="s2">&quot;https://obelisk.ilabt.imec.be/api/v3&quot;</span>
             <span class="k">case</span> <span class="n">ObeliskKind</span><span class="o">.</span><span class="n">HFS</span><span class="p">:</span>
-                <span class="k">return</span> <span class="s1">&#39;https://obelisk-hfs.discover.ilabt.imec.be&#39;</span>
+                <span class="k">return</span> <span class="s2">&quot;https://obelisk-hfs.discover.ilabt.imec.be&quot;</span>
             <span class="k">case</span> <span class="n">ObeliskKind</span><span class="o">.</span><span class="n">CORE</span><span class="p">:</span>
-                <span class="k">return</span> <span class="s1">&#39;https://obelisk.discover.ilabt.imec.be/datasets&#39;</span>
+                <span class="k">return</span> <span class="s2">&quot;https://obelisk.discover.ilabt.imec.be/datasets&quot;</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">query_url</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">match</span> <span class="bp">self</span><span class="p">:</span>
             <span class="k">case</span> <span class="n">ObeliskKind</span><span class="o">.</span><span class="n">CLASSIC</span><span class="p">:</span>
-                <span class="k">return</span> <span class="s1">&#39;https://obelisk.ilabt.imec.be/api/v3/data/query/events&#39;</span>
+                <span class="k">return</span> <span class="s2">&quot;https://obelisk.ilabt.imec.be/api/v3/data/query/events&quot;</span>
             <span class="k">case</span> <span class="n">ObeliskKind</span><span class="o">.</span><span class="n">HFS</span><span class="p">:</span>
-                <span class="k">return</span> <span class="s1">&#39;https://obelisk-hfs.discover.ilabt.imec.be/data/query/events&#39;</span>
+                <span class="k">return</span> <span class="s2">&quot;https://obelisk-hfs.discover.ilabt.imec.be/data/query/events&quot;</span>
             <span class="k">case</span> <span class="n">ObeliskKind</span><span class="o">.</span><span class="n">CORE</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span>
 
@@ -136,9 +136,9 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">ingest_url</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">match</span> <span class="bp">self</span><span class="p">:</span>
             <span class="k">case</span> <span class="n">ObeliskKind</span><span class="o">.</span><span class="n">CLASSIC</span><span class="p">:</span>
-                <span class="k">return</span> <span class="s1">&#39;https://obelisk.ilabt.imec.be/api/v3/data/ingest&#39;</span>
+                <span class="k">return</span> <span class="s2">&quot;https://obelisk.ilabt.imec.be/api/v3/data/ingest&quot;</span>
             <span class="k">case</span> <span class="n">ObeliskKind</span><span class="o">.</span><span class="n">HFS</span><span class="p">:</span>
-                <span class="k">return</span> <span class="s1">&#39;https://obelisk-hfs.discover.ilabt.imec.be/data/ingest&#39;</span>
+                <span class="k">return</span> <span class="s2">&quot;https://obelisk-hfs.discover.ilabt.imec.be/data/ingest&quot;</span>
             <span class="k">case</span> <span class="n">ObeliskKind</span><span class="o">.</span><span class="n">CORE</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span>
 
@@ -146,7 +146,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">stream_url</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">match</span> <span class="bp">self</span><span class="p">:</span>
             <span class="k">case</span> <span class="n">ObeliskKind</span><span class="o">.</span><span class="n">CLASSIC</span><span class="p">:</span>
-                <span class="k">return</span> <span class="s1">&#39;https://obelisk.ilabt.imec.be/api/v3/data/streams&#39;</span>
+                <span class="k">return</span> <span class="s2">&quot;https://obelisk.ilabt.imec.be/api/v3/data/streams&quot;</span>
             <span class="k">case</span> <span class="n">ObeliskKind</span><span class="o">.</span><span class="n">HFS</span><span class="p">:</span>
                 <span class="k">return</span> <span class="kc">None</span>
             <span class="k">case</span> <span class="n">ObeliskKind</span><span class="o">.</span><span class="n">CORE</span><span class="p">:</span>
