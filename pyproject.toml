@@ -59,5 +59,6 @@ strict = true
 include = ["src/obelisk/**/*.py"]
 
 [tool.ruff.lint]
-select = ["E4", "E7", "E9", "F", "ASYNC", "S", "B"]
-ignore = []
+select = ["E4", "E7", "E9", "F", "ASYNC", "S", "B", "FIX", "SIM", "C90", "N", "PERF"]
+# Ignore N815, camelcase field names are usually for serialisation reasons
+ignore = ["N815"]

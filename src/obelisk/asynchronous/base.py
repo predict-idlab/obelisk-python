@@ -74,7 +74,7 @@ class BaseClient:
                     )
 
                     response = request.json()
-                except Exception as e:
+                except Exception as e:  # noqa: PERF203 # retry strategy should add delay
                     last_error = e
                     self.log.error(e)
                     continue
@@ -88,7 +88,7 @@ class BaseClient:
             if request.status_code != 200:
                 if "error" in response:
                     self.log.warning(f"Could not authenticate, {response['error']}")
-                    raise AuthenticationError
+                raise AuthenticationError
 
             self._token = response["access_token"]
             self._token_expires = datetime.now() + timedelta(

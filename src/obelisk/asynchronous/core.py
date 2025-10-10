@@ -107,11 +107,11 @@ class IncomingDatapoint(BaseModel):
                 f"Type suffix mismatch, expected number, got {type(self.value)}"
             )
 
-        if suffix == "number[]":
-            if type(self.value) is not list or any(
-                [not isinstance(x, Number) for x in self.value]
-            ):
-                raise ValueError("Type suffix mismatch, expected value of number[]")
+        if suffix == "number[]" and (
+            type(self.value) is not list
+            or any([not isinstance(x, Number) for x in self.value])
+        ):
+            raise ValueError("Type suffix mismatch, expected value of number[]")
 
         # Do not check json, most things should be serialisable
 
@@ -153,9 +153,8 @@ class QueryParams(BaseModel):
 
     @model_validator(mode="after")
     def check_datatype_needed(self) -> Self:
-        if self.fields is None or "value" in self.fields:
-            if self.dataType is None:
-                raise ValueError("Value field requested, must specify datatype")
+        if (self.fields is None or "value" in self.fields) and self.dataType is None:
+            raise ValueError("Value field requested, must specify datatype")
 
         return self
 
@@ -182,9 +181,8 @@ class ChunkedParams(BaseModel):
 
     @model_validator(mode="after")
     def check_datatype_needed(self) -> Self:
-        if self.fields is None or "value" in self.fields:
-            if self.dataType is None:
-                raise ValueError("Value field requested, must specify datatype")
+        if (self.fields is None or "value" in self.fields) and self.dataType is None:
+            raise ValueError("Value field requested, must specify datatype")
 
         return self
 
