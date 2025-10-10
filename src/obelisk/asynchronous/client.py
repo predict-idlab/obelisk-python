@@ -1,7 +1,7 @@
 import json
 from datetime import datetime, timedelta
 from math import floor
-from typing import AsyncGenerator, List, Literal, Optional
+from typing import Any, AsyncGenerator, List, Literal, Optional
 
 import httpx
 from pydantic import ValidationError
@@ -28,10 +28,10 @@ class Obelisk(BaseClient):
         fields: Optional[List[str]] = None,
         from_timestamp: Optional[int] = None,
         to_timestamp: Optional[int] = None,
-        order_by: Optional[dict] = None,
-        filter_: Optional[dict] = None,
+        order_by: Optional[dict[str, Any]] = None,
+        filter_: Optional[dict[str, Any]] = None,
         limit: Optional[int] = None,
-        limit_by: Optional[dict] = None,
+        limit_by: Optional[dict[str, Any]] = None,
         cursor: Optional[str] = None,
     ) -> QueryResult:
         """
@@ -116,10 +116,10 @@ class Obelisk(BaseClient):
         fields: Optional[List[str]] = None,
         from_timestamp: Optional[int] = None,
         to_timestamp: Optional[int] = None,
-        order_by: Optional[dict] = None,
-        filter_: Optional[dict] = None,
+        order_by: Optional[dict[str, Any]] = None,
+        filter_: Optional[dict[str, Any]] = None,
         limit: Optional[int] = None,
-        limit_by: Optional[dict] = None,
+        limit_by: Optional[dict[str, Any]] = None,
     ) -> List[Datapoint]:
         """
         Queries data from obelisk,
@@ -196,7 +196,7 @@ class Obelisk(BaseClient):
         from_time: datetime,
         to_time: datetime,
         jump: timedelta,
-        filter_: Optional[dict] = None,
+        filter_: Optional[dict[str, Any]] = None,
         direction: Literal["asc", "desc"] = "asc",
     ) -> AsyncGenerator[List[Datapoint], None]:
         """
@@ -239,7 +239,7 @@ class Obelisk(BaseClient):
     async def send(
         self,
         dataset: str,
-        data: List[dict],
+        data: List[dict[str, Any]],
         precision: TimestampPrecision = TimestampPrecision.MILLISECONDS,
         mode: IngestMode = IngestMode.DEFAULT,
     ) -> httpx.Response:

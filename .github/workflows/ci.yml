@@ -21,7 +21,7 @@ jobs:
       - run: uv python install ${{ matrix.python }}
       - run: uv run ruff check src/obelisk/
       - run: uv run ruff format --check src/obelisk/
-      - run: uv run mypy src/obelisk/
+      - run: uv run mypy
   test:
     name: Run tests
     strategy:

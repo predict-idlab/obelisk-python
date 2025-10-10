@@ -1,7 +1,7 @@
 import asyncio
 from datetime import datetime, timedelta
 from math import floor
-from typing import Generator, List, Literal, Optional
+from typing import Any, Generator, List, Literal, Optional
 
 import httpx
 
@@ -49,10 +49,10 @@ class Obelisk:
         fields: Optional[List[str]] = None,
         from_timestamp: Optional[int] = None,
         to_timestamp: Optional[int] = None,
-        order_by: Optional[dict] = None,
-        filter_: Optional[dict] = None,
+        order_by: Optional[dict[str, Any]] = None,
+        filter_: Optional[dict[str, Any]] = None,
         limit: Optional[int] = None,
-        limit_by: Optional[dict] = None,
+        limit_by: Optional[dict[str, Any]] = None,
         cursor: Optional[str] = None,
     ) -> QueryResult:
         """
@@ -119,10 +119,10 @@ class Obelisk:
         fields: Optional[List[str]] = None,
         from_timestamp: Optional[int] = None,
         to_timestamp: Optional[int] = None,
-        order_by: Optional[dict] = None,
-        filter_: Optional[dict] = None,
+        order_by: Optional[dict[str, Any]] = None,
+        filter_: Optional[dict[str, Any]] = None,
         limit: Optional[int] = None,
-        limit_by: Optional[dict] = None,
+        limit_by: Optional[dict[str, Any]] = None,
     ) -> List[Datapoint]:
         """
         Queries data from obelisk,
@@ -182,7 +182,7 @@ class Obelisk:
         from_time: datetime,
         to_time: datetime,
         jump: timedelta,
-        filter_: Optional[dict] = None,
+        filter_: Optional[dict[str, Any]] = None,
         direction: Literal["asc", "desc"] = "asc",
     ) -> Generator[List[Datapoint], None, None]:
         """
@@ -225,7 +225,7 @@ class Obelisk:
     def send(
         self,
         dataset: str,
-        data: List[dict],
+        data: List[dict[str, Any]],
         precision: TimestampPrecision = TimestampPrecision.MILLISECONDS,
         mode: IngestMode = IngestMode.DEFAULT,
     ) -> httpx.Response:

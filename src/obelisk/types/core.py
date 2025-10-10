@@ -69,7 +69,7 @@ class Comparison:
         return f"'{self.left}'{self.op}{right}"
 
     @staticmethod
-    def _sstr(item: Any):
+    def _sstr(item: Any) -> str:
         """Smart string conversion"""
         if isinstance(item, datetime):
             return item.isoformat()

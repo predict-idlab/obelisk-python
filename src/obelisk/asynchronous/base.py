@@ -5,7 +5,7 @@ from typing import Any, Optional
 
 import httpx
 
-from obelisk.exceptions import AuthenticationError
+from obelisk.exceptions import AuthenticationError, ObeliskError
 from obelisk.strategies.retry import RetryStrategy, NoRetryStrategy
 from obelisk.types import ObeliskKind
 
@@ -45,7 +45,7 @@ class BaseClient:
 
         self.log = logging.getLogger("obelisk")
 
-    async def _get_token(self):
+    async def _get_token(self) -> None:
         auth_string = str(
             base64.b64encode(f"{self._client}:{self._secret}".encode("utf-8")), "utf-8"
         )
@@ -60,6 +60,7 @@ class BaseClient:
         payload = {"grant_type": "client_credentials"}
 
         async with httpx.AsyncClient() as client:
+            request: httpx.Response | None = None
             response = None
             last_error = None
             retry = self.retry_strategy.make()
@@ -81,6 +82,9 @@ class BaseClient:
             if response is None and last_error is not None:
                 raise last_error
 
+            if request is None:
+                raise last_error or ObeliskError("Could not create HTTP request")
+
             if request.status_code != 200:
                 if "error" in response:
                     self.log.warning(f"Could not authenticate, {response['error']}")
@@ -91,9 +95,11 @@ class BaseClient:
                 seconds=response["expires_in"]
             )
 
-    async def _verify_token(self):
-        if self._token is None or self._token_expires < (
-            datetime.now() - self.grace_period
+    async def _verify_token(self) -> None:
+        if (
+            self._token is None
+            or self._token_expires is None
+            or self._token_expires < (datetime.now() - self.grace_period)
         ):
             retry = self.retry_strategy.make()
             first = True
@@ -107,7 +113,7 @@ class BaseClient:
                     continue
 
     async def http_post(
-        self, url: str, data: Any = None, params: Optional[dict] = None
+        self, url: str, data: Any = None, params: Optional[dict[str, str]] = None
     ) -> httpx.Response:
         """
         Send an HTTP POST request to Obelisk,
@@ -155,7 +161,9 @@ class BaseClient:
                 raise last_error
             return response
 
-    async def http_get(self, url: str, params: Optional[dict] = None) -> httpx.Response:
+    async def http_get(
+        self, url: str, params: Optional[dict[str, str]] = None
+    ) -> httpx.Response:
         """
         Send an HTTP GET request to Obelisk,
         with proper auth.
