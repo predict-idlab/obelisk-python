@@ -27,7 +27,7 @@ Field names are not validated at this time, due to the inherent complexity.
 """
 
 
-class Constraint(ABC):
+class Constraint(ABC):  # noqa: B024 # This is just a marker class
     """
     Constraints are simply groups of :class:`Comparison`,
     such as :class:`And`, or :class:`Or`.

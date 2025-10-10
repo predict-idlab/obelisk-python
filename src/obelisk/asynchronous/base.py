@@ -35,7 +35,7 @@ class BaseClient:
         self,
         client: str,
         secret: str,
-        retry_strategy: RetryStrategy = NoRetryStrategy(),
+        retry_strategy: RetryStrategy = NoRetryStrategy(),  # noqa: B008   # This is fine to bew shared
         kind: ObeliskKind = ObeliskKind.CLASSIC,
     ) -> None:
         self._client = client

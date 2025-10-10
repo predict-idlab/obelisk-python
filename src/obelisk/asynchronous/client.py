@@ -103,11 +103,11 @@ class Obelisk(BaseClient):
         except json.JSONDecodeError as e:
             msg = f"Obelisk response is not a JSON object: {e}"
             self.log.warning(msg)
-            raise ObeliskError(msg)
+            raise ObeliskError(msg) from e
         except ValidationError as e:
             msg = f"Response cannot be validated: {e}"
             self.log.warning(msg)
-            raise ObeliskError(msg)
+            raise ObeliskError(msg) from e
 
     async def query(
         self,

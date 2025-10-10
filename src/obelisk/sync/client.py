@@ -36,7 +36,7 @@ class Obelisk:
         self,
         client: str,
         secret: str,
-        retry_strategy: RetryStrategy = NoRetryStrategy(),
+        retry_strategy: RetryStrategy = NoRetryStrategy(),  # noqa: B008   # This is fine to bew shared
         kind: ObeliskKind = ObeliskKind.CLASSIC,
     ):
         self.async_obelisk = AsyncObelisk(client, secret, retry_strategy, kind)
