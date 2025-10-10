@@ -19,6 +19,9 @@ from typing import Annotated, AsyncIterator, Dict, Iterator, List, Literal, Opti
 from typing_extensions import Self
 from numbers import Number
 
+from obelisk.strategies.retry import NoRetryStrategy, RetryStrategy
+from obelisk.types import ObeliskKind
+
 
 DataType = Literal['number', 'number[]', 'json', 'bool', 'string']
 """The possible types of data Obelisk can accept"""
@@ -179,6 +182,16 @@ class QueryResult(BaseModel):
 class Client(BaseClient):
     page_limit: int = 250
     """How many datapoints to request per page in a cursored fetch"""
+
+
+    def __init__(self, client: str, secret: str,
+                 retry_strategy: RetryStrategy = NoRetryStrategy()) -> None:
+        BaseClient.__init__(
+            client=client,
+            secret=secret,
+            retry_strategy=retry_strategy,
+            kind=ObeliskKind.CORE
+        )
 
     async def send(
         self,
