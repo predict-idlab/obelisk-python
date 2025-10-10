@@ -6,6 +6,7 @@ from asyncio import sleep
 from abc import ABC, abstractmethod
 from datetime import timedelta
 
+
 class RetryEvaluator(ABC):
     """
     This class performs the actual retry handling.
@@ -20,6 +21,7 @@ class RetryEvaluator(ABC):
         but may wait internally if it deems necessary.
         """
         pass
+
 
 class RetryStrategy(ABC):
     """
@@ -38,10 +40,12 @@ class RetryStrategy(ABC):
         """
         pass
 
+
 class NoRetryStrategy(RetryStrategy):
     """
     Retry strategy that simply does not retry.
     """
+
     def make(self) -> RetryEvaluator:
         class NoRetryEvaluator(RetryEvaluator):
             async def should_retry(self) -> bool:
@@ -49,11 +53,13 @@ class NoRetryStrategy(RetryStrategy):
 
         return NoRetryEvaluator()
 
+
 class ImmediateRetryStrategy(RetryStrategy):
     """
     Retry strategy that tries again without delay,
     up to a user defined maximum amount of times.
     """
+
     def __init__(self, max_retries: int) -> None:
         self.max_retries = max_retries
 
@@ -61,6 +67,7 @@ class ImmediateRetryStrategy(RetryStrategy):
         class ImmediateRetryEvaluator(RetryEvaluator):
             count: int = 0
             max_retries: int = self.max_retries
+
             async def should_retry(self) -> bool:
                 if self.count >= self.max_retries:
                     return False
@@ -68,6 +75,7 @@ class ImmediateRetryStrategy(RetryStrategy):
                 return True
 
         return ImmediateRetryEvaluator()
+
 
 class ExponentialBackoffStrategy(RetryStrategy):
     """
@@ -77,13 +85,17 @@ class ExponentialBackoffStrategy(RetryStrategy):
 
     Note that backoff values less than one second will count as zero.
     """
+
     max_retries: int
     backoff: timedelta
     max_backoff: timedelta
 
-    def __init__(self, max_retries: int = 5,
-                 backoff: timedelta = timedelta(seconds=2),
-                 max_backoff: timedelta = timedelta(hours=24)) -> None:
+    def __init__(
+        self,
+        max_retries: int = 5,
+        backoff: timedelta = timedelta(seconds=2),
+        max_backoff: timedelta = timedelta(hours=24),
+    ) -> None:
         self.max_retries = max_retries
         self.backoff = backoff
         self.max_backoff = max_backoff
@@ -100,7 +112,8 @@ class ExponentialBackoffStrategy(RetryStrategy):
                     return False
                 self.count += 1
                 await sleep(
-                    min(self.max_backoff.seconds, self.backoff.seconds ** self.count))
+                    min(self.max_backoff.seconds, self.backoff.seconds**self.count)
+                )
                 return True
 
         return ExponentialBackoffEvaluator()

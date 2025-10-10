@@ -69,6 +69,11 @@ In case of major restructuring, it may be needed to clean up the contents of `do
 followed by re-running the build.
 Manually triggering sphinx-apidoc is unnecessary.
 
+### Hooks
+
+We use some simple Git hooks to avoid fighting the CI too often.
+These are stored in the `hooks/` directory, and can be enabled by setting `git config core.hooksPath hooks/`.
+
 ## Credits
 
 Base implementation originally by Pieter Moens <Pieter.Moens@ugent.be>,

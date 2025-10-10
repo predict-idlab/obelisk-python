@@ -17,9 +17,9 @@ class IngestMode(str, Enum):
     Does not apply to HFS
     """
 
-    DEFAULT = 'default'
-    STREAM_ONLY = 'stream_only'
-    STORE_ONLY = 'store_only'
+    DEFAULT = "default"
+    STREAM_ONLY = "stream_only"
+    STORE_ONLY = "store_only"
 
 
 class TimestampPrecision(str, Enum):
@@ -29,14 +29,14 @@ class TimestampPrecision(str, Enum):
     but interpreted by Obelisk as milliseconds, it would erroneously be somewhere in the past.
     """
 
-    __choices__ = ('SECONDS', 'MILLISECONDS', 'MICROSECONDS')
+    __choices__ = ("SECONDS", "MILLISECONDS", "MICROSECONDS")
 
-    SECONDS = 'seconds'
-    MILLISECONDS = 'milliseconds'
-    MICROSECONDS = 'microseconds'
+    SECONDS = "seconds"
+    MILLISECONDS = "milliseconds"
+    MICROSECONDS = "microseconds"
 
 
-class Datapoint(BaseModel, extra='allow'):
+class Datapoint(BaseModel, extra="allow"):
     timestamp: int
     value: Any
     dataset: Optional[str] = None
@@ -51,37 +51,37 @@ class QueryResult(BaseModel):
 
 
 class ObeliskKind(str, Enum):
-    CLASSIC = 'classic'
-    HFS = 'hfs'
-    CORE = 'core'
+    CLASSIC = "classic"
+    HFS = "hfs"
+    CORE = "core"
 
     @property
     def token_url(self) -> str:
         match self:
             case ObeliskKind.CLASSIC:
-                return 'https://obelisk.ilabt.imec.be/api/v3/auth/token'
+                return "https://obelisk.ilabt.imec.be/api/v3/auth/token"
             case ObeliskKind.HFS:
-                return 'https://obelisk-hfs.discover.ilabt.imec.be/auth/realms/obelisk-hfs/protocol/openid-connect/token'
+                return "https://obelisk-hfs.discover.ilabt.imec.be/auth/realms/obelisk-hfs/protocol/openid-connect/token"
             case ObeliskKind.CORE:
-                return 'https://auth.obelisk.discover.ilabt.imec.be/realms/obelisk/protocol/openid-connect/token'
+                return "https://auth.obelisk.discover.ilabt.imec.be/realms/obelisk/protocol/openid-connect/token"
 
     @property
     def root_url(self) -> str:
         match self:
             case ObeliskKind.CLASSIC:
-                return 'https://obelisk.ilabt.imec.be/api/v3'
+                return "https://obelisk.ilabt.imec.be/api/v3"
             case ObeliskKind.HFS:
-                return 'https://obelisk-hfs.discover.ilabt.imec.be'
+                return "https://obelisk-hfs.discover.ilabt.imec.be"
             case ObeliskKind.CORE:
-                return 'https://obelisk.discover.ilabt.imec.be/datasets'
+                return "https://obelisk.discover.ilabt.imec.be/datasets"
 
     @property
     def query_url(self) -> str:
         match self:
             case ObeliskKind.CLASSIC:
-                return 'https://obelisk.ilabt.imec.be/api/v3/data/query/events'
+                return "https://obelisk.ilabt.imec.be/api/v3/data/query/events"
             case ObeliskKind.HFS:
-                return 'https://obelisk-hfs.discover.ilabt.imec.be/data/query/events'
+                return "https://obelisk-hfs.discover.ilabt.imec.be/data/query/events"
             case ObeliskKind.CORE:
                 raise NotImplementedError()
 
@@ -89,9 +89,9 @@ class ObeliskKind(str, Enum):
     def ingest_url(self) -> str:
         match self:
             case ObeliskKind.CLASSIC:
-                return 'https://obelisk.ilabt.imec.be/api/v3/data/ingest'
+                return "https://obelisk.ilabt.imec.be/api/v3/data/ingest"
             case ObeliskKind.HFS:
-                return 'https://obelisk-hfs.discover.ilabt.imec.be/data/ingest'
+                return "https://obelisk-hfs.discover.ilabt.imec.be/data/ingest"
             case ObeliskKind.CORE:
                 raise NotImplementedError()
 
@@ -99,7 +99,7 @@ class ObeliskKind(str, Enum):
     def stream_url(self) -> str | None:
         match self:
             case ObeliskKind.CLASSIC:
-                return 'https://obelisk.ilabt.imec.be/api/v3/data/streams'
+                return "https://obelisk.ilabt.imec.be/api/v3/data/streams"
             case ObeliskKind.HFS:
                 return None
             case ObeliskKind.CORE:

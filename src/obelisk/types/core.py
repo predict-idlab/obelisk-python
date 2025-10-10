@@ -14,6 +14,7 @@ Example:
 >>> print(f)
 (('source'=='test source';'metricType'=in=('number', 'number[]')),'timestamp'<'2025-09-09T14:48:48')
 """
+
 from __future__ import annotations
 from abc import ABC
 from datetime import datetime
@@ -34,10 +35,11 @@ class Constraint(ABC):
     These constraints always enclose their contents in parentheses,
     to avoid confusing precendence situations in serialised format.
     """
+
     pass
 
 
-class Comparison():
+class Comparison:
     """
     Comparisons are the basic items of a :class:`Filter`.
     They consist of a field name, operator, and possibly a value on the right.
@@ -49,6 +51,7 @@ class Comparison():
     each argument is single quoted as to accept any otherwise reserved characters,
     and serialised using :func:`str`.
     """
+
     left: FieldName
     right: Any
     op: str
@@ -60,7 +63,7 @@ class Comparison():
 
     def __str__(self) -> str:
         right = self._sstr(self.right)
-        if not right.startswith('(') and len(right) > 0:
+        if not right.startswith("(") and len(right) > 0:
             right = f"'{right}'"
 
         return f"'{self.left}'{self.op}{right}"
@@ -141,7 +144,7 @@ class Or(Constraint):
         return "(" + ",".join([str(x) for x in self.content]) + ")"
 
 
-class Filter():
+class Filter:
     """
     Filter is an easier way to programatically create filters for the Obelisk CORE platform.
 
@@ -154,6 +157,7 @@ class Filter():
     As this field is not checked, we also do not check whether the type of left operand
     and right operand make sense in the provided comparison.
     """
+
     content: Item | None = None
 
     def __init__(self, content: Constraint | None = None):
