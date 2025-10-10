@@ -9,5 +9,6 @@ Please note that the sync module *will not* work in an asynchronous context (i.e
 This is because it is internally nothing more than a wrapper over the asynchronous implementation.
 Use the asynchronous implementation in these situations.
 """
+
 __all__ = ["Obelisk"]
 from .client import Obelisk

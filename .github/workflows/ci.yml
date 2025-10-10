@@ -34,4 +34,5 @@ jobs:
       - uses: astral-sh/setup-uv@v6
       - run: uv python install python3.13
       - run: uv run ruff check src/obelisk/
+      - run: uv run ruff format --check src/obelisk/
       - run: uv run pytest

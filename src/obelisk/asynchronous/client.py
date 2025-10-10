@@ -90,7 +90,8 @@ class Obelisk(BaseClient):
             "limitBy": limit_by,
         }
         response = await self.http_post(
-            self.kind.query_url, data={k: v for k, v in payload.items() if v is not None}
+            self.kind.query_url,
+            data={k: v for k, v in payload.items() if v is not None},
         )
         if response.status_code != 200:
             self.log.warning(f"Unexpected status code: {response.status_code}")
@@ -187,7 +188,6 @@ class Obelisk(BaseClient):
                 break
 
         return result_set
-
 
     async def query_time_chunked(
         self,
