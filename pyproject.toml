@@ -50,3 +50,7 @@ dev = [
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/obelisk"]
+
+[tool.mypy]
+files = "src/obelisk"
+strict = true

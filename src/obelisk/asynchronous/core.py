@@ -159,7 +159,7 @@ class QueryParams(BaseModel):
 
         return self
 
-    def to_dict(self) -> Dict:
+    def to_dict(self) -> dict[str, Any]:
         return self.model_dump(exclude_none=True, by_alias=True)
 
 
