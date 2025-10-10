@@ -225,6 +225,7 @@ class Client(BaseClient):
         retry_strategy: RetryStrategy = NoRetryStrategy(),
     ) -> None:
         BaseClient.__init__(
+            self,
             client=client,
             secret=secret,
             retry_strategy=retry_strategy,

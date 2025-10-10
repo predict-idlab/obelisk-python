@@ -10,4 +10,5 @@
 # Redirect output to stderr.
 exec 1>&2
 
-exec uv run ruff format --check src/obelisk/
+uv run ruff format --check src/obelisk/
+uv run mypy src/obelisk/
