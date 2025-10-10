@@ -5,7 +5,8 @@ from obelisk.asynchronous import Obelisk
 client_id = "682c6c46604b3b3be35429df"
 client_secret = "7136832d-01be-456a-a1fe-25c7f9e130c5"
 
-pytest_plugins = ('pytest_asyncio',)
+pytest_plugins = ("pytest_asyncio",)
+
 
 @pytest.mark.asyncio
 async def test_fetch_demo_igent():
@@ -15,7 +16,7 @@ async def test_fetch_demo_igent():
         metrics=["org.dyamand.types.common.Temperature::number"],
         from_timestamp=1740924034000,
         to_timestamp=1741100614258,
-        limit=2
+        limit=2,
     )
 
     assert len(result.items) == 2

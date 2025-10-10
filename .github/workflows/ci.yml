@@ -19,8 +19,8 @@ jobs:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v6
       - run: uv python install ${{ matrix.python }}
-      - run: uv run ruff check src/obelisk/
-      - run: uv run ruff format --check src/obelisk/
+      - run: uv run ruff check
+      - run: uv run ruff format
       - run: uv run mypy
   test:
     name: Run tests
