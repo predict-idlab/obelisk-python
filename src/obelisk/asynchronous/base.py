@@ -94,7 +94,8 @@ class BaseClient:
                 try:
                     await self._get_token()
                     return
-                except:
+                except: # noqa: E722
+                    self.log.info("excepted, Retrying token fetch")
                     continue
 
     async def http_post(self, url: str, data: Any = None,

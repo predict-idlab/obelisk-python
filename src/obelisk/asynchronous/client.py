@@ -1,7 +1,7 @@
 import json
 from datetime import datetime, timedelta
 from math import floor
-from typing import AsyncGenerator, Generator, List, Literal, Optional
+from typing import AsyncGenerator, List, Literal, Optional
 
 import httpx
 from pydantic import ValidationError
