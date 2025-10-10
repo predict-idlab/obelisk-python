@@ -1,3 +1,10 @@
+Version 2.0.3
+-------------
+
+:Date: October 10, 2025
+
+* Fix: Overridden constructor in `core.Client` does not pass `self`
+
 Version 2.0.2
 -------------
 
