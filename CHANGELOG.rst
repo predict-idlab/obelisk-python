@@ -1,3 +1,10 @@
+Version 2.0.1
+-------------
+
+:Date: Oktober 9, 2025
+
+* Fix: CORE `query` now bails when less data is available than requested
+
 Version 2.0.0
 -------------
 

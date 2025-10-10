@@ -22,6 +22,7 @@ license-files = [
 [project.urls]
 source = "https://github.com/predict-idlab/obelisk-python"
 documentation = "https://predict-idlab.github.io/obelisk-python/"
+changelog = "https://github.com/predict-idlab/obelisk-python/blob/main/CHANGELOG.rst"
 
 [build-system]
 requires = ["hatchling", "hatch-vcs"]
