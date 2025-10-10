@@ -16,6 +16,8 @@ obelisk.asynchronous.core.Client
    .. autosummary::
    
    
+   .. automethod:: __init__
+      :no-index-entry:
    
    .. automethod:: fetch_single_chunk
       :no-index-entry:
