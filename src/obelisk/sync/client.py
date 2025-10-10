@@ -1,7 +1,8 @@
 import asyncio
 from datetime import datetime, timedelta
 from math import floor
-from typing import Any, Generator, List, Literal, Optional
+from typing import Any, Literal
+from collections.abc import Generator
 
 import httpx
 
@@ -44,16 +45,16 @@ class Obelisk:
 
     def fetch_single_chunk(
         self,
-        datasets: List[str],
-        metrics: Optional[List[str]] = None,
-        fields: Optional[List[str]] = None,
-        from_timestamp: Optional[int] = None,
-        to_timestamp: Optional[int] = None,
-        order_by: Optional[dict[str, Any]] = None,
-        filter_: Optional[dict[str, Any]] = None,
-        limit: Optional[int] = None,
-        limit_by: Optional[dict[str, Any]] = None,
-        cursor: Optional[str] = None,
+        datasets: list[str],
+        metrics: list[str] | None = None,
+        fields: list[str] | None = None,
+        from_timestamp: int | None = None,
+        to_timestamp: int | None = None,
+        order_by: dict[str, Any] | None = None,
+        filter_: dict[str, Any] | None = None,
+        limit: int | None = None,
+        limit_by: dict[str, Any] | None = None,
+        cursor: str | None = None,
     ) -> QueryResult:
         """
         Queries one chunk of events from Obelisk for given parameters,
@@ -114,16 +115,16 @@ class Obelisk:
 
     def query(
         self,
-        datasets: List[str],
-        metrics: Optional[List[str]] = None,
-        fields: Optional[List[str]] = None,
-        from_timestamp: Optional[int] = None,
-        to_timestamp: Optional[int] = None,
-        order_by: Optional[dict[str, Any]] = None,
-        filter_: Optional[dict[str, Any]] = None,
-        limit: Optional[int] = None,
-        limit_by: Optional[dict[str, Any]] = None,
-    ) -> List[Datapoint]:
+        datasets: list[str],
+        metrics: list[str] | None = None,
+        fields: list[str] | None = None,
+        from_timestamp: int | None = None,
+        to_timestamp: int | None = None,
+        order_by: dict[str, Any] | None = None,
+        filter_: dict[str, Any] | None = None,
+        limit: int | None = None,
+        limit_by: dict[str, Any] | None = None,
+    ) -> list[Datapoint]:
         """
         Queries data from obelisk,
         automatically iterating when a cursor is returned.
@@ -177,14 +178,14 @@ class Obelisk:
 
     def query_time_chunked(
         self,
-        datasets: List[str],
-        metrics: List[str],
+        datasets: list[str],
+        metrics: list[str],
         from_time: datetime,
         to_time: datetime,
         jump: timedelta,
-        filter_: Optional[dict[str, Any]] = None,
+        filter_: dict[str, Any] | None = None,
         direction: Literal["asc", "desc"] = "asc",
-    ) -> Generator[List[Datapoint], None, None]:
+    ) -> Generator[list[Datapoint], None, None]:
         """
         Fetches all data matching the provided filters,
         yielding one chunk at a time.
@@ -225,7 +226,7 @@ class Obelisk:
     def send(
         self,
         dataset: str,
-        data: List[dict[str, Any]],
+        data: list[dict[str, Any]],
         precision: TimestampPrecision = TimestampPrecision.MILLISECONDS,
         mode: IngestMode = IngestMode.DEFAULT,
     ) -> httpx.Response:

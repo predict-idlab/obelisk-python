@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import List, Any, Optional
+from typing import Any
 
 from pydantic import BaseModel
 
@@ -39,15 +39,15 @@ class TimestampPrecision(str, Enum):
 class Datapoint(BaseModel, extra="allow"):
     timestamp: int
     value: Any
-    dataset: Optional[str] = None
-    metric: Optional[str] = None
-    source: Optional[str] = None
-    userId: Optional[int] = None  # Only if HFS and no other name for field
+    dataset: str | None = None
+    metric: str | None = None
+    source: str | None = None
+    userId: int | None = None  # Only if HFS and no other name for field
 
 
 class QueryResult(BaseModel):
-    items: List[Datapoint]
-    cursor: Optional[str] = None
+    items: list[Datapoint]
+    cursor: str | None = None
 
 
 class ObeliskKind(str, Enum):

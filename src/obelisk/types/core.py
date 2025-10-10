@@ -18,7 +18,8 @@ Example:
 from __future__ import annotations
 from abc import ABC
 from datetime import datetime
-from typing import Any, Iterable, List
+from typing import Any
+from collections.abc import Iterable
 
 
 FieldName = str
@@ -125,7 +126,7 @@ Item = Constraint | Comparison
 
 
 class And(Constraint):
-    content: List[Item]
+    content: list[Item]
 
     def __init__(self, *args: Item):
         self.content = list(args)
@@ -135,7 +136,7 @@ class And(Constraint):
 
 
 class Or(Constraint):
-    content: List[Item]
+    content: list[Item]
 
     def __init__(self, *args: Item):
         self.content = list(args)

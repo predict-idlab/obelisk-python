@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 import logging
 import base64
-from typing import Any, Optional
+from typing import Any
 
 import httpx
 
@@ -19,9 +19,9 @@ class BaseClient:
     _client: str = ""
     _secret: str = ""
 
-    _token: Optional[str] = None
+    _token: str | None = None
     """Current authentication token"""
-    _token_expires: Optional[datetime] = None
+    _token_expires: datetime | None = None
     """Deadline after which token is no longer useable"""
 
     grace_period: timedelta = timedelta(seconds=10)
@@ -47,7 +47,7 @@ class BaseClient:
 
     async def _get_token(self) -> None:
         auth_string = str(
-            base64.b64encode(f"{self._client}:{self._secret}".encode("utf-8")), "utf-8"
+            base64.b64encode(f"{self._client}:{self._secret}".encode()), "utf-8"
         )
         headers = {
             "Authorization": f"Basic {auth_string}",
@@ -113,7 +113,7 @@ class BaseClient:
                     continue
 
     async def http_post(
-        self, url: str, data: Any = None, params: Optional[dict[str, str]] = None
+        self, url: str, data: Any = None, params: dict[str, str] | None = None
     ) -> httpx.Response:
         """
         Send an HTTP POST request to Obelisk,
@@ -162,7 +162,7 @@ class BaseClient:
             return response
 
     async def http_get(
-        self, url: str, params: Optional[dict[str, str]] = None
+        self, url: str, params: dict[str, str] | None = None
     ) -> httpx.Response:
         """
         Send an HTTP GET request to Obelisk,

@@ -25,16 +25,12 @@ from pydantic import (
 )
 from typing import (
     Annotated,
-    AsyncIterator,
-    Dict,
-    Iterator,
-    List,
     Literal,
-    Optional,
     Any,
     cast,
     get_args,
 )
+from collections.abc import AsyncIterator, Iterator
 from typing_extensions import Self
 from numbers import Number
 
@@ -71,7 +67,7 @@ Aggregator = Literal["last", "min", "mean", "max", "count", "stddev"]
 """Type of aggregation Obelisk can process"""
 
 
-Datapoint = Dict[str, Any]
+Datapoint = dict[str, Any]
 """Datapoints resulting from queries are modeled as simple dicts, as fields can come and go depending on query."""
 
 
@@ -92,11 +88,11 @@ class IncomingDatapoint(BaseModel):
     .. automethod:: check_metric_type(self)
     """
 
-    timestamp: Optional[AwareDatetime] = None
+    timestamp: AwareDatetime | None = None
     metric: str
     value: Any
-    labels: Optional[Dict[str, str]] = None
-    location: Optional[ObeliskPosition] = None
+    labels: dict[str, str] | None = None
+    location: ObeliskPosition | None = None
 
     @model_validator(mode="after")
     def check_metric_type(self) -> Self:
@@ -130,23 +126,21 @@ class IncomingDatapoint(BaseModel):
 
 class QueryParams(BaseModel):
     dataset: str
-    groupBy: Optional[List[FieldName]] = None
-    aggregator: Optional[Aggregator] = None
-    fields: Optional[List[FieldName]] = None
-    orderBy: Optional[List[str]] = (
+    groupBy: list[FieldName] | None = None
+    aggregator: Aggregator | None = None
+    fields: list[FieldName] | None = None
+    orderBy: list[str] | None = (
         None  # More complex than just FieldName, can be prefixed with - to invert sort
     )
-    dataType: Optional[DataType] = None
-    filter_: Annotated[Optional[str | Filter], Field(serialization_alias="filter")] = (
-        None
-    )
+    dataType: DataType | None = None
+    filter_: Annotated[str | Filter | None, Field(serialization_alias="filter")] = None
     """
     Obelisk CORE handles filtering in `RSQL format <https://obelisk.pages.ilabt.imec.be/obelisk-core/query.html#rsql-format>`__ ,
     to make it easier to also programatically write these filters, we provide the :class:`Filter` option as well.
 
     Suffix to avoid collisions.
     """
-    cursor: Optional[str] = None
+    cursor: str | None = None
     limit: int = 1000
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
@@ -164,14 +158,14 @@ class QueryParams(BaseModel):
 
 class ChunkedParams(BaseModel):
     dataset: str
-    groupBy: Optional[List[FieldName]] = None
-    aggregator: Optional[Aggregator] = None
-    fields: Optional[List[FieldName]] = None
-    orderBy: Optional[List[str]] = (
+    groupBy: list[FieldName] | None = None
+    aggregator: Aggregator | None = None
+    fields: list[FieldName] | None = None
+    orderBy: list[str] | None = (
         None  # More complex than just FieldName, can be prefixed with - to invert sort
     )
-    dataType: Optional[DataType] = None
-    filter_: Optional[str | Filter] = None
+    dataType: DataType | None = None
+    filter_: str | Filter | None = None
     """Underscore suffix to avoid name collisions"""
     start: datetime
     end: datetime
@@ -208,8 +202,8 @@ class ChunkedParams(BaseModel):
 
 
 class QueryResult(BaseModel):
-    cursor: Optional[str] = None
-    items: List[Datapoint]
+    cursor: str | None = None
+    items: list[Datapoint]
 
 
 class Client(BaseClient):
@@ -233,7 +227,7 @@ class Client(BaseClient):
     async def send(
         self,
         dataset: str,
-        data: List[IncomingDatapoint],
+        data: list[IncomingDatapoint],
     ) -> httpx.Response:
         """
         Publishes data to Obelisk
@@ -285,9 +279,9 @@ class Client(BaseClient):
             self.log.warning(msg)
             raise ObeliskError(msg) from e
 
-    async def query(self, params: QueryParams) -> List[Datapoint]:
+    async def query(self, params: QueryParams) -> list[Datapoint]:
         params.cursor = None
-        result_set: List[Datapoint] = []
+        result_set: list[Datapoint] = []
         result_limit = params.limit
 
         # Obelisk CORE does not actually stop emitting a cursor when done, limit serves as page limit
@@ -305,6 +299,6 @@ class Client(BaseClient):
 
     async def query_time_chunked(
         self, params: ChunkedParams
-    ) -> AsyncIterator[List[Datapoint]]:
+    ) -> AsyncIterator[list[Datapoint]]:
         for chunk in params.chunks():
             yield await self.query(chunk)
