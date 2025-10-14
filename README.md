@@ -58,7 +58,7 @@ and allows extra fields to provide naive support for other field names.
 `uv` is used to manage this project.
 Tests can be run using `uv run pytest`, building and deployment are handled by `uv build` and `uv publish`.
 
-Documentation uses the classic `sphinx` setup, with numpydoc for their lovely layouts and conventions.
+Documentation uses the classic `sphinx` setup.
 Building is as follows:
 
 ``` sh
