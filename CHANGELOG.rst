@@ -1,3 +1,10 @@
+Version 2.0.4
+-------------
+
+:Date: October 29, 2025
+
+* Fix: groupBy, orderBy and fields in Core are passed as repeating query parameter, rather than comma-separated string
+
 Version 2.0.3
 -------------
 
