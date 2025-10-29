@@ -22,6 +22,8 @@ from pydantic import (
     Field,
     ValidationError,
     model_validator,
+    SerializerFunctionWrapHandler,
+    WrapSerializer,
 )
 from typing import (
     Annotated,
@@ -124,12 +126,18 @@ class IncomingDatapoint(BaseModel):
         return self
 
 
+def serialize_comma_string(input: Any, handler: SerializerFunctionWrapHandler) -> str | None:
+    if val := handler(input):
+        return ",".join(val)
+    return None
+
+
 class QueryParams(BaseModel):
     dataset: str
-    groupBy: list[FieldName] | None = None
+    groupBy: Annotated[list[FieldName] | None, WrapSerializer(serialize_comma_string)] = None
     aggregator: Aggregator | None = None
-    fields: list[FieldName] | None = None
-    orderBy: list[str] | None = (
+    fields: Annotated[list[FieldName] | None, WrapSerializer(serialize_comma_string)] = None
+    orderBy: Annotated[list[str] | None, WrapSerializer(serialize_comma_string)] = (
         None  # More complex than just FieldName, can be prefixed with - to invert sort
     )
     dataType: DataType | None = None
@@ -153,7 +161,7 @@ class QueryParams(BaseModel):
         return self
 
     def to_dict(self) -> dict[str, Any]:
-        return self.model_dump(exclude_none=True, by_alias=True)
+        return self.model_dump(exclude_none=True, by_alias=True, mode='json')
 
 
 class ChunkedParams(BaseModel):
