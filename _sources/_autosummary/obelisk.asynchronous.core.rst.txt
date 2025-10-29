@@ -19,6 +19,7 @@ obelisk.asynchronous.core
    .. autosummary::
       :toctree:
    
+      serialize_comma_string
       type_suffix
    
    .. rubric:: Classes
