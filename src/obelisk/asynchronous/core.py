@@ -1,8 +1,8 @@
 """
 This module contains the asynchronous API to interface with Obelisk CORE.
-These methods all return a :class:`Awaitable`.
+These methods all return a `Awaitable`.
 
-Relevant entrance points are :class:`Client`.
+Relevant entrance points are `Client`.
 
 This API vaguely resembles that of clients to previous Obelisk versions,
 but also significantly diverts from it where the underlying Obelisk CORE API does so.
@@ -87,7 +87,7 @@ class ObeliskPosition(BaseModel):
 
 class IncomingDatapoint(BaseModel):
     """A datapoint to be submitted to Obelisk. These are validated quite extensively, but not fully.
-    .. automethod:: check_metric_type(self)
+    We check roughly if the value type corresponds to the declared type if its one of `number`, `number[]`, `bool` or `string`.
     """
 
     timestamp: AwareDatetime | None = None
@@ -133,20 +133,29 @@ def serialize_comma_string(input: Any, handler: SerializerFunctionWrapHandler) -
 
 
 class QueryParams(BaseModel):
+    """
+    To avoid having too many parameters on query functions,
+    and sharing the implementation between query and chunked query,
+    this model collects the information needed to execute a query.
+
+    Contrary to the name, this does not correlate directly to URL query parameters sent to Obelisk.
+    """
     dataset: str
     groupBy: Annotated[list[FieldName] | None, WrapSerializer(serialize_comma_string)] = None
+    """List of Field Names to aggregate by as defined in Obelisk docs, None selects the server-side defaults."""
     aggregator: Aggregator | None = None
     fields: Annotated[list[FieldName] | None, WrapSerializer(serialize_comma_string)] = None
-    orderBy: Annotated[list[str] | None, WrapSerializer(serialize_comma_string)] = (
-        None  # More complex than just FieldName, can be prefixed with - to invert sort
-    )
+    """List of Field Names as defined in Obelisk docs, None selects the server-side defaults."""
+    orderBy: Annotated[list[str] | None, WrapSerializer(serialize_comma_string)] = None
+    """List of Field Names, with their potential prefixes and suffixes, to select ordering. None user server defaults."""
     dataType: DataType | None = None
+    """Data type expected to be returned, is mandatory if the `value` field is requested in the `fields` parameter"""
     filter_: Annotated[str | Filter | None, Field(serialization_alias="filter")] = None
     """
-    Obelisk CORE handles filtering in `RSQL format <https://obelisk.pages.ilabt.imec.be/obelisk-core/query.html#rsql-format>`__ ,
-    to make it easier to also programatically write these filters, we provide the :class:`Filter` option as well.
+    Obelisk CORE handles filtering in [RSQL format](https://obelisk.pages.ilabt.imec.be/obelisk-core/query.html#rsql-format),
+    to make it easier to also programatically write these filters, we provide the `obelisk.types.core.Filter` option as well.
 
-    Suffix to avoid collisions.
+    Suffix to avoid collisions with builtin Python filter function.
     """
     cursor: str | None = None
     limit: int = 1000
@@ -161,10 +170,16 @@ class QueryParams(BaseModel):
         return self
 
     def to_dict(self) -> dict[str, Any]:
-        return self.model_dump(exclude_none=True, by_alias=True, mode='json')
+        return self.model_dump(exclude_none=True, by_alias=True, mode='json', exclude={"dataset"})
 
 
 class ChunkedParams(BaseModel):
+    """
+    The parameters to be used with `Client.query_time_chunked`,
+    which allows fetching large spans of data in specified "chunks" specified in time units,
+    for example processing weeks of data one hour at a time.
+    This limits memory useage.
+    """
     dataset: str
     groupBy: list[FieldName] | None = None
     aggregator: Aggregator | None = None
@@ -178,6 +193,7 @@ class ChunkedParams(BaseModel):
     start: datetime
     end: datetime
     jump: timedelta = timedelta(hours=1)
+    """The size of one chunk. 1 hour is a common default. You will receive however many datapoints are included in this interval."""
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
@@ -189,6 +205,7 @@ class ChunkedParams(BaseModel):
         return self
 
     def chunks(self) -> Iterator[QueryParams]:
+        """Splits this model into an Iterator of ordinary `QueryParams` objects, to query one timestep at a time."""
         current_start = self.start
         while current_start < self.end:
             current_end = current_start + self.jump
@@ -210,11 +227,28 @@ class ChunkedParams(BaseModel):
 
 
 class QueryResult(BaseModel):
+    """The data returned by a single chunk fetch"""
     cursor: str | None = None
+    """Cursors always point to the next page of data matched by filters.
+    They are none if there is no more data, they do not consider datapoint count limits."""
     items: list[Datapoint]
 
 
 class Client(BaseClient):
+    """
+    This class performs all communication with Obelisk.
+
+    The intended methods to be used by consumers are `query` or `query_time_chunked`.
+    These will respectively return all data matching specified parameters,
+    or return all data, one timestep at a time respectively.
+
+    `send` is considered an implementation detail,
+    but may be used by consumers for any endpoints not yet implemented by obelisk-py.
+
+    `fetch_single_chunk` is the underlying layer to both query methods and requires the user to handle cursors themselves.
+    It may however still be useful in some circumstances.
+    """
+
     page_limit: int = 250
     """How many datapoints to request per page in a cursored fetch"""
 
@@ -222,7 +256,7 @@ class Client(BaseClient):
         self,
         client: str,
         secret: str,
-        retry_strategy: RetryStrategy = NoRetryStrategy(),  # noqa: B008   # This is fine to bew shared
+        retry_strategy: RetryStrategy = NoRetryStrategy(),  # noqa: B008   # This is fine to be shared
     ) -> None:
         BaseClient.__init__(
             self,
@@ -242,9 +276,9 @@ class Client(BaseClient):
 
         Parameters
         ----------
-        dataset : str
+        - dataset
             ID for the dataset to publish to
-        data : List[IncomingDatapoint]
+        - data
             List of Obelisk-acceptable datapoints.
             Exact format varies between Classic or HFS,
             caller is responsible for formatting.
@@ -252,8 +286,8 @@ class Client(BaseClient):
         Raises
         ------
 
-        ObeliskError
-            When the resulting status code is not 204, an :exc:`~obelisk.exceptions.ObeliskError` is raised.
+        - ObeliskError
+            When the resulting status code is not 204, an `obelisk.exceptions.ObeliskError` is raised.
         """
 
         response = await self.http_post(

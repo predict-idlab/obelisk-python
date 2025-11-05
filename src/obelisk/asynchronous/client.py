@@ -18,6 +18,9 @@ class Obelisk(BaseClient):
     Component that contains all the logic to consume data from
     the Obelisk API (e.g. historical data, sse).
 
+    For most usecases, `query` will be the method you need.
+    Have a look at `query_time_chunked` too, because it might just be very useful.
+
     Obelisk API Documentation:
     https://obelisk.docs.apiary.io/
     """
@@ -42,34 +45,34 @@ class Obelisk(BaseClient):
         Parameters
         ----------
 
-        datasets : List[str]
+        - datasets:
             List of Dataset IDs.
-        metrics : Optional[List[str]] = None
+        - metrics:
             List of Metric IDs or wildcards (e.g. `*::number`), defaults to all metrics.
-        fields : Optional[List[str]] = None
+        - fields:
             List of fields to return in the result set.
             Defaults to `[metric, source, value]`
-        from_timestamp : Optional[int] = None
+        - from_timestamp:
             Limit output to events after (and including)
             this UTC millisecond timestamp, if present.
-        to_timestamp : Optional[int] = None
+        - to_timestamp:
             Limit output to events before (and excluding)
             this UTC millisecond timestamp, if present.
-        order_by : Optional[dict] = None
+        - order_by:
             Specifies the ordering of the output,
             defaults to ascending by timestamp.
             See Obelisk docs for format. Caller is responsible for validity.
-        filter_ : Optional[dict] = None
+        - filter_:
             Limit output to events matching the specified Filter expression.
             See Obelisk docs, caller is responsible for validity.
-        limit : Optional[int] = None
+        - limit:
             Limit output to a maximum number of events.
             Also determines the page size.
             Default is server-determined, usually 2500.
-        limit_by : Optional[dict] = None
+        - limit_by:
             Limit the combination of a specific set of Index fields
             to a specified maximum number.
-        cursor : Optional[str] = None
+        - cursor:
             Specifies the next cursor,
             used when paging through large result sets.
         """
@@ -129,31 +132,31 @@ class Obelisk(BaseClient):
         Parameters
         ----------
 
-        datasets : List[str]
+        - datasets:
             List of Dataset IDs.
-        metrics : Optional[List[str]] = None
+        - metrics:
             List of Metric IDs or wildcards (e.g. `*::number`), defaults to all metrics.
-        fields : Optional[List[str]] = None
+        - fields:
             List of fields to return in the result set.
             Defaults to `[metric, source, value]`
-        from_timestamp : Optional[int] = None
+        - from_timestamp:
             Limit output to events after (and including)
             this UTC millisecond timestamp, if present.
-        to_timestamp : Optional[int] = None
+        - to_timestamp:
             Limit output to events before (and excluding)
             this UTC millisecond timestamp, if present.
-        order_by : Optional[dict] = None
+        - order_by:
             Specifies the ordering of the output,
             defaults to ascending by timestamp.
             See Obelisk docs for format. Caller is responsible for validity.
-        filter_ : Optional[dict] = None
+        - filter_:
             Limit output to events matching the specified Filter expression.
             See Obelisk docs, caller is responsible for validity.
-        limit : Optional[int] = None
+        - limit:
             Limit output to a maximum number of events.
             Also determines the page size.
             Default is server-determined, usually 2500.
-        limit_by : Optional[dict] = None
+        - limit_by:
             Limit the combination of a specific set of Index fields
             to a specified maximum number.
         """
@@ -209,19 +212,19 @@ class Obelisk(BaseClient):
         Parameters
         ----------
 
-        datasets : List[str]
+        - datasets:
             Dataset IDs to query from
-        metrics : List[str]
+        - metrics:
             IDs of metrics to query
-        from_time : `datetime.datetime`
+        - from_time:
             Start time to fetch from
-        to_time : `datetime.datetime`
+        - to_time:
             End time to fetch until.
-        jump : `datetime.timedelta`
+        - jump:
             Size of one yielded chunk
-        filter_ : Optional[dict] = None
+        - filter_:
             Obelisk filter, caller is responsible for correct format
-        direction : Literal['asc', 'desc'] = 'asc'
+        - direction:
             Yield older data or newer data first, defaults to older first.
         """
 
@@ -249,23 +252,23 @@ class Obelisk(BaseClient):
 
         Parameters
         ----------
-        dataset : str
+        - dataset:
             ID for the dataset to publish to
-        data : List[dict]
+        - data:
             List of Obelisk-acceptable datapoints.
             Exact format varies between Classic or HFS,
             caller is responsible for formatting.
-        precision : :class:`~obelisk.types.TimestampPrecision` = TimestampPrecision.MILLISECONDS
+        - precision:
             Precision used in the numeric timestamps contained in data.
             Ensure it matches to avoid weird errors.
-        mode : :class:`~obelisk.types.IngestMode` = IngestMode.DEFAULT
-            See docs for :class:`~obelisk.types.IngestMode`.
+        - mode:
+            See docs for `obelisk.types.IngestMode`.
 
         Raises
         ------
 
         ObeliskError
-            When the resulting status code is not 204, an empty :exc:`~obelisk.exceptions.ObeliskError` is raised.
+            When the resulting status code is not 204, an empty `obelisk.exceptions.ObeliskError` is raised.
         """
 
         params = {
