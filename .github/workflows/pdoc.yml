@@ -26,10 +26,10 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: '3.14'
-      - run: uv run pdoc ./src/obelisk -o docs/ --math
+      - run: uv run pdoc ./src/obelisk -o ./docs/build/ --math --template-directory ./docs/templates/
       - uses: actions/upload-pages-artifact@v4
         with:
-          path: docs/
+          path: docs/build/
 
   # Deploy the artifact to GitHub pages.
   # This is a separate job so that only actions/deploy-pages has the necessary permissions.
