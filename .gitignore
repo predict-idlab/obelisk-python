@@ -26,6 +26,8 @@ share/python-wheels/
 *.egg
 MANIFEST
 
+.python-version
+
 # Installer logs
 pip-log.txt
 pip-delete-this-directory.txt
@@ -46,9 +48,7 @@ coverage.xml
 cover/
 
 # Sphinx documentation
-docs/_build/
-docs/build/
-docs/source/_autosummary/
+docs/
 
 # PyBuilder
 .pybuilder/
