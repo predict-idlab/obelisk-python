@@ -7,9 +7,10 @@ We also support Obelisk CORE, in async only for now.
 The PyPi package name is `obelisk-py`, the Python module is called `obelisk`.
 
 Your starting point will be one of the Obelisk instances in `.sync` or `.asynchronous` depending on your preferred API.
-
 The Obelisk classes in these modules both implement the same interface,
 but the asynchronous implementation returns Coroutines.
+
+For Obelisk CORE, look at `obelisk.asynchronous.core`, or the below example as your starting point.
 
 ## Error handling
 
@@ -77,5 +78,6 @@ data = client.query(
 ```
 
 ## Changelog
-.. include:: ../../CHANGELOG.rst
+
+See [here](https://github.com/predict-idlab/obelisk-python/blob/main/CHANGELOG.rst)
 """
