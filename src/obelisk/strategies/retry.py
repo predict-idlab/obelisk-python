@@ -1,5 +1,14 @@
 """
 Various retry strategies, from no retry to exponential backoff.
+
+We provide predefined strategies, as well as baseclasses for you to define your own.
+Predefined are:
+- `NoRetryStrategy`
+- `ImmediateRetryStrategy`
+- `ExponentialBackoffStrategy`
+
+To define your own strategy, implement your own subclass of `RetryStrategy`,
+which returns fresh instances of your own `RetryEvaluator` subclass.
 """
 
 from asyncio import sleep
@@ -11,7 +20,7 @@ class RetryEvaluator(ABC):
     """
     This class performs the actual retry handling.
     It can keep track of internal state as it so wishes,
-    to perform the function of :meth:`should_retry`.
+    to perform the function of `should_retry`.
     """
 
     @abstractmethod
@@ -26,7 +35,7 @@ class RetryEvaluator(ABC):
 class RetryStrategy(ABC):
     """
     Base class for all retry strategies, whether predefined or user-made.
-    The strategy has as its sole purpose to create instances of :class:`RetryEvaluator`
+    The strategy has as its sole purpose to create instances of `RetryEvaluator`
     that can be used for a specific operation.
 
     Each individual failable operation will request a separate evaluator using the make method.
@@ -81,7 +90,7 @@ class ExponentialBackoffStrategy(RetryStrategy):
     """
     Retry strategy implementing the exponential backoff algorithm.
     Every failure up to `max_retries` will result in a sleep
-    of t ** n seconds, with t being the backoff and n amount of failures.
+    of $t^n$ seconds, with $t$ being the backoff and $n$ amount of failures.
 
     Note that backoff values less than one second will count as zero.
     """

@@ -1,7 +1,7 @@
 from enum import Enum
 from typing import Any
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class IngestMode(str, Enum):
@@ -36,21 +36,29 @@ class TimestampPrecision(str, Enum):
     MICROSECONDS = "microseconds"
 
 
-class Datapoint(BaseModel, extra="allow"):
+class Datapoint(BaseModel):
+    """An Obelisk Classic / HFS datapoint. May contain more or less fields"""
     timestamp: int
     value: Any
     dataset: str | None = None
     metric: str | None = None
     source: str | None = None
-    userId: int | None = None  # Only if HFS and no other name for field
+    userId: int | None = None
+    """This field is only used on HFS, and has a different name in some deployments."""
+
+    model_config = ConfigDict(
+        extra='allow'
+    )
 
 
 class QueryResult(BaseModel):
+    """Result of a query"""
     items: list[Datapoint]
     cursor: str | None = None
 
 
 class ObeliskKind(str, Enum):
+    """Defines which variety of Obelisk a Client should use, and provides some URLs and config information."""
     CLASSIC = "classic"
     HFS = "hfs"
     CORE = "core"

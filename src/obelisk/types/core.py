@@ -1,7 +1,7 @@
 """
 Types specific to Obelisk CORE, including an RSQL filter implementation
 
-To create a filter, look at :class:`Filter`.
+To create a filter, look at `Filter`.
 Example:
 
 >>> from datetime import datetime
@@ -30,11 +30,14 @@ Field names are not validated at this time, due to the inherent complexity.
 
 class Constraint(ABC):  # noqa: B024 # This is just a marker class
     """
-    Constraints are simply groups of :class:`Comparison`,
-    such as :class:`And`, or :class:`Or`.
+    Constraints are simply groups of `Comparison`,
+    such as `And`, or `Or`.
 
     These constraints always enclose their contents in parentheses,
     to avoid confusing precendence situations in serialised format.
+
+    Comparisons should not be created manually by library consumers,
+    instead use `Filter.add_and` or `Filter.add_or`.
     """
 
     pass
@@ -42,7 +45,7 @@ class Constraint(ABC):  # noqa: B024 # This is just a marker class
 
 class Comparison:
     """
-    Comparisons are the basic items of a :class:`Filter`.
+    Comparisons are the basic items of a `Filter`.
     They consist of a field name, operator, and possibly a value on the right.
 
     It is strongly suggested you create comparisons by using the staticmethods
@@ -149,7 +152,7 @@ class Filter:
     """
     Filter is an easier way to programatically create filters for the Obelisk CORE platform.
 
-    We still recommend you familiarise yourself with the CORE filter documentation,
+    We still recommend you familiarise yourself with the [CORE filter documentation](https://obelisk.pages.ilabt.imec.be/obelisk-core/query.html#rsql-format),
     as not everything is typechecked.
     Specifically, the left hand side of any comparison is left unchecked.
     Checking this would be borderline impossible with the optional arguments to some fields,
