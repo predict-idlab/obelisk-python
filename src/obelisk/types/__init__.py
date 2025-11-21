@@ -38,6 +38,7 @@ class TimestampPrecision(str, Enum):
 
 class Datapoint(BaseModel):
     """An Obelisk Classic / HFS datapoint. May contain more or less fields"""
+
     timestamp: int
     value: Any
     dataset: str | None = None
@@ -46,19 +47,19 @@ class Datapoint(BaseModel):
     userId: int | None = None
     """This field is only used on HFS, and has a different name in some deployments."""
 
-    model_config = ConfigDict(
-        extra='allow'
-    )
+    model_config = ConfigDict(extra="allow")
 
 
 class QueryResult(BaseModel):
     """Result of a query"""
+
     items: list[Datapoint]
     cursor: str | None = None
 
 
 class ObeliskKind(str, Enum):
     """Defines which variety of Obelisk a Client should use, and provides some URLs and config information."""
+
     CLASSIC = "classic"
     HFS = "hfs"
     CORE = "core"
