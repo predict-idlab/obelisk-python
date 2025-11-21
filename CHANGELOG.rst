@@ -1,3 +1,10 @@
+Version 2.0.5
+-------------
+
+:Date: November 21, 2025
+
+* Fix: For small total limits, core.Client.query would return too many results
+
 Version 2.0.4
 -------------
 
