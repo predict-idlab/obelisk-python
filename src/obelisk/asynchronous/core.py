@@ -338,9 +338,9 @@ class Client(BaseClient):
         result_limit = params.limit
 
         # Obelisk CORE does not actually stop emitting a cursor when done, limit serves as page limit
-        params.limit = min(self.page_limit, result_limit)
 
         while True:
+            params.limit = min(self.page_limit, result_limit - len(result_set))
             result: QueryResult = await self.fetch_single_chunk(params)
             result_set.extend(result.items)
             params.cursor = result.cursor

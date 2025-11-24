@@ -1,3 +1,10 @@
+Version 2.0.6
+-------------
+
+:Date: November 24, 2025
+
+* Fix: Limit is now strict on multi-page queries in CORE
+
 Version 2.0.5
 -------------
 
