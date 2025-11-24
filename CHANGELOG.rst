@@ -1,3 +1,9 @@
+Version 2.0.7
+
+:Date: November 24, 2025
+
+* Fix: Filter classes now correctly serialized in CORE queries
+
 Version 2.0.6
 -------------
 
