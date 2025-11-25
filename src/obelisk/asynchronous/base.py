@@ -61,10 +61,10 @@ class BaseClient:
 
         async with httpx.AsyncClient() as client:
             request: httpx.Response | None = None
-            response = None
+            response: dict[Any, str] | None = None
             last_error = None
             retry = self.retry_strategy.make()
-            while not response or await retry.should_retry():
+            while not response:
                 try:
                     request = await client.post(
                         self.kind.token_url,
@@ -72,12 +72,15 @@ class BaseClient:
                         data=payload if not self.kind.use_json_auth else None,
                         headers=headers,
                     )
-
-                    response = request.json()
+                    if request:
+                        response = request.json()
+                    break
                 except Exception as e:  # noqa: PERF203 # retry strategy should add delay
                     last_error = e
                     self.log.error(e)
-                    continue
+
+                if not await retry.should_retry():
+                    break
 
             if response is None and last_error is not None:
                 raise last_error
@@ -85,32 +88,28 @@ class BaseClient:
             if request is None:
                 raise last_error or ObeliskError("Could not create HTTP request")
 
-            if request.status_code != 200:
-                if "error" in response:
+            if request.status_code != 200 or not response:
+                if response and "error" in response:
                     self.log.warning(f"Could not authenticate, {response['error']}")
                 raise AuthenticationError
 
             self._token = response["access_token"]
             self._token_expires = datetime.now() + timedelta(
-                seconds=response["expires_in"]
+                seconds=float(response["expires_in"])
             )
 
     async def _verify_token(self) -> None:
         if (
             self._token is None
             or self._token_expires is None
-            or self._token_expires >= (datetime.now() - self.grace_period)
+            or self._token_expires <= (datetime.now() - self.grace_period)
         ):
-            retry = self.retry_strategy.make()
-            first = True
-            while first or await retry.should_retry():
-                first = False
-                try:
-                    await self._get_token()
-                    return
-                except:  # noqa: E722
-                    self.log.info("excepted, Retrying token fetch")
-                    continue
+            try:
+                await self._get_token()
+                return
+            except:  # noqa: E722
+                # Retry is handled insdie get_token()
+                self.log.info("excepted, Cannot get token!")
 
     async def http_post(
         self, url: str, data: Any = None, params: dict[str, str] | None = None
@@ -187,7 +186,7 @@ class BaseClient:
             response = None
             retry = self.retry_strategy.make()
             last_error = None
-            while not response or await retry.should_retry():
+            while not response:
                 if response is not None:
                     self.log.debug(f"Retrying, last response: {response.status_code}")
 
@@ -203,8 +202,12 @@ class BaseClient:
                 except Exception as e:
                     self.log.error(e)
                     last_error = e
-                    continue
+
+                if not await retry.should_retry():
+                    break
 
             if not response and last_error:
                 raise last_error
-            return response
+            if response:
+                return response
+            raise ObeliskError("Could not complete HTTP operation")

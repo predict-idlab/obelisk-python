@@ -1,3 +1,9 @@
+Version 2.0.9
+
+:Date: November 25, 2025
+
+* Fix: Simplify retry handling in token refresh to avoid nested retry
+
 Version 2.0.8
 -------------
 
