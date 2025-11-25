@@ -1,4 +1,12 @@
+Version 2.0.8
+-------------
+
+:Date: November 25, 2025
+
+* Fix: Token refreshes happened only when not needed
+
 Version 2.0.7
+-------------
 
 :Date: November 24, 2025
 
