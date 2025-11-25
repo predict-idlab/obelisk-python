@@ -99,7 +99,7 @@ class BaseClient:
         if (
             self._token is None
             or self._token_expires is None
-            or self._token_expires < (datetime.now() - self.grace_period)
+            or self._token_expires >= (datetime.now() - self.grace_period)
         ):
             retry = self.retry_strategy.make()
             first = True
