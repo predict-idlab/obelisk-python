@@ -39,6 +39,7 @@ from numbers import Number
 
 from obelisk.strategies.retry import NoRetryStrategy, RetryStrategy
 from obelisk.types import ObeliskKind
+from obelisk.types.core import IngestMode
 
 
 DataType = Literal["number", "number[]", "json", "bool", "string"]
@@ -289,6 +290,7 @@ class Client(BaseClient):
         self,
         dataset: str,
         data: list[IncomingDatapoint],
+        ingest_mode: IngestMode = IngestMode.BOTH,
     ) -> httpx.Response:
         """
         Publishes data to Obelisk
@@ -312,6 +314,7 @@ class Client(BaseClient):
         response = await self.http_post(
             f"{self.kind.root_url}/{dataset}/data/ingest",
             data=[x.model_dump(mode="json") for x in data],
+            params={"mode": ingest_mode.value}
         )
         if response.status_code != 204:
             msg = f"An error occured during data ingest. Status {response.status_code}, message: {response.text}"

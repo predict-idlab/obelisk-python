@@ -20,6 +20,7 @@ from abc import ABC
 from datetime import datetime
 from typing import Any
 from collections.abc import Iterable
+from enum import Enum
 
 
 FieldName = str
@@ -199,3 +200,10 @@ class Filter:
         else:
             self.content = Or(self.content, *other)
         return self
+
+
+class IngestMode(str, Enum):
+    """Whether the ingested datapoints should be streamed, stored, or both (the default)"""
+    BOTH = "DEFAULT"
+    STREAM = "STREAM_ONLY"
+    STORE = "STORE_ONLY"
