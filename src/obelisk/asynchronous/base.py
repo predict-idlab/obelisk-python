@@ -102,7 +102,7 @@ class BaseClient:
         if (
             self._token is None
             or self._token_expires is None
-            or self._token_expires <= (datetime.now() - self.grace_period)
+            or self._token_expires <= (datetime.now() + self.grace_period)
         ):
             try:
                 await self._get_token()
