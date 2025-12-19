@@ -42,7 +42,7 @@ from obelisk.types import ObeliskKind
 from obelisk.types.core import IngestMode
 
 
-DataType = Literal["number", "number[]", "json", "bool", "string"]
+DataType = Literal["number", "number[]", "json", "bool", "string", "integer", "integer[]"]
 """The possible types of data Obelisk can accept"""
 
 
@@ -112,6 +112,15 @@ class IncomingDatapoint(BaseModel):
             or any([not isinstance(x, Number) for x in self.value])
         ):
             raise ValueError("Type suffix mismatch, expected value of number[]")
+
+        if suffix == "integer" and not isinstance(self.value, int):
+            raise ValueError("Type suffix mismatch, expected value of type integer")
+
+        if suffix == "integer[]" and (
+            type(self.value) is not list
+            or any([not isinstance(x, int) for x in self.value])
+        ):
+            raise ValueError("Type suffix mismatch, expected value of integer[]")
 
         # Do not check json, most things should be serialisable
 
