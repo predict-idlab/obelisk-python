@@ -42,7 +42,9 @@ from obelisk.types import ObeliskKind
 from obelisk.types.core import IngestMode
 
 
-DataType = Literal["number", "number[]", "json", "bool", "string", "integer", "integer[]"]
+DataType = Literal[
+    "number", "number[]", "json", "bool", "string", "integer", "integer[]"
+]
 """The possible types of data Obelisk can accept"""
 
 
@@ -168,7 +170,12 @@ class QueryParams(BaseModel):
     """List of Field Names, with their potential prefixes and suffixes, to select ordering. None user server defaults."""
     dataType: DataType | None = None
     """Data type expected to be returned, is mandatory if the `value` field is requested in the `fields` parameter"""
-    filter_: Annotated[str | Filter | None, Field(serialization_alias="filter",)] = None
+    filter_: Annotated[
+        str | Filter | None,
+        Field(
+            serialization_alias="filter",
+        ),
+    ] = None
     """
     Obelisk CORE handles filtering in [RSQL format](https://obelisk.pages.ilabt.imec.be/obelisk-core/query.html#rsql-format),
     to make it easier to also programatically write these filters, we provide the `obelisk.types.core.Filter` option as well.
@@ -192,7 +199,7 @@ class QueryParams(BaseModel):
             exclude_none=True, by_alias=True, mode="json", exclude={"dataset"}
         )
 
-    @field_serializer('filter_', mode='plain')
+    @field_serializer("filter_", mode="plain")
     def serialize_filter(self, value: Filter | str | None) -> str | None:
         if value is None or isinstance(value, str):
             return value
@@ -323,7 +330,7 @@ class Client(BaseClient):
         response = await self.http_post(
             f"{self.kind.root_url}/{dataset}/data/ingest",
             data=[x.model_dump(mode="json") for x in data],
-            params={"mode": ingest_mode.value}
+            params={"mode": ingest_mode.value},
         )
         if response.status_code != 204:
             msg = f"An error occured during data ingest. Status {response.status_code}, message: {response.text}"

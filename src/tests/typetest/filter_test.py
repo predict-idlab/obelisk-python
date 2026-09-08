@@ -1,9 +1,10 @@
 from obelisk.types.core import Filter, Comparison
-from datetime import datetime
+from datetime import datetime, timezone
+import pytest
 
 
 def test_basic_filter():
-    test_dt = datetime.now()
+    test_dt = datetime.now(tz=timezone.utc)
     f = (
         Filter()
         .add_and(
@@ -17,3 +18,9 @@ def test_basic_filter():
 
     expected = f"((('source'=='test source'),'timestamp'<'{test_dt.isoformat()}'),'metricType'=in=('number', 'number[]'))"
     assert str(f) == expected
+
+
+def test_naive_datetime():
+    with pytest.raises(ValueError):
+        c = Comparison.less("timestamp", datetime.fromtimestamp(1879282))
+        print(str(c))
