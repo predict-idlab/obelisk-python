@@ -4,20 +4,21 @@ Types specific to Obelisk CORE, including an RSQL filter implementation
 To create a filter, look at `Filter`.
 Example:
 
->>> from datetime import datetime
+>>> from datetime import datetime, timezone
 >>> f = (Filter().add_and(
 ...     Comparison.equal('source', 'test source'),
 ...     Comparison.is_in('metricType', ['number', 'number[]']),
 ... ).add_or(
-...     Comparison.less('timestamp', datetime.fromtimestamp(1757422128))
+...     Comparison.less('timestamp', datetime.fromtimestamp(1757422128).astimezone(timezone.utc))
 ... ))
 >>> print(f)
-(('source'=='test source';'metricType'=in=('number', 'number[]')),'timestamp'<'2025-09-09T14:48:48')
+(('source'=='test source';'metricType'=in=('number', 'number[]')),'timestamp'<'2025-09-09T12:48:48+00:00')
 """
 
 from __future__ import annotations
 from abc import ABC
 from datetime import datetime
+
 from typing import Any
 from collections.abc import Iterable
 from enum import Enum
@@ -55,6 +56,8 @@ class Comparison:
     When serializing to RSQL format,
     each argument is single quoted as to accept any otherwise reserved characters,
     and serialised using :func:`str`.
+
+    If the right-hand value is a datetime, it _must_ be timezone-aware.
     """
 
     left: FieldName
@@ -77,6 +80,8 @@ class Comparison:
     def _sstr(item: Any) -> str:
         """Smart string conversion"""
         if isinstance(item, datetime):
+            if item.tzinfo is None:
+                raise ValueError(f"Right side of comparison is naive datetime: {item}")
             return item.isoformat()
         return str(item)
 
@@ -204,6 +209,7 @@ class Filter:
 
 class IngestMode(str, Enum):
     """Whether the ingested datapoints should be streamed, stored, or both (the default)"""
+
     BOTH = "DEFAULT"
     STREAM = "STREAM_ONLY"
     STORE = "STORE_ONLY"
