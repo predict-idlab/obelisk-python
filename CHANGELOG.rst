@@ -1,4 +1,12 @@
+Version 2.3.1
+-------------
+
+:Date: September 08, 2026
+
+* Fix: Comparison no longer allows the RHS value to be a naive datetime, to prevent Obelisk Core 500 errors.
+
 Version 2.0.9
+-------------
 
 :Date: November 25, 2025
 
