@@ -1,3 +1,10 @@
+Version 2.3.2
+-------------
+
+:Date: November 09, 2026
+
+* Fix: HTTP POST queries no longer risk infinite looping in some exception circumstances
+
 Version 2.3.1
 -------------
 
