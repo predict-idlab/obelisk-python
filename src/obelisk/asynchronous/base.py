@@ -137,7 +137,10 @@ class BaseClient:
             response = None
             retry = self.retry_strategy.make()
             last_error = None
-            while not response or await retry.should_retry():
+            first_run = True
+            while first_run or await retry.should_retry():
+                first_run = False
+
                 if response is not None:
                     self.log.debug(f"Retrying, last response: {response.status_code}")
 
@@ -156,9 +159,13 @@ class BaseClient:
                     last_error = e
                     continue
 
-            if not response and last_error:
+            if response:
+                raise ObeliskError(f"Unacceptable response, got: {response.status_code}")
+
+            if last_error:
                 raise last_error
-            return response
+
+            raise ObeliskError("Did not manage to get any response")
 
     async def http_get(
         self, url: str, params: dict[str, str] | None = None
